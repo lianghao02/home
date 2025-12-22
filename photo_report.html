@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Photo Report - 相片整理自動套印工具，專為警務需求設計。">
+    <meta name="author" content="LiangHao">
+    <title>Photo Report 自動套印工具 | LiangHao Dev</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta property="og:title" content="Photo Report 自動套印工具 | LiangHao Dev">
+    <meta property="og:description" content="快速將照片整理並套印至指定的表格格式中，大幅節省人工排版的時間。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lianghao02.github.io/photo_report.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 特製樣式 */
+        .download-section {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            color: #2c3e50;
+            /* Ensure dark text on white background */
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .download-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            max-width: 400px;
+            margin: 0 auto 20px auto;
+        }
+
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            color: #34495e;
+            /* Dark text for list items */
+        }
+
+        .feature-list li::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--color-success);
+            position: absolute;
+            left: 0;
+            top: 2px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: var(--color-primary);
+        }
+
+        /* README Content Styles */
+        .readme-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+            color: #2c3e50;
+            text-align: left;
+        }
+
+        .readme-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .readme-content h3 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #34495e;
+            border-left: 4px solid var(--color-accent);
+            padding-left: 10px;
+        }
+
+        .readme-content h4 {
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .readme-content p,
+        .readme-content li {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .readme-content ul {
+            padding-left: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .readme-content li {
+            margin-bottom: 8px;
+        }
+
+        .readme-content code {
+            background: #f1f2f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #c0392b;
+            font-size: 0.9em;
+        }
+
+        .readme-content strong {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-gradient"></div>
+
+    <div class="container">
+        <header style="text-align: center; margin-bottom: 40px;">
+            <h1><i class="fa-solid fa-file-zipper"></i> Photo Report</h1>
+            <p>相片整理自動套印工具</p>
+        </header>
+
+        <main>
+            <div class="download-section">
+                <h2>立即下載</h2>
+                <p style="color: #7f8c8d; margin-bottom: 20px;">包含 Excel 自動化工具與使用說明</p>
+
+                <ul class="feature-list">
+                    <li>一鍵匯入大量照片</li>
+                    <li>自動調整大小與排版</li>
+                    <li>支援 PDF 輸出與列印</li>
+                    <li>完全離線執行，安全可靠</li>
+                </ul>
+
+                <a href="downloads/Photo_Report.rar" class="download-btn" download>
+                    <i class="fa-solid fa-download"></i> 下載工具包 (.rar)
+                </a>
+                <br>
+                <small style="color: #95a5a6; display: block; margin-top: 10px;">適用於 Windows / Excel 環境</small>
+            </div>
+
+            <!-- Usage Guide Section -->
+            <section class="usage-guide">
+                <div class="step">
+                    <div class="step-icon"><i class="fa-solid fa-images"></i></div>
+                    <span>1. 準備照片</span>
+                </div>
+                <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="step">
+                    <div class="step-icon"><i class="fa-solid fa-file-excel"></i></div>
+                    <span>2. 開啟工具</span>
+                </div>
+                <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="step">
+                    <div class="step-icon"><i class="fa-solid fa-print"></i></div>
+                    <span>3. 自動套印</span>
+                </div>
+            </section>
+
+            <!-- Embedded README Content -->
+            <section class="readme-content">
+                <h2>Photo Report 自動化工具使用說明</h2>
+
+                <h3>簡介</h3>
+                <p>這是一個專為警務工作設計的 Excel VBA 自動化工具，能夠快速將照片整理並套印至指定的表格格式中，大幅節省人工排版的時間。</p>
+
+                <h3>功能特色</h3>
+                <ul>
+                    <li><strong>自動匯入</strong>: 批量匯入資料夾內的照片。</li>
+                    <li><strong>自動排版</strong>: 依照預設格式自動調整照片大小與位置。</li>
+                    <li><strong>快速輸出</strong>: 支援直接列印或另存為 PDF。</li>
+                </ul>
+
+                <h3>系統需求</h3>
+                <ul>
+                    <li>作業系統: Windows 10/11</li>
+                    <li>軟體需求: Microsoft Excel (需啟用巨集功能)</li>
+                </ul>
+
+                <h3>使用步驟</h3>
+
+                <h4>1. 準備照片</h4>
+                <ul>
+                    <li>將需要製作報告的照片整理在同一個資料夾中。</li>
+                    <li><strong>注意</strong>: 本工具僅支援 <strong>JPG</strong> 或 <strong>PNG</strong> 格式。</li>
+                    <li>若您的照片為 <strong>HEIC</strong> 格式 (iPhone 預設)，請先使用我們提供的 <a
+                            href="https://lianghao02.github.io/police-image-converter/" target="_blank">Police Image
+                            Converter</a> 進行轉檔。
+                    </li>
+                </ul>
+
+                <h4>2. 開啟工具</h4>
+                <ul>
+                    <li>點擊 <code>Photo_Report.xlsm</code> 開啟檔案。</li>
+                    <li>若 Excel 上方出現「安全性警告」，請點擊 <strong>[啟用內容]</strong> 以允許巨集執行。</li>
+                </ul>
+
+                <h4>3. 執行匯入</h4>
+                <ul>
+                    <li>點擊工具介面上的 <strong>[匯入照片]</strong> 按鈕。</li>
+                    <li>選擇您存放照片的資料夾。</li>
+                    <li>系統將自動讀取並排版。</li>
+                </ul>
+
+                <h4>4. 輸出報告</h4>
+                <ul>
+                    <li>確認排版無誤後，可直接列印或儲存檔案。</li>
+                </ul>
+
+                <h3>常見問題</h3>
+                <p><strong>Q: 為什麼照片無法匯入？</strong><br>
+                    A: 請確認照片檔名是否包含特殊字元，或格式是否為 JPG/PNG。</p>
+
+                <p><strong>Q: 執行時出現錯誤訊息？</strong><br>
+                    A: 請確認您已啟用 Excel 的巨集權限。</p>
+            </section>
+
+            <div style="text-align: center;">
+                <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> 返回作品集首頁</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Photo Report Tool. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

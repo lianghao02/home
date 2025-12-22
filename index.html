@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="LiangHao's Projects Portal - 探索我開發的實用工具與應用程式。">
+    <meta name="author" content="LiangHao">
+    <title>LiangHao's Projects | 作品集</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta property="og:title" content="LiangHao's Projects | 作品集">
+    <meta property="og:description" content="LiangHao's Projects Portal - 探索我開發的實用工具與應用程式。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lianghao02.github.io/">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (Local Build) -->
+    <link href="./output.css" rel="stylesheet">
+</head>
+
+<body class="bg-bg text-text font-sans min-h-screen flex flex-col overflow-x-hidden leading-relaxed">
+    <!-- Background Gradient -->
+    <div
+        class="fixed inset-0 w-full h-full -z-10 opacity-60 pointer-events-none bg-[radial-gradient(circle_at_top_right,#1e3a8a_0%,transparent_40%),radial-gradient(circle_at_bottom_left,#334155_0%,transparent_40%)]">
+    </div>
+
+    <header class="py-8 px-[5%]">
+        <nav class="flex justify-between items-center max-w-[1200px] mx-auto">
+            <div
+                class="logo text-2xl font-bold bg-gradient-to-r from-accent to-[#818cf8] bg-clip-text text-transparent">
+                LiangHao.Dev</div>
+            <div class="social-links">
+                <a href="https://github.com/lianghao02" target="_blank" rel="noopener noreferrer"
+                    class="text-text no-underline font-medium transition-colors duration-300 hover:text-accent">GitHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-1 w-full max-w-[1200px] mx-auto py-16 px-[5%]">
+        <section class="hero text-center mb-20 animate-fadeInDown">
+            <h1
+                class="text-[2.5rem] md:text-[3.5rem] mb-4 tracking-tight bg-gradient-to-br from-white to-[#94a3b8] bg-clip-text text-transparent font-bold">
+                探索我的專案作品</h1>
+            <p class="subtitle text-xl text-[#94a3b8]">這裡展示了我開發的實用工具與應用程式</p>
+        </section>
+
+        <section class="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fadeInUp">
+            <!-- Project 1: PoliceLocate -->
+            <a href="https://lianghao02.github.io/PoliceLocate/"
+                class="project-card group bg-card-bg border border-[rgba(148,163,184,0.1)] rounded-xl p-8 no-underline text-text transition-all duration-300 backdrop-blur-md relative overflow-hidden flex flex-col hover:-translate-y-[5px] hover:border-[rgba(56,189,248,0.3)] hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]"
+                target="_blank" rel="noopener noreferrer">
+                <!-- Hover Gradient Overlay -->
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-[rgba(56,189,248,0.1)] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">
+                </div>
+
+                <div class="card-content relative z-10 h-full flex flex-col">
+                    <div class="card-icon text-[2.5rem] mb-6"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h2 class="text-2xl mb-3 font-semibold">PoliceLocate</h2>
+                    <p class="text-[#94a3b8] mb-8 flex-grow">行動電話即時定位輔助工具。</p>
+                    <span
+                        class="link-text text-accent font-semibold flex items-center gap-2 transition-all duration-300 group-hover:gap-[0.8rem]">前往專案
+                        &rarr;</span>
+                </div>
+            </a>
+
+            <!-- Project 2: CSV to Excel -->
+            <a href="https://lianghao02.github.io/CSV_to_Excel/"
+                class="project-card group bg-card-bg border border-[rgba(148,163,184,0.1)] rounded-xl p-8 no-underline text-text transition-all duration-300 backdrop-blur-md relative overflow-hidden flex flex-col hover:-translate-y-[5px] hover:border-[rgba(56,189,248,0.3)] hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]"
+                target="_blank" rel="noopener noreferrer">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-[rgba(56,189,248,0.1)] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">
+                </div>
+
+                <div class="card-content relative z-10 h-full flex flex-col">
+                    <div class="card-icon text-[2.5rem] mb-6"><i class="fa-solid fa-file-csv"></i></div>
+                    <h2 class="text-2xl mb-3 font-semibold">CSV to Excel</h2>
+                    <p class="text-[#94a3b8] mb-8 flex-grow">交易明細轉檔合併。</p>
+                    <span
+                        class="link-text text-accent font-semibold flex items-center gap-2 transition-all duration-300 group-hover:gap-[0.8rem]">前往專案
+                        &rarr;</span>
+                </div>
+            </a>
+
+            <!-- Project 3: Police Image Converter -->
+            <a href="https://lianghao02.github.io/police-image-converter/"
+                class="project-card group bg-card-bg border border-[rgba(148,163,184,0.1)] rounded-xl p-8 no-underline text-text transition-all duration-300 backdrop-blur-md relative overflow-hidden flex flex-col hover:-translate-y-[5px] hover:border-[rgba(56,189,248,0.3)] hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]"
+                target="_blank" rel="noopener noreferrer">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-[rgba(56,189,248,0.1)] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">
+                </div>
+
+                <div class="card-content relative z-10 h-full flex flex-col">
+                    <div class="card-icon text-[2.5rem] mb-6"><i class="fa-solid fa-images"></i></div>
+                    <h2 class="text-2xl mb-3 font-semibold">Police Image Converter</h2>
+                    <p class="text-[#94a3b8] mb-8 flex-grow">照片規格化+縮圖。</p>
+                    <span
+                        class="link-text text-accent font-semibold flex items-center gap-2 transition-all duration-300 group-hover:gap-[0.8rem]">前往專案
+                        &rarr;</span>
+                </div>
+            </a>
+
+            <!-- Resource: Photo Report -->
+            <a href="photo_report.html"
+                class="project-card group bg-card-bg border border-[rgba(148,163,184,0.1)] rounded-xl p-8 no-underline text-text transition-all duration-300 backdrop-blur-md relative overflow-hidden flex flex-col hover:-translate-y-[5px] hover:border-[rgba(56,189,248,0.3)] hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-[rgba(56,189,248,0.1)] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">
+                </div>
+
+                <div class="card-content relative z-10 h-full flex flex-col">
+                    <div class="card-icon text-[2.5rem] mb-6"><i class="fa-solid fa-file-zipper"></i></div>
+                    <h2 class="text-2xl mb-3 font-semibold">Photo Report</h2>
+                    <p class="text-[#94a3b8] mb-8 flex-grow">相片整理自動套印。</p>
+                    <span
+                        class="link-text text-accent font-semibold flex items-center gap-2 transition-all duration-300 group-hover:gap-[0.8rem]">前往下載
+                        &rarr;</span>
+                </div>
+            </a>
+        </section>
+    </main>
+
+    <footer class="text-center p-8 text-[#64748b] text-sm">
+        <p>&copy; 2025 LiangHao. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>
