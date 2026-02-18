@@ -27,6 +27,47 @@
     <!-- Tailwind CSS -->
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#0f172a',
+                        text: '#f8fafc',
+                        'card-bg': 'rgba(30, 41, 59, 0.7)',
+                        'card-border': 'rgba(148, 163, 184, 0.1)',
+                        accent: '#38bdf8',
+                        'accent-hover': '#0ea5e9'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    animation: {
+                        fadeInDown: 'fadeInDown 0.8s ease-out',
+                        fadeInUp: 'fadeInUp 0.8s ease-out 0.2s backwards',
+                    },
+                    keyframes: {
+                        fadeInDown: {
+                            '0%': { opacity: '0', transform: 'translateY(-20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .project-card {
+            background-color: rgba(30, 41, 59, 0.7);
+            /* Fallback/explicit */
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(10px);
+        }
+    </style>
 </head>
 
 <body class="bg-bg text-text font-sans min-h-screen flex flex-col overflow-x-hidden leading-relaxed">
