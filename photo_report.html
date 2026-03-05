@@ -2,499 +2,920 @@
 <html lang="zh-TW">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Photo Report - 相片整理自動套印工具，專為警務需求設計。">
-    <meta name="author" content="LiangHao">
-    <title>Photo Report 自動套印工具 | LiangHao Dev</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Photo Report 相片整理自動套印工具 — 批次匯入照片、自動排版輸出，專為警務需求設計。">
+  <meta name="author" content="LiangHao">
+  <title>Photo Report 自動套印工具 | LiangHao Dev</title>
 
-    <meta property="og:title" content="Photo Report 自動套印工具 | LiangHao Dev">
-    <meta property="og:description" content="快速將照片整理並套印至指定的表格格式中，大幅節省人工排版的時間。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://lianghao02.github.io/photo_report.html">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@400;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --color-bg: #0f172a;
-            --color-text: #f8fafc;
-            --color-card-bg: rgba(30, 41, 59, 0.7);
-            --color-card-border: rgba(148, 163, 184, 0.1);
-            --color-accent: #38bdf8;
-            --color-accent-hover: #0ea5e9;
-            --color-gradient-start: #0f172a;
-            --color-gradient-end: #1e293b;
-            --font-main: 'Inter', 'Noto Sans TC', sans-serif;
-            --color-success: #2ecc71;
-            --color-primary: #3498db;
-        }
+  <meta property="og:title" content="Photo Report 自動套印工具 | LiangHao Dev">
+  <meta property="og:description" content="快速將照片整理並套印至指定的表格格式中，大幅節省人工排版的時間。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lianghao02.github.io/photo_report.html">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 
-        body {
-            font-family: var(--font-main);
-            background-color: var(--color-bg);
-            color: var(--color-text);
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        .background-gradient {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at top right, #1e3a8a 0%, transparent 40%),
-                radial-gradient(circle at bottom left, #334155 0%, transparent 40%);
-            z-index: -1;
-            opacity: 0.6;
-        }
+  <style>
+    /* =========================================================
+       Design System — CSS Custom Properties
+    ========================================================= */
+    :root {
+      --bg:          #080d1a;
+      --surface:     rgba(15, 23, 42, 0.85);
+      --surface-2:   rgba(30, 41, 59, 0.55);
+      --surface-3:   rgba(30, 41, 59, 0.35);
+      --border:      rgba(148, 163, 184, 0.12);
+      --border-glow: rgba(251, 146, 60, 0.4);
+      --text:        #f1f5f9;
+      --text-muted:  #94a3b8;
+      --text-dim:    #64748b;
+      --accent:      #fb923c;   /* orange — matches index.html accent-4 */
+      --accent-alt:  #fbbf24;
+      --accent-soft: rgba(251, 146, 60, 0.12);
+      --accent-border: rgba(251, 146, 60, 0.28);
+      --success:     #34d399;
+      --radius:      1.25rem;
+      --radius-sm:   0.65rem;
+      --transition:  0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --font:        'Inter', 'Noto Sans TC', sans-serif;
+    }
 
-        header {
-            padding: 2rem 5%;
-        }
+    /* =========================================================
+       Reset & Base
+    ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #38bdf8, #818cf8);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+    a { text-decoration: none; color: inherit; }
 
-        .social-links a {
-            color: var(--color-text);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
+    /* =========================================================
+       Background
+    ========================================================= */
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .bg-orbs::before {
+      content: '';
+      position: absolute;
+      top: -15%;
+      right: -10%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124,45,18,0.4) 0%, transparent 65%);
+      border-radius: 50%;
+      animation: orbFloat 20s ease-in-out infinite alternate;
+    }
+    .bg-orbs::after {
+      content: '';
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 550px; height: 550px;
+      background: radial-gradient(circle, rgba(30,58,138,0.3) 0%, transparent 65%);
+      border-radius: 50%;
+      animation: orbFloat 26s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes orbFloat {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(30px,-30px) scale(1.06); }
+    }
 
-        .social-links a:hover {
-            color: var(--color-accent);
-        }
+    /* =========================================================
+       Header / Nav
+    ========================================================= */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1.1rem 5%;
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+    header.scrolled {
+      background: rgba(8,13,26,0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--border), 0 4px 20px rgba(0,0,0,0.4);
+    }
 
-        main {
-            flex: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 5%;
-            width: 100%;
-        }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-        .hero {
-            text-align: center;
-            margin-bottom: 5rem;
-            animation: fadeInDown 0.8s ease-out;
-        }
+    .logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-            background: linear-gradient(to bottom right, #ffffff, #94a3b8);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+    .nav-links { display: flex; align-items: center; gap: 1.5rem; }
 
-        .subtitle {
-            font-size: 1.25rem;
-            color: #94a3b8;
-        }
+    .nav-link {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color var(--transition);
+    }
+    .nav-link:hover { color: var(--text); }
 
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            animation: fadeInUp 0.8s ease-out 0.2s backwards;
-        }
+    .nav-back {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: color var(--transition);
+    }
+    .nav-back:hover { color: var(--accent); }
 
-        .project-card {
-            background: var(--color-card-bg);
-            border: 1px solid var(--color-card-border);
-            border-radius: 12px;
-            padding: 2rem;
-            text-decoration: none;
-            color: var(--color-text);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+    /* =========================================================
+       Main
+    ========================================================= */
+    main {
+      flex: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3.5rem 5% 6rem;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
 
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom right, rgba(56, 189, 248, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+    /* =========================================================
+       Page Hero
+    ========================================================= */
+    .page-hero {
+      text-align: center;
+      margin-bottom: 3.5rem;
+      opacity: 0;
+      animation: fadeInDown 0.7s ease-out 0.1s forwards;
+    }
 
-        .project-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(56, 189, 248, 0.3);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-        }
+    .page-hero-icon {
+      width: 72px; height: 72px;
+      border-radius: 20px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
 
-        .project-card:hover::before {
-            opacity: 1;
-        }
+    .page-hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(160deg, #fff 0%, #cbd5e1 60%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.75rem;
+    }
 
-        .card-content {
-            position: relative;
-            z-index: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
+    .page-hero-sub {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
 
-        .card-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-        }
+    .version-chip {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
 
-        .project-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-        }
+    /* =========================================================
+       Download Card
+    ========================================================= */
+    .download-card {
+      background: var(--surface-2);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      padding: 2.25rem 2.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeInUp 0.7s ease-out 0.25s forwards;
+    }
+    .download-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--accent), var(--accent-alt), transparent);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .download-card-inner {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+    }
 
-        .project-card p {
-            color: #94a3b8;
-            margin-bottom: 2rem;
-            flex-grow: 1;
-        }
+    .dl-info { flex: 1; min-width: 220px; }
+    .dl-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    .dl-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    .dl-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
 
-        .link-text {
-            color: var(--color-accent);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: gap 0.3s ease;
-        }
+    .dl-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; }
 
-        .project-card:hover .link-text {
-            gap: 0.8rem;
-        }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0.8rem 1.75rem;
+      border-radius: var(--radius-sm);
+      transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(251,146,60,0.3);
+    }
+    .download-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+      box-shadow: 0 6px 28px rgba(251,146,60,0.45);
+    }
 
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: #64748b;
-            font-size: 0.875rem;
-        }
+    .dl-note {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
+    /* =========================================================
+       Feature List (inside download card)
+    ========================================================= */
+    .feature-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem 1.5rem;
+      margin-top: 1.25rem;
+    }
+    .feature-list li {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .feature-list li i {
+      color: var(--success);
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    /* =========================================================
+       Steps Flow
+    ========================================================= */
+    .steps-section {
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeInUp 0.7s ease-out 0.4s forwards;
+    }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    .steps-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
 
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
+    .step-item {
+      flex: 1;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.4rem 1.25rem;
+      text-align: center;
+      position: relative;
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .step-item:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-soft);
+    }
 
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+    .step-num {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
 
-        /* 特製樣式 */
-        .download-section {
-            text-align: center;
-            padding: 40px 20px;
-            background: white;
-            color: #2c3e50;
-            /* Ensure dark text on white background */
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
+    .step-icon-wrap {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-bottom: 0.7rem;
+    }
 
-        .download-btn {
-            display: inline-block;
-            background-color: var(--color-accent);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-        }
+    .step-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
 
-        .download-btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-        }
+    .step-arrow {
+      display: flex;
+      align-items: center;
+      padding: 0 0.5rem;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
 
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-            max-width: 400px;
-            margin: 0 auto 20px auto;
-        }
+    /* =========================================================
+       Content Sections (README)
+    ========================================================= */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      opacity: 0;
+      animation: fadeInUp 0.7s ease-out 0.55s forwards;
+    }
 
-        .feature-list li {
-            margin-bottom: 10px;
-            padding-left: 25px;
-            position: relative;
-            color: #34495e;
-            /* Dark text for list items */
-        }
+    .content-block {
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
 
-        .feature-list li::before {
-            content: '\f00c';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: var(--color-success);
-            position: absolute;
-            left: 0;
-            top: 2px;
-        }
+    /* Accordion-style block header */
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 1.1rem 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background var(--transition);
+    }
+    .block-header:hover { background: rgba(148,163,184,0.04); }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: #7f8c8d;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
+    .block-header-icon {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
 
-        .back-link:hover {
-            color: var(--color-primary);
-        }
+    .block-header-title {
+      font-size: 0.97rem;
+      font-weight: 700;
+      flex: 1;
+    }
 
-        /* README Content Styles */
-        .readme-content {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            margin-top: 30px;
-            color: #2c3e50;
-            text-align: left;
-        }
+    .block-toggle {
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      transition: transform var(--transition);
+    }
+    .content-block.open .block-toggle { transform: rotate(180deg); }
 
-        .readme-content h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #ecf0f1;
-            color: #2c3e50;
-        }
+    .block-body {
+      padding: 0 1.5rem 1.4rem;
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+    .block-body.open {
+      display: block;
+      animation: fadeInUp 0.25s ease-out forwards;
+    }
 
-        .readme-content h3 {
-            font-size: 1.4rem;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            color: #34495e;
-            border-left: 4px solid var(--color-accent);
-            padding-left: 10px;
-        }
+    /* Typography inside block-body */
+    .block-body p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      line-height: 1.75;
+    }
 
-        .readme-content h4 {
-            font-size: 1.1rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-            font-weight: 700;
-        }
+    .block-body ul {
+      list-style: none;
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
 
-        .readme-content p,
-        .readme-content li {
-            color: #555;
-            line-height: 1.8;
-            font-size: 1rem;
-        }
+    .block-body ul li {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      line-height: 1.65;
+    }
 
-        .readme-content ul {
-            padding-left: 20px;
-            margin-bottom: 1rem;
-        }
+    .block-body ul li::before {
+      content: '▸';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
 
-        .readme-content li {
-            margin-bottom: 8px;
-        }
+    .block-body strong { color: var(--text); font-weight: 600; }
 
-        .readme-content code {
-            background: #f1f2f6;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            color: #c0392b;
-            font-size: 0.9em;
-        }
+    .block-body a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: opacity var(--transition);
+    }
+    .block-body a:hover { opacity: 0.8; }
 
-        .readme-content strong {
-            color: #2c3e50;
-        }
-    </style>
+    .block-body code {
+      background: rgba(148,163,184,0.1);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.45rem;
+      border-radius: 5px;
+      font-family: 'Consolas', 'Menlo', monospace;
+      font-size: 0.85em;
+      color: var(--accent-alt);
+    }
+
+    /* Step sub-items inside block-body */
+    .sub-step {
+      margin-top: 1rem;
+    }
+    .sub-step-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* FAQ */
+    .faq-item {
+      margin-top: 1.1rem;
+      padding-top: 1.1rem;
+      border-top: 1px solid var(--border);
+    }
+    .faq-item:first-child { border-top: none; margin-top: 0.8rem; padding-top: 0; }
+
+    .faq-q {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+    .faq-q::before {
+      content: 'Q';
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      width: 20px; height: 20px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .faq-a {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      padding-left: 1.6rem;
+      line-height: 1.65;
+    }
+
+    /* =========================================================
+       Back Link
+    ========================================================= */
+    .back-wrap {
+      text-align: center;
+      margin-top: 3rem;
+      opacity: 0;
+      animation: fadeInUp 0.7s ease-out 0.7s forwards;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      padding: 0.65rem 1.4rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+    }
+    .back-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent-border);
+      background: var(--accent-soft);
+    }
+
+    /* =========================================================
+       Footer
+    ========================================================= */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem 5%;
+      border-top: 1px solid var(--border);
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .footer-links { display: flex; gap: 1.25rem; }
+    .footer-link {
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      transition: color var(--transition), transform var(--transition);
+    }
+    .footer-link:hover { color: var(--accent); transform: translateY(-2px); }
+    .footer-copy { font-size: 0.8rem; color: var(--text-dim); }
+
+    /* =========================================================
+       Keyframes
+    ========================================================= */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0);     }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    /* =========================================================
+       Responsive
+    ========================================================= */
+    @media (max-width: 640px) {
+      .download-card-inner { flex-direction: column; gap: 1.5rem; }
+      .dl-actions { align-items: flex-start; }
+      .steps-flow { flex-direction: column; }
+      .step-arrow { transform: rotate(90deg); padding: 0.25rem 0; align-self: center; }
+      .feature-list { grid-template-columns: 1fr; }
+      main { padding: 2rem 5% 4rem; }
+    }
+  </style>
 </head>
 
 <body>
-    <div class="background-gradient"></div>
+  <!-- Background Orbs -->
+  <div class="bg-orbs" aria-hidden="true"></div>
 
-    <div class="container">
-        <header style="text-align: center; margin-bottom: 40px;">
-            <h1><i class="fa-solid fa-file-zipper"></i> Photo Report</h1>
-            <p>相片整理自動套印工具</p>
-        </header>
+  <!-- ===== Header ===== -->
+  <header id="site-header">
+    <nav>
+      <a href="index.html" class="logo">LiangHao.Dev</a>
+      <div class="nav-links">
+        <a href="https://github.com/lianghao02" target="_blank" rel="noopener noreferrer" class="nav-link">
+          <i class="fa-brands fa-github"></i> GitHub
+        </a>
+      </div>
+    </nav>
+  </header>
 
-        <main>
-            <div class="download-section">
-                <h2>立即下載</h2>
-                <p style="color: #7f8c8d; margin-bottom: 20px;">包含 Excel 自動化工具與使用說明</p>
+  <!-- ===== Main ===== -->
+  <main>
 
-                <ul class="feature-list">
-                    <li>一鍵匯入大量照片</li>
-                    <li>自動調整大小與排版</li>
-                    <li>支援 PDF 輸出與列印</li>
-                    <li>完全離線執行，安全可靠</li>
-                </ul>
+    <!-- Page Hero -->
+    <section class="page-hero" aria-label="工具簡介">
+      <div class="page-hero-icon" aria-hidden="true">
+        <i class="fa-solid fa-file-zipper"></i>
+      </div>
+      <h1>Photo Report <span class="version-chip">v1.1</span></h1>
+      <p class="page-hero-sub">現況照片清冊整理與自動套印工具</p>
+    </section>
 
-                <a href="downloads/Photo_Report.rar" class="download-btn" download>
-                    <i class="fa-solid fa-download"></i> 下載工具包 (.rar)
-                </a>
-                <br>
-                <small style="color: #95a5a6; display: block; margin-top: 10px;">適用於 Windows / Excel 環境</small>
-            </div>
-
-            <!-- Usage Guide Section -->
-            <section class="usage-guide">
-                <div class="step">
-                    <div class="step-icon"><i class="fa-solid fa-images"></i></div>
-                    <span>1. 準備照片</span>
-                </div>
-                <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
-                <div class="step">
-                    <div class="step-icon"><i class="fa-solid fa-file-excel"></i></div>
-                    <span>2. 開啟工具</span>
-                </div>
-                <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
-                <div class="step">
-                    <div class="step-icon"><i class="fa-solid fa-print"></i></div>
-                    <span>3. 自動套印</span>
-                </div>
-            </section>
-
-            <!-- Embedded README Content -->
-            <section class="readme-content">
-                <h2>Photo Report 自動化工具使用說明</h2>
-
-                <h3>簡介</h3>
-                <p>這是一個專為警務工作設計的 Excel VBA 自動化工具，能夠快速將照片整理並套印至指定的表格格式中，大幅節省人工排版的時間。</p>
-
-                <h3>功能特色</h3>
-                <ul>
-                    <li><strong>自動匯入</strong>: 批量匯入資料夾內的照片。</li>
-                    <li><strong>自動排版</strong>: 依照預設格式自動調整照片大小與位置。</li>
-                    <li><strong>快速輸出</strong>: 支援直接列印或另存為 PDF。</li>
-                </ul>
-
-                <h3>系統需求</h3>
-                <ul>
-                    <li>作業系統: Windows 10/11</li>
-                    <li>軟體需求: Microsoft Excel (需啟用巨集功能)</li>
-                </ul>
-
-                <h3>使用步驟</h3>
-
-                <h4>1. 準備照片</h4>
-                <ul>
-                    <li>將需要製作報告的照片整理在同一個資料夾中。</li>
-                    <li><strong>注意</strong>: 本工具僅支援 <strong>JPG</strong> 或 <strong>PNG</strong> 格式。</li>
-                    <li>若您的照片為 <strong>HEIC</strong> 格式 (iPhone 預設)，請先使用我們提供的 <a
-                            href="https://lianghao02.github.io/police-image-converter/" target="_blank">Police Image
-                            Converter</a> 進行轉檔。
-                    </li>
-                </ul>
-
-                <h4>2. 開啟工具</h4>
-                <ul>
-                    <li>點擊 <code>Photo_Report.xlsm</code> 開啟檔案。</li>
-                    <li>若 Excel 上方出現「安全性警告」，請點擊 <strong>[啟用內容]</strong> 以允許巨集執行。</li>
-                </ul>
-
-                <h4>3. 執行匯入</h4>
-                <ul>
-                    <li>點擊工具介面上的 <strong>[匯入照片]</strong> 按鈕。</li>
-                    <li>選擇您存放照片的資料夾。</li>
-                    <li>系統將自動讀取並排版。</li>
-                </ul>
-
-                <h4>4. 輸出報告</h4>
-                <ul>
-                    <li>確認排版無誤後，可直接列印或儲存檔案。</li>
-                </ul>
-
-                <h3>常見問題</h3>
-                <p><strong>Q: 為什麼照片無法匯入？</strong><br>
-                    A: 請確認照片檔名是否包含特殊字元，或格式是否為 JPG/PNG。</p>
-
-                <p><strong>Q: 執行時出現錯誤訊息？</strong><br>
-                    A: 請確認您已啟用 Excel 的巨集權限。</p>
-            </section>
-
-            <div style="text-align: center;">
-                <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> 返回作品集首頁</a>
-            </div>
-        </main>
-
-        <footer>
-            <p>&copy; 2025 Photo Report Tool. All rights reserved.</p>
-        </footer>
+    <!-- Download Card -->
+    <div class="download-card" aria-label="下載區">
+      <div class="download-card-inner">
+        <div class="dl-info">
+          <div class="dl-label"><i class="fa-solid fa-download"></i> &nbsp;立即下載</div>
+          <div class="dl-title">Photo_Report.rar</div>
+          <p class="dl-desc">包含 Excel VBA 自動化工具與完整使用說明</p>
+          <ul class="feature-list">
+            <li><i class="fa-solid fa-check"></i> 一鍵匯入大量照片</li>
+            <li><i class="fa-solid fa-check"></i> 自動調整大小與排版</li>
+            <li><i class="fa-solid fa-check"></i> 支援 PDF 輸出與列印</li>
+            <li><i class="fa-solid fa-check"></i> 完全離線執行，安全可靠</li>
+          </ul>
+        </div>
+        <div class="dl-actions">
+          <a href="downloads/Photo_Report.rar" class="download-btn" download>
+            <i class="fa-solid fa-download"></i> 下載工具包 (.rar)
+          </a>
+          <span class="dl-note"><i class="fa-brands fa-windows"></i> 適用於 Windows / Excel 環境</span>
+        </div>
+      </div>
     </div>
+
+    <!-- Steps Flow -->
+    <section class="steps-section" aria-label="使用流程">
+      <div class="section-label">使用流程</div>
+      <div class="steps-flow">
+        <div class="step-item">
+          <div class="step-num">STEP 01</div>
+          <div class="step-icon-wrap" aria-hidden="true"><i class="fa-solid fa-images"></i></div>
+          <div class="step-name">準備照片</div>
+        </div>
+        <div class="step-arrow" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="step-item">
+          <div class="step-num">STEP 02</div>
+          <div class="step-icon-wrap" aria-hidden="true"><i class="fa-solid fa-file-excel"></i></div>
+          <div class="step-name">開啟工具</div>
+        </div>
+        <div class="step-arrow" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="step-item">
+          <div class="step-num">STEP 03</div>
+          <div class="step-icon-wrap" aria-hidden="true"><i class="fa-solid fa-upload"></i></div>
+          <div class="step-name">匯入照片</div>
+        </div>
+        <div class="step-arrow" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="step-item">
+          <div class="step-num">STEP 04</div>
+          <div class="step-icon-wrap" aria-hidden="true"><i class="fa-solid fa-print"></i></div>
+          <div class="step-name">輸出報告</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Accordion -->
+    <div class="content-area" aria-label="說明文件">
+
+      <!-- 簡介 -->
+      <div class="content-block open" id="block-intro">
+        <div class="block-header" onclick="toggleBlock('block-intro')" role="button" tabindex="0" aria-expanded="true">
+          <div class="block-header-icon" aria-hidden="true"><i class="fa-solid fa-circle-info"></i></div>
+          <span class="block-header-title">簡介</span>
+          <i class="fa-solid fa-chevron-down block-toggle"></i>
+        </div>
+        <div class="block-body open" id="block-intro-body">
+          <p>這是一個專為警務工作設計的 Excel VBA 自動化工具，能夠快速將照片整理並套印至指定的表格格式中，大幅節省人工排版的時間。完全在本機離線執行，資料不上傳，安全可靠。</p>
+        </div>
+      </div>
+
+      <!-- 功能特色 -->
+      <div class="content-block open" id="block-features">
+        <div class="block-header" onclick="toggleBlock('block-features')" role="button" tabindex="0" aria-expanded="true">
+          <div class="block-header-icon" aria-hidden="true"><i class="fa-solid fa-star"></i></div>
+          <span class="block-header-title">功能特色</span>
+          <i class="fa-solid fa-chevron-down block-toggle"></i>
+        </div>
+        <div class="block-body open" id="block-features-body">
+          <ul>
+            <li><span><strong>自動匯入：</strong>批量匯入資料夾內的照片，無需逐一操作。</span></li>
+            <li><span><strong>自動排版：</strong>依照預設格式自動調整照片大小與位置，版面整齊一致。</span></li>
+            <li><span><strong>快速輸出：</strong>支援直接列印或另存為 PDF，一鍵完成報告。</span></li>
+            <li><span><strong>離線執行：</strong>完全不需網路，資料安全不外傳。</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 系統需求 -->
+      <div class="content-block open" id="block-sysreq">
+        <div class="block-header" onclick="toggleBlock('block-sysreq')" role="button" tabindex="0" aria-expanded="true">
+          <div class="block-header-icon" aria-hidden="true"><i class="fa-brands fa-windows"></i></div>
+          <span class="block-header-title">系統需求</span>
+          <i class="fa-solid fa-chevron-down block-toggle"></i>
+        </div>
+        <div class="block-body open" id="block-sysreq-body">
+          <ul>
+            <li><span>作業系統：<strong>Windows 10 / 11</strong></span></li>
+            <li><span>軟體需求：<strong>Microsoft Excel</strong>（需啟用巨集功能）</span></li>
+            <li><span>照片格式：<strong>JPG</strong> 或 <strong>PNG</strong>（HEIC 需先轉檔）</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 使用步驟 -->
+      <div class="content-block open" id="block-steps">
+        <div class="block-header" onclick="toggleBlock('block-steps')" role="button" tabindex="0" aria-expanded="true">
+          <div class="block-header-icon" aria-hidden="true"><i class="fa-solid fa-list-ol"></i></div>
+          <span class="block-header-title">詳細使用步驟</span>
+          <i class="fa-solid fa-chevron-down block-toggle"></i>
+        </div>
+        <div class="block-body open" id="block-steps-body">
+
+          <div class="sub-step">
+            <div class="sub-step-title"><i class="fa-solid fa-images"></i> 1. 準備照片</div>
+            <ul>
+              <li><span>將需要製作報告的照片整理在同一個資料夾中。</span></li>
+              <li><span>本工具僅支援 <strong>JPG</strong> 或 <strong>PNG</strong> 格式。</span></li>
+              <li><span>若照片為 <strong>HEIC</strong> 格式（iPhone 預設），請先使用 <a href="https://lianghao02.github.io/Image-Format-Converter/" target="_blank">Image Converter</a> 進行轉檔。</span></li>
+            </ul>
+          </div>
+
+          <div class="sub-step">
+            <div class="sub-step-title"><i class="fa-solid fa-file-excel"></i> 2. 開啟工具</div>
+            <ul>
+              <li><span>點擊 <code>Photo_Report.xlsm</code> 開啟檔案。</span></li>
+              <li><span>若 Excel 上方出現「安全性警告」，請點擊 <strong>[啟用內容]</strong> 以允許巨集執行。</span></li>
+            </ul>
+          </div>
+
+          <div class="sub-step">
+            <div class="sub-step-title"><i class="fa-solid fa-upload"></i> 3. 執行匯入</div>
+            <ul>
+              <li><span>點擊工具介面上的 <strong>[匯入照片]</strong> 按鈕。</span></li>
+              <li><span>選擇您存放照片的資料夾。</span></li>
+              <li><span>系統將自動讀取並完成排版。</span></li>
+            </ul>
+          </div>
+
+          <div class="sub-step">
+            <div class="sub-step-title"><i class="fa-solid fa-print"></i> 4. 輸出報告</div>
+            <ul>
+              <li><span>確認排版無誤後，可直接列印或儲存檔案。</span></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 常見問題 -->
+      <div class="content-block open" id="block-faq">
+        <div class="block-header" onclick="toggleBlock('block-faq')" role="button" tabindex="0" aria-expanded="true">
+          <div class="block-header-icon" aria-hidden="true"><i class="fa-solid fa-circle-question"></i></div>
+          <span class="block-header-title">常見問題 FAQ</span>
+          <i class="fa-solid fa-chevron-down block-toggle"></i>
+        </div>
+        <div class="block-body open" id="block-faq-body">
+          <div class="faq-item">
+            <div class="faq-q">為什麼照片無法匯入？</div>
+            <p class="faq-a">請確認照片檔名是否包含特殊字元，或格式是否為 JPG / PNG。</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">執行時出現錯誤訊息？</div>
+            <p class="faq-a">請確認您已啟用 Excel 的巨集權限（點擊上方黃色安全性警告列並選擇「啟用內容」）。</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">照片排版順序如何決定？</div>
+            <p class="faq-a">預設依照檔名的字母順序排序，建議在匯入前先將照片檔名以流水號命名（如 01.jpg、02.jpg⋯）。</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Back Link -->
+    <div class="back-wrap">
+      <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> 返回作品集首頁
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="https://github.com/lianghao02" target="_blank" rel="noopener noreferrer"
+           class="footer-link" aria-label="GitHub">
+          <i class="fa-brands fa-github"></i>
+        </a>
+      </div>
+      <p class="footer-copy">© <span id="footer-year"></span> LiangHao. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ===== Scripts ===== -->
+  <script>
+    /* ---- Footer Year ---- */
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+    /* ---- Sticky Header ---- */
+    const header = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    /* ---- Accordion Toggle ---- */
+    function toggleBlock(id) {
+      const block = document.getElementById(id);
+      const body = document.getElementById(id + '-body');
+      const isOpen = block.classList.toggle('open');
+      if (isOpen) {
+        body.classList.add('open');
+      } else {
+        body.classList.remove('open');
+      }
+      const header = block.querySelector('.block-header');
+      header.setAttribute('aria-expanded', isOpen);
+    }
+
+    /* ---- Keyboard support for accordion ---- */
+    document.querySelectorAll('.block-header').forEach(h => {
+      h.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h.click(); }
+      });
+    });
+  </script>
 </body>
 
 </html>
