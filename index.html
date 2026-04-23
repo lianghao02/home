@@ -202,14 +202,35 @@
         margin: 0 auto;
       }
 
+      .logo-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
       .logo {
-        font-size: 1.35rem;
+        font-size: 1.25rem;
         font-weight: 800;
         letter-spacing: -0.02em;
         background: linear-gradient(135deg, var(--accent), var(--accent-2));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        flex-shrink: 0;
+      }
+
+      .logo-divider {
+        width: 1px;
+        height: 1rem;
+        background: rgba(148, 163, 184, 0.2);
+      }
+
+      .header-title {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        letter-spacing: -0.01em;
+        white-space: nowrap;
       }
 
       .nav-links {
@@ -242,7 +263,7 @@
         width: 100%;
         max-width: 1200px;
         margin: 0 auto;
-        padding: 4rem 5% 6rem;
+        padding: 2.5rem 5% 4rem;
         position: relative;
         z-index: 1;
       }
@@ -252,8 +273,8 @@
     ========================================================= */
       .hero {
         text-align: center;
-        margin-bottom: 5rem;
-        padding-top: 2rem;
+        margin-bottom: 2rem;
+        padding-top: 1rem;
       }
 
       .hero-badge {
@@ -267,7 +288,7 @@
         font-size: 0.8rem;
         font-weight: 500;
         color: var(--accent);
-        margin-bottom: 1.75rem;
+        margin-bottom: 1rem;
         opacity: 0;
         animation: fadeInDown 0.6s ease-out 0.1s forwards;
       }
@@ -291,11 +312,11 @@
       }
 
       .hero h1 {
-        font-size: clamp(2.4rem, 6vw, 4.2rem);
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
         font-weight: 800;
         letter-spacing: -0.04em;
-        line-height: 1.1;
-        margin-bottom: 1.25rem;
+        line-height: 1.2;
+        margin-bottom: 0.75rem;
         background: linear-gradient(160deg, #fff 0%, #cbd5e1 55%, #94a3b8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -305,10 +326,10 @@
       }
 
       .hero-sub {
-        font-size: clamp(1rem, 2vw, 1.2rem);
+        font-size: clamp(0.9rem, 1.5vw, 1rem);
         color: var(--text-muted);
         max-width: 540px;
-        margin: 0 auto 2rem;
+        margin: 0 auto 1.5rem;
         opacity: 0;
         animation: fadeInDown 0.7s ease-out 0.4s forwards;
       }
@@ -384,7 +405,7 @@
         background: var(--surface-2);
         border: 1px solid var(--border);
         border-radius: var(--radius-card);
-        padding: 2rem;
+        padding: 1.5rem;
         overflow: hidden;
         transition:
           transform var(--transition),
@@ -650,17 +671,20 @@
         }
       }
       @media (max-width: 640px) {
+        .header-title {
+          display: none;
+        }
+        .logo-divider {
+          display: none;
+        }
         .projects-grid {
           grid-template-columns: 1fr;
         }
         main {
-          padding: 2.5rem 5% 4rem;
-        }
-        .hero {
-          margin-bottom: 3rem;
+          padding: 1.5rem 5% 3rem;
         }
         .project-card {
-          padding: 1.5rem;
+          padding: 1.25rem;
         }
       }
     </style>
@@ -676,7 +700,11 @@
     <!-- ===== Header ===== -->
     <header id="site-header">
       <nav>
-        <div class="logo">LiangHao.Dev</div>
+        <div class="logo-group">
+          <div class="logo">LiangHao.Dev</div>
+          <div class="logo-divider" aria-hidden="true"></div>
+          <h1 class="header-title">探索我的專案作品集</h1>
+        </div>
         <div class="nav-links">
           <a
             href="https://github.com/lianghao02"
@@ -692,21 +720,6 @@
 
     <!-- ===== Main ===== -->
     <main>
-      <!-- Hero -->
-      <section class="hero" aria-label="個人簡介">
-        <div class="hero-badge">
-          <span class="dot"></span>
-          持續開發中
-        </div>
-        <h1>探索我的<br />專案作品集</h1>
-        <p class="hero-sub">
-          開發實用工具與自動化應用程式，<br />以程式解決日常工作問題。
-        </p>
-        <div class="hero-typing">
-          <span id="typed-text"></span>
-          <span class="cursor" aria-hidden="true"></span>
-        </div>
-      </section>
 
       <!-- Projects -->
       <section aria-label="專案列表">
@@ -761,7 +774,7 @@
               </div>
               <div class="card-title-row">
                 <h2>CSV to Excel</h2>
-                <span class="version-badge">v1.4</span>
+                <span class="version-badge">v1.4.1</span>
               </div>
               <p class="card-desc">
                 交易明細轉檔合併工具，支援遞迴資料夾讀取、批次解壓與單檔防護安全機制。
@@ -792,7 +805,7 @@
               </div>
               <div class="card-title-row">
                 <h2>Image Converter</h2>
-                <span class="version-badge">v3.1</span>
+                <span class="version-badge">v3.2</span>
               </div>
               <p class="card-desc">
                 警務專用照片規格化與縮圖工具，批次轉換格式、統一尺寸與壓縮品質。
@@ -886,7 +899,7 @@
               </div>
               <div class="card-title-row">
                 <h2>Smart Photo</h2>
-                <span class="version-badge">v2.6</span>
+                <span class="version-badge">v2.7</span>
               </div>
               <p class="card-desc">
                 智慧相片自動分類、整理與歸檔，依日期、地點或自訂規則批次排序，解放大量手動工時。
@@ -895,6 +908,37 @@
                 <span class="tag">Python</span>
                 <span class="tag">AI 分類</span>
                 <span class="tag">自動化</span>
+              </div>
+              <span class="card-link"
+                >前往專案 <span class="arrow">→</span></span
+              >
+            </div>
+          </a>
+
+          <!-- 7: SmartFileManager -->
+          <a
+            href="https://github.com/lianghao02/SmartFileManager"
+            class="project-card accent-1"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="--delay: 0.48s"
+          >
+            <div class="card-shine" aria-hidden="true"></div>
+            <div class="card-body">
+              <div class="card-icon-wrap" aria-hidden="true">
+                <i class="fa-solid fa-folder-tree"></i>
+              </div>
+              <div class="card-title-row">
+                <h2>檔案整理大師</h2>
+                <span class="version-badge">v1.0</span>
+              </div>
+              <p class="card-desc">
+                即時操作型檔案總管，結合批次改名、拖曳搬移與智慧過濾，高效管理大量混亂檔案。
+              </p>
+              <div class="card-tags">
+                <span class="tag">Python</span>
+                <span class="tag">PyQt5</span>
+                <span class="tag">檔案管理</span>
               </div>
               <span class="card-link"
                 >前往專案 <span class="arrow">→</span></span
@@ -941,40 +985,6 @@
         { passive: true },
       );
 
-      /* ---- Typing Animation ---- */
-      const phrases = [
-        "Python 腳本自動化",
-        "Web 工具開發",
-        "VBA Office 自動化",
-        "資料處理與轉換",
-        "影像批次處理",
-      ];
-      let phraseIdx = 0,
-        charIdx = 0,
-        deleting = false;
-      const typedEl = document.getElementById("typed-text");
-
-      function typeStep() {
-        const phrase = phrases[phraseIdx];
-        if (!deleting) {
-          typedEl.textContent = phrase.slice(0, charIdx + 1);
-          charIdx++;
-          if (charIdx === phrase.length) {
-            deleting = true;
-            setTimeout(typeStep, 2000);
-            return;
-          }
-        } else {
-          typedEl.textContent = phrase.slice(0, charIdx - 1);
-          charIdx--;
-          if (charIdx === 0) {
-            deleting = false;
-            phraseIdx = (phraseIdx + 1) % phrases.length;
-          }
-        }
-        setTimeout(typeStep, deleting ? 45 : 90);
-      }
-      setTimeout(typeStep, 1200);
 
       /* ---- Stagger Cards on IntersectionObserver ---- */
       const cards = document.querySelectorAll(".project-card");
