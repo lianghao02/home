@@ -1,1159 +1,585 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-TW">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta
-      name="description"
-      content="LiangHao's Projects Portal - 探索我開發的實用工具與應用程式。"
-    />
-    <meta name="author" content="LiangHao" />
-    <title>LiangHao's Projects | 作品集</title>
-
-    <meta property="og:title" content="LiangHao's Projects | 作品集" />
-    <meta
-      property="og:description"
-      content="LiangHao's Projects Portal - 探索我開發的實用工具與應用程式。"
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://lianghao02.github.io/" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="LiangHao's Projects Portal - 探索我開發的 11 個實用 AI、警務與自動化專案。">
+    <meta name="author" content="LiangHao (梁巡官)">
+    <title>LiangHao's Projects | 專案作品集儀表板</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
     <!-- FontAwesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-      /* =========================================================
-       CSS Design System — Custom Properties
-    ========================================================= */
-      :root {
-        --bg: #080d1a;
-        --surface: rgba(15, 23, 42, 0.85);
-        --surface-2: rgba(30, 41, 59, 0.6);
-        --border: rgba(148, 163, 184, 0.12);
-        --border-glow: rgba(56, 189, 248, 0.35);
-        --text: #f1f5f9;
-        --text-muted: #94a3b8;
-        --text-dim: #64748b;
-        --accent: #38bdf8;
-        --accent-2: #818cf8;
-        --radius-card: 1.25rem;
-        --radius-tag: 0.4rem;
-        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --shadow-card: 0 4px 24px -4px rgba(0, 0, 0, 0.5);
-        --shadow-glow: 0 0 30px -5px;
-        --font: "Inter", "Noto Sans TC", sans-serif;
-
-        /* Project accent colors */
-        --c1: #22d3ee;
-        --c1-bg: rgba(34, 211, 238, 0.08);
-        --c1-border: rgba(34, 211, 238, 0.25);
-        --c2: #34d399;
-        --c2-bg: rgba(52, 211, 153, 0.08);
-        --c2-border: rgba(52, 211, 153, 0.25);
-        --c3: #a78bfa;
-        --c3-bg: rgba(167, 139, 250, 0.08);
-        --c3-border: rgba(167, 139, 250, 0.25);
-        --c4: #fb923c;
-        --c4-bg: rgba(251, 146, 60, 0.08);
-        --c4-border: rgba(251, 146, 60, 0.25);
-        --c5: #f472b6;
-        --c5-bg: rgba(244, 114, 182, 0.08);
-        --c5-border: rgba(244, 114, 182, 0.25);
-        --c6: #60a5fa;
-        --c6-bg: rgba(96, 165, 250, 0.08);
-        --c6-border: rgba(96, 165, 250, 0.25);
-      }
-
-      /* =========================================================
-       Reset & Base
-    ========================================================= */
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        background-color: var(--bg);
-        color: var(--text);
-        font-family: var(--font);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow-x: hidden;
-        line-height: 1.7;
-      }
-
-      a {
-        text-decoration: none;
-        color: inherit;
-      }
-
-      /* =========================================================
-       Canvas Particle Background
-    ========================================================= */
-      #particle-canvas {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-      }
-
-      /* =========================================================
-       Background Gradient Orbs
-    ========================================================= */
-      .bg-orbs {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        overflow: hidden;
-      }
-      .bg-orbs::before {
-        content: "";
-        position: absolute;
-        top: -20%;
-        right: -10%;
-        width: 700px;
-        height: 700px;
-        background: radial-gradient(
-          circle,
-          rgba(30, 58, 138, 0.45) 0%,
-          transparent 65%
-        );
-        border-radius: 50%;
-        animation: orbFloat 18s ease-in-out infinite alternate;
-      }
-      .bg-orbs::after {
-        content: "";
-        position: absolute;
-        bottom: -15%;
-        left: -10%;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(
-          circle,
-          rgba(91, 33, 182, 0.3) 0%,
-          transparent 65%
-        );
-        border-radius: 50%;
-        animation: orbFloat 22s ease-in-out infinite alternate-reverse;
-      }
-
-      @keyframes orbFloat {
-        0% {
-          transform: translate(0, 0) scale(1);
+        :root {
+            --bg: #060b18;
+            --surface: rgba(15, 23, 42, 0.75);
+            --surface-card: rgba(15, 23, 42, 0.85);
+            --border: rgba(148, 163, 184, 0.15);
+            --border-glow: rgba(56, 189, 248, 0.4);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-purple: #818cf8;
+            --radius-card: 1.25rem;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Inter', 'Noto Sans TC', sans-serif;
         }
-        100% {
-          transform: translate(40px, -40px) scale(1.08);
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-      }
 
-      /* =========================================================
-       Header / Nav
-    ========================================================= */
-      header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        padding: 1.1rem 5%;
-        transition:
-          box-shadow var(--transition),
-          background var(--transition),
-          backdrop-filter var(--transition);
-      }
-      header.scrolled {
-        background: rgba(8, 13, 26, 0.8);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        box-shadow:
-          0 1px 0 rgba(148, 163, 184, 0.1),
-          0 4px 20px rgba(0, 0, 0, 0.4);
-      }
-
-      nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .logo-group {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-
-      .logo {
-        font-size: 1.25rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        flex-shrink: 0;
-      }
-
-      .logo-divider {
-        width: 1px;
-        height: 1rem;
-        background: rgba(148, 163, 184, 0.2);
-      }
-
-      .header-title {
-        font-size: 1rem;
-        font-weight: 500;
-        color: var(--text-muted);
-        letter-spacing: -0.01em;
-        white-space: nowrap;
-      }
-
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-      }
-
-      .nav-link {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--text-muted);
-        transition: color var(--transition);
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-      }
-      .nav-link:hover {
-        color: var(--text);
-      }
-      .nav-link i {
-        font-size: 1rem;
-      }
-
-      /* =========================================================
-       Main Content
-    ========================================================= */
-      main {
-        flex: 1;
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2.5rem 5% 4rem;
-        position: relative;
-        z-index: 1;
-      }
-
-      /* =========================================================
-       Hero Section
-    ========================================================= */
-      .hero {
-        text-align: center;
-        margin-bottom: 2rem;
-        padding-top: 1rem;
-      }
-
-      .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.35rem 1rem;
-        background: rgba(56, 189, 248, 0.1);
-        border: 1px solid rgba(56, 189, 248, 0.25);
-        border-radius: 999px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: var(--accent);
-        margin-bottom: 1rem;
-        opacity: 0;
-        animation: fadeInDown 0.6s ease-out 0.1s forwards;
-      }
-      .hero-badge .dot {
-        width: 7px;
-        height: 7px;
-        background: var(--accent);
-        border-radius: 50%;
-        animation: pulse 2s ease-in-out infinite;
-      }
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-          transform: scale(1);
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 75%, rgba(129, 140, 248, 0.08) 0%, transparent 40%);
         }
-        50% {
-          opacity: 0.5;
-          transform: scale(0.8);
+
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
         }
-      }
 
-      .hero h1 {
-        font-size: clamp(1.8rem, 4vw, 2.8rem);
-        font-weight: 800;
-        letter-spacing: -0.04em;
-        line-height: 1.2;
-        margin-bottom: 0.75rem;
-        background: linear-gradient(160deg, #fff 0%, #cbd5e1 55%, #94a3b8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        opacity: 0;
-        animation: fadeInDown 0.7s ease-out 0.25s forwards;
-      }
-
-      .hero-sub {
-        font-size: clamp(0.9rem, 1.5vw, 1rem);
-        color: var(--text-muted);
-        max-width: 540px;
-        margin: 0 auto 1.5rem;
-        opacity: 0;
-        animation: fadeInDown 0.7s ease-out 0.4s forwards;
-      }
-
-      .hero-typing {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        font-size: 0.95rem;
-        color: var(--text-dim);
-        opacity: 0;
-        animation: fadeInDown 0.7s ease-out 0.55s forwards;
-      }
-      .hero-typing .cursor {
-        display: inline-block;
-        width: 2px;
-        height: 1.1em;
-        background: var(--accent);
-        border-radius: 1px;
-        animation: blink 1s step-end infinite;
-      }
-      @keyframes blink {
-        0%,
-        100% {
-          opacity: 1;
+        /* ===== Header ===== */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(6, 11, 24, 0.75);
+            border-bottom: 1px solid var(--border);
         }
-        50% {
-          opacity: 0;
+        .header-inner {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-      }
-
-      /* =========================================================
-       Section Header
-    ========================================================= */
-      .section-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 2.5rem;
-        opacity: 0;
-        animation: fadeInUp 0.7s ease-out 0.6s forwards;
-      }
-      .section-header h2 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-      }
-      .section-header::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: linear-gradient(to right, var(--border), transparent);
-      }
-
-      /* =========================================================
-       Projects Grid
-    ========================================================= */
-      .projects-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-      }
-
-      /* =========================================================
-       Project Card
-    ========================================================= */
-      .project-card {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        background: var(--surface-2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-card);
-        padding: 1.5rem;
-        overflow: hidden;
-        transition:
-          transform var(--transition),
-          border-color var(--transition),
-          box-shadow var(--transition);
-        cursor: pointer;
-        opacity: 0;
-        transform: translateY(24px);
-      }
-
-      .project-card.visible {
-        animation: cardIn 0.55s ease-out var(--delay, 0s) forwards;
-      }
-
-      @keyframes cardIn {
-        to {
-          opacity: 1;
-          transform: translateY(0);
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text);
         }
-      }
-
-      /* Noise texture overlay */
-      .project-card::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-        pointer-events: none;
-        border-radius: inherit;
-        z-index: 0;
-      }
-
-      /* Colored shine overlay on hover */
-      .card-shine {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          circle at 50% 0%,
-          var(--card-accent-bg, rgba(56, 189, 248, 0.12)),
-          transparent 65%
-        );
-        opacity: 0;
-        transition: opacity var(--transition);
-        pointer-events: none;
-        border-radius: inherit;
-        z-index: 1;
-      }
-      .project-card:hover .card-shine {
-        opacity: 1;
-      }
-
-      .project-card:hover {
-        transform: translateY(-6px);
-        border-color: var(--card-accent-border, var(--border-glow));
-        box-shadow:
-          var(--shadow-card),
-          var(--shadow-glow) var(--card-accent, var(--accent));
-      }
-
-      /* Card content wrapper */
-      .card-body {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
-
-      /* Icon */
-      .card-icon-wrap {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.4rem;
-        margin-bottom: 1.25rem;
-        background: var(--card-accent-bg, rgba(56, 189, 248, 0.12));
-        color: var(--card-accent, var(--accent));
-        border: 1px solid var(--card-accent-border, rgba(56, 189, 248, 0.2));
-        transition: transform var(--transition);
-      }
-      .project-card:hover .card-icon-wrap {
-        transform: scale(1.08) rotate(-3deg);
-      }
-
-      /* Title row */
-      .card-title-row {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        margin-bottom: 0.6rem;
-        flex-wrap: wrap;
-      }
-      .card-title-row h2 {
-        font-size: 1.15rem;
-        font-weight: 700;
-        letter-spacing: -0.01em;
-      }
-
-      /* Version badge */
-      .version-badge {
-        font-size: 0.7rem;
-        font-weight: 600;
-        padding: 0.18rem 0.55rem;
-        border-radius: 999px;
-        background: var(--card-accent-bg, rgba(56, 189, 248, 0.12));
-        color: var(--card-accent, var(--accent));
-        border: 1px solid var(--card-accent-border, rgba(56, 189, 248, 0.2));
-        letter-spacing: 0.02em;
-      }
-
-      /* Description */
-      .card-desc {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        line-height: 1.65;
-        flex-grow: 1;
-        margin-bottom: 1.25rem;
-      }
-
-      /* Tags */
-      .card-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.45rem;
-        margin-bottom: 1.25rem;
-      }
-      .tag {
-        font-size: 0.72rem;
-        font-weight: 500;
-        padding: 0.2rem 0.6rem;
-        border-radius: var(--radius-tag);
-        background: rgba(148, 163, 184, 0.08);
-        color: var(--text-dim);
-        border: 1px solid var(--border);
-        letter-spacing: 0.02em;
-      }
-
-      /* Link CTA */
-      .card-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--card-accent, var(--accent));
-        transition: gap var(--transition);
-      }
-      .project-card:hover .card-link {
-        gap: 0.85rem;
-      }
-      .card-link .arrow {
-        transition: transform var(--transition);
-      }
-      .project-card:hover .card-link .arrow {
-        transform: translateX(4px);
-      }
-
-      /* =========================================================
-       Card Accent Color Classes
-    ========================================================= */
-      .accent-1 {
-        --card-accent: var(--c1);
-        --card-accent-bg: var(--c1-bg);
-        --card-accent-border: var(--c1-border);
-      }
-      .accent-2 {
-        --card-accent: var(--c2);
-        --card-accent-bg: var(--c2-bg);
-        --card-accent-border: var(--c2-border);
-      }
-      .accent-3 {
-        --card-accent: var(--c3);
-        --card-accent-bg: var(--c3-bg);
-        --card-accent-border: var(--c3-border);
-      }
-      .accent-4 {
-        --card-accent: var(--c4);
-        --card-accent-bg: var(--c4-bg);
-        --card-accent-border: var(--c4-border);
-      }
-      .accent-5 {
-        --card-accent: var(--c5);
-        --card-accent-bg: var(--c5-bg);
-        --card-accent-border: var(--c5-border);
-      }
-      .accent-6 {
-        --card-accent: var(--c6);
-        --card-accent-bg: var(--c6-bg);
-        --card-accent-border: var(--c6-border);
-      }
-
-      /* =========================================================
-       Footer
-    ========================================================= */
-      footer {
-        position: relative;
-        z-index: 1;
-        text-align: center;
-        padding: 2.5rem 5%;
-        border-top: 1px solid var(--border);
-      }
-      .footer-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-      }
-      .footer-links {
-        display: flex;
-        gap: 1.25rem;
-      }
-      .footer-link {
-        color: var(--text-dim);
-        font-size: 1.1rem;
-        transition:
-          color var(--transition),
-          transform var(--transition);
-      }
-      .footer-link:hover {
-        color: var(--accent);
-        transform: translateY(-2px);
-      }
-      .footer-copy {
-        font-size: 0.82rem;
-        color: var(--text-dim);
-      }
-
-      /* =========================================================
-       Keyframes
-    ========================================================= */
-      @keyframes fadeInDown {
-        from {
-          opacity: 0;
-          transform: translateY(-16px);
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
         }
-        to {
-          opacity: 1;
-          transform: translateY(0);
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-      }
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(16px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
 
-      /* =========================================================
-       Responsive
-    ========================================================= */
-      @media (max-width: 1024px) {
+        /* ===== Hero Section ===== */
+        .hero {
+            position: relative;
+            z-index: 1;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem 2rem;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        /* ===== Grid Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem 5rem;
+        }
+
         .projects-grid {
-          grid-template-columns: repeat(2, 1fr);
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 2rem;
         }
-      }
-      @media (max-width: 640px) {
-        .header-title {
-          display: none;
+
+        /* ===== Project Card ===== */
+        .card {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+            backdrop-filter: blur(12px);
         }
-        .logo-divider {
-          display: none;
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--border-glow);
+            box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.7), 0 0 25px -5px rgba(56, 189, 248, 0.3);
         }
-        .projects-grid {
-          grid-template-columns: 1fr;
+
+        .card-banner {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            position: relative;
+            background: #020617;
         }
-        main {
-          padding: 1.5rem 5% 3rem;
+
+        .card-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .project-card {
-          padding: 1.25rem;
+
+        .card:hover .card-banner img {
+            transform: scale(1.08);
         }
-      }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .card-desc {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 1.25rem;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.72rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-link {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: gap var(--transition);
+        }
+
+        .card:hover .btn-link {
+            gap: 0.7rem;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            background: rgba(4, 8, 18, 0.9);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
-  </head>
+</head>
+<body>
 
-  <body>
-    <!-- Particle Canvas -->
-    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+    <canvas id="particle-canvas"></canvas>
 
-    <!-- Background Orbs -->
-    <div class="bg-orbs" aria-hidden="true"></div>
-
-    <!-- ===== Header ===== -->
-    <header id="site-header">
-      <nav>
-        <div class="logo-group">
-          <div class="logo">LiangHao.Dev</div>
-          <div class="logo-divider" aria-hidden="true"></div>
-          <h1 class="header-title">探索我的專案作品集</h1>
+    <!-- Header -->
+    <header>
+        <div class="header-inner">
+            <a href="#" class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-code"></i></div>
+                <span class="brand-title">LiangHao's Projects</span>
+            </a>
+            <a href="https://github.com/lianghao02" target="_blank" class="brand" style="font-size: 1.3rem; color: var(--text-muted);">
+                <i class="fa-brands fa-github"></i>
+            </a>
         </div>
-        <div class="nav-links">
-          <a
-            href="https://github.com/lianghao02"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="nav-link"
-          >
-            <i class="fa-brands fa-github"></i> GitHub
-          </a>
-        </div>
-      </nav>
     </header>
 
-    <!-- ===== Main ===== -->
-    <main>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> 全域開發與 Agent 實戰憲法 v3.0 驅動</div>
+        <h1>AI、警務與自動化專案儀表板</h1>
+        <p>歡迎探索我開發的 11 個專業工具與應用程式。涵蓋 AI 視訊過濾、基地台地圖定位、金融資料解析與系統清理優化。</p>
+    </section>
 
-      <!-- Hero Section -->
-      <section class="hero" aria-label="介紹">
-        <div class="hero-badge">
-          <span class="dot" aria-hidden="true"></span> Tech Lead 核心驅動
+    <!-- Main Content Grid -->
+    <main class="main-container">
+        <div class="projects-grid">
+
+            <!-- 1. System Optimizer Tool -->
+            <a href="https://github.com/lianghao02/System-Optimizer-Tool" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_System-Optimizer-Tool.jpg" alt="清理" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-broom" style="color:#38bdf8;"></i> 系統清理與記憶體優化</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">Windows 系統暫存與 RAM 記憶體釋放工具，CustomTkinter 深色 UI，100% 絕不更動系統設定，附帶安全過濾白名單。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Python</span><span class="tag">CustomTkinter</span><span class="tag">RAM 釋放</span></div>
+                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 2. Monitor Filter Tool -->
+            <a href="https://github.com/lianghao02/Monitor-Filter-Tool" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Monitor-Filter-Tool.jpg" alt="監控" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-video" style="color:#34d399;"></i> AG-MONITOR 科技偵查</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">萬用 AI 戰術播放器與數位鑑識超解析工作站，專為警務實戰設計的自動化 YOLO 影像過濾與證物強化神器。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Python</span><span class="tag">YOLOv8</span><span class="tag">AI 鑑識</span></div>
+                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 3. Calendar Card App -->
+            <a href="https://lianghao02.github.io/Calendar-Card-App/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Calendar-Card-App.jpg" alt="行事曆" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-calendar-days" style="color:#a78bfa;"></i> 卡片式行事曆 App</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">Mobile-First Split View 卡片式日程管理，內建 Smart NLP 自然語言自動解析時間與地點，搭配 Google Sheets 儲存。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">JavaScript</span><span class="tag">Smart NLP</span><span class="tag">Google Sheets</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 4. Cell Tower Map Locator -->
+            <a href="https://lianghao02.github.io/Cell-Tower-Map-Locator/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Cell-Tower-Map-Locator.jpg" alt="基地台" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-tower-cell" style="color:#fb923c;"></i> 基地台地圖即時定位</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">警務門號即時定位工具，離線運算與 Leaflet 扇形涵蓋區域繪製，支援台灣邊界驗證與 XSS 防衛。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Leaflet</span><span class="tag">地圖定位</span><span class="tag">離線安全</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 5. Financial Data Parser -->
+            <a href="https://lianghao02.github.io/Financial-Data-Parser/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Financial-Data-Parser.jpg" alt="金融" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-file-csv" style="color:#10b981;"></i> 金融資料 CSV 轉 Excel</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">高容錯金融數據轉換器，SheetJS 帳號字串強型別保護 (前導零防護)、智慧金額清理與 ZIP 遞迴解壓縮。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">SheetJS</span><span class="tag">金融轉檔</span><span class="tag">ZIP 解壓</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 6. Photo Report Generator -->
+            <a href="https://lianghao02.github.io/Photo-Report-Generator/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Photo-Report-Generator.jpg" alt="清冊" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-file-word" style="color:#f59e0b;"></i> 現況照片清冊生成器</h2>
+                        <span class="badge">v1.1</span>
+                    </div>
+                    <p class="card-desc">現況照片清冊自動整理與套印工具，結合 Excel VBA 自動將相片嵌入 Word 範本，大幅提升報告製作效率。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Excel VBA</span><span class="tag">Word 巨集</span><span class="tag">清冊套印</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 7. Image Format Converter -->
+            <a href="https://lianghao02.github.io/Image-Format-Converter/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Image-Format-Converter.jpg" alt="轉檔" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-file-image" style="color:#ec4899;"></i> 警務影像轉檔與銳化器</h2>
+                        <span class="badge">v4.0</span>
+                    </div>
+                    <p class="card-desc">100% 瀏覽器本機離線運算，支援 HEIC 轉檔、長截圖智慧分段切片、3x3 卷積核銳化與 JSZip 壓縮打包。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Canvas</span><span class="tag">HEIC 轉檔</span><span class="tag">卷積濾鏡</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 8. Smart Photo Organizer -->
+            <a href="https://github.com/lianghao02/Smart-Photo-Organizer" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Smart-Photo-Organizer.jpg" alt="分類" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-images" style="color:#6366f1;"></i> 智慧相片自動分類助手</h2>
+                        <span class="badge">v2.7</span>
+                    </div>
+                    <p class="card-desc">Python 智慧相片分類與整理助手，依拍攝日期、地點 EXIF 或自訂邏輯進行批次排序與安全重命名。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Python</span><span class="tag">EXIF 解析</span><span class="tag">相片歸檔</span></div>
+                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 9. Fruit Ninja Motion -->
+            <a href="https://lianghao02.github.io/Fruit-Ninja-Motion/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Fruit-Ninja-Motion.jpg" alt="切水果" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-gamepad" style="color:#ef4444;"></i> 體感切水果遊戲</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">Web 體感手勢互動遊戲，結合視訊鏡頭與即時動作追蹤，輕鬆在瀏覽器體驗切水果斬擊快感。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">HTML5</span><span class="tag">Canvas</span><span class="tag">手勢追蹤</span></div>
+                        <span class="btn-link">開啟遊戲 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 10. Auto Learning Bot -->
+            <a href="https://github.com/lianghao02/auto-learning-bot" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_auto-learning-bot.jpg" alt="機器人" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-robot" style="color:#8b5cf6;"></i> 自動學習機器人</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">自動化學習測驗與題庫解析 Bot，具備智慧題庫分析、答案匹配與學習歷程追蹤邏輯。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Python</span><span class="tag">自動化 Bot</span><span class="tag">題庫解析</span></div>
+                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 11. Home Portal -->
+            <a href="https://lianghao02.github.io/home/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_home.jpg" alt="首頁" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-house" style="color:#3b82f6;"></i> LiangHao 首頁門戶</h2>
+                        <span class="badge">v2.0</span>
+                    </div>
+                    <p class="card-desc">個人作品集與專案儀表板入口，整合全域憲法 v3.0 規範、粒子動畫背景與動態響應式卡片。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">儀表板</span></div>
+                        <span class="btn-link">當前頁面 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
         </div>
-        <h1>探索我的專案作品集</h1>
-        <p class="hero-sub">
-          歡迎來到我的個人開發門面，這裡匯集了所有為了解決實務痛點所打造的自動化工具與應用程式。
-        </p>
-        <div class="hero-typing">
-          專注於 警務自動化 / 影像處理 / 前端工程 <span class="cursor" aria-hidden="true"></span>
-        </div>
-      </section>
-
-      <!-- Projects -->
-      <section aria-label="專案列表">
-        <div class="section-header">
-          <h2>Projects</h2>
-        </div>
-
-        <div class="projects-grid" id="projects-grid">
-          <!-- 1: Cell Tower Map Locator -->
-          <a
-            href="https://lianghao02.github.io/Cell-Tower-Map-Locator/"
-            class="project-card accent-1"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="--delay: 0s"
-          >
-            <div class="card-shine" aria-hidden="true"></div>
-            <div class="card-body">
-              <div class="card-icon-wrap" aria-hidden="true">
-                <i class="fa-solid fa-map-location-dot"></i>
-              </div>
-              <div class="card-title-row">
-                <h2>手機門號定位</h2>
-                <span class="version-badge">v3.0</span>
-              </div>
-              <p class="card-desc">
-                專業 GIS 手機即時定位輔助工具。重構滿版地圖與懸浮控制台，支援目標地址空間比對測距、22級高清放大與防同名誤判。
-              </p>
-              <div class="card-tags">
-                <span class="tag">Web App</span>
-                <span class="tag">地圖 API</span>
-                <span class="tag">定位</span>
-              </div>
-              <span class="card-link"
-                >前往專案 <span class="arrow">→</span></span
-              >
-            </div>
-          </a>
-
-          <!-- 2: Financial Data Parser -->
-          <a
-            href="https://lianghao02.github.io/Financial-Data-Parser/"
-            class="project-card accent-2"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="--delay: 0.08s"
-          >
-            <div class="card-shine" aria-hidden="true"></div>
-            <div class="card-body">
-              <div class="card-icon-wrap" aria-hidden="true">
-                <i class="fa-solid fa-file-csv"></i>
-              </div>
-              <div class="card-title-row">
-                <h2>CSV to Excel</h2>
-                <span class="version-badge">v1.4.1</span>
-              </div>
-              <p class="card-desc">
-                交易明細轉檔合併工具，支援遞迴資料夾讀取、批次解壓與單檔防護安全機制。
-              </p>
-              <div class="card-tags">
-                <span class="tag">Web App</span>
-                <span class="tag">財務</span>
-                <span class="tag">CSV</span>
-              </div>
-              <span class="card-link"
-                >前往專案 <span class="arrow">→</span></span
-              >
-            </div>
-          </a>
-
-          <!-- 3: Image Format Converter -->
-          <a
-            href="https://lianghao02.github.io/Image-Format-Converter/"
-            class="project-card accent-3"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="--delay: 0.16s"
-          >
-            <div class="card-shine" aria-hidden="true"></div>
-            <div class="card-body">
-              <div class="card-icon-wrap" aria-hidden="true">
-                <i class="fa-solid fa-images"></i>
-              </div>
-              <div class="card-title-row">
-                <h2>Image Converter</h2>
-                <span class="version-badge">v4.0</span>
-              </div>
-              <p class="card-desc">
-                警務專用影像自動化工具，支援 PDF 轉圖、影片擷取、批次轉檔與長截圖分頁切片。
-              </p>
-              <div class="card-tags">
-                <span class="tag">Web App</span>
-                <span class="tag">影像處理</span>
-                <span class="tag">批次</span>
-              </div>
-              <span class="card-link"
-                >前往專案 <span class="arrow">→</span></span
-              >
-            </div>
-          </a>
-
-          <!-- 4: Photo Report Generator -->
-          <a
-            href="https://lianghao02.github.io/Photo-Report-Generator/"
-            class="project-card accent-4"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="--delay: 0.24s"
-          >
-            <div class="card-shine" aria-hidden="true"></div>
-            <div class="card-body">
-              <div class="card-icon-wrap" aria-hidden="true">
-                <i class="fa-solid fa-file-zipper"></i>
-              </div>
-              <div class="card-title-row">
-                <h2>Photo Report</h2>
-                <span class="version-badge">v1.1</span>
-              </div>
-              <p class="card-desc">
-                現況照片清冊整理與自動套印，將照片自動嵌入 Word
-                範本，大幅提升報告製作效率。
-              </p>
-              <div class="card-tags">
-                <span class="tag">VBA</span>
-                <span class="tag">Word</span>
-                <span class="tag">自動化</span>
-              </div>
-              <span class="card-link"
-                >前往下載 <span class="arrow">→</span></span
-              >
-            </div>
-          </a>
-
-          <!-- 5: Calendar Card App -->
-          <a
-            href="https://lianghao02.github.io/Calendar-Card-App/"
-            class="project-card accent-5"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="--delay: 0.32s"
-          >
-            <div class="card-shine" aria-hidden="true"></div>
-            <div class="card-body">
-              <div class="card-icon-wrap" aria-hidden="true">
-                <i class="fa-solid fa-calendar-check"></i>
-              </div>
-              <div class="card-title-row">
-                <h2>Calendar Card</h2>
-                <span class="version-badge">v1.0</span>
-              </div>
-              <p class="card-desc">
-                精美每日一卡，日曆式卡片生成工具，支援自訂風格與一鍵匯出圖片分享。
-              </p>
-              <div class="card-tags">
-                <span class="tag">Web App</span>
-                <span class="tag">Canvas</span>
-                <span class="tag">設計</span>
-              </div>
-              <span class="card-link"
-                >前往專案 <span class="arrow">→</span></span
-              >
-            </div>
-          </a>
-
-          <!-- 6: Smart Photo Organizer -->
-          <a
-            href="https://github.com/lianghao02/Smart-Photo-Organizer"
-            class="project-card accent-6"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="--delay: 0.4s"
-          >
-            <div class="card-shine" aria-hidden="true"></div>
-            <div class="card-body">
-              <div class="card-icon-wrap" aria-hidden="true">
-                <i class="fa-solid fa-layer-group"></i>
-              </div>
-              <div class="card-title-row">
-                <h2>Smart Photo</h2>
-                <span class="version-badge">v2.7</span>
-              </div>
-              <p class="card-desc">
-                智慧相片自動分類、整理與歸檔，依日期、地點或自訂規則批次排序，解放大量手動工時。
-              </p>
-              <div class="card-tags">
-                <span class="tag">Python</span>
-                <span class="tag">AI 分類</span>
-                <span class="tag">自動化</span>
-              </div>
-              <span class="card-link"
-                >前往專案 <span class="arrow">→</span></span
-              >
-            </div>
-          </a>
-
-          <!-- 7: SmartFileManager -->
-          <a
-            href="https://github.com/lianghao02/SmartFileManager"
-            class="project-card accent-1"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="--delay: 0.48s"
-          >
-            <div class="card-shine" aria-hidden="true"></div>
-            <div class="card-body">
-              <div class="card-icon-wrap" aria-hidden="true">
-                <i class="fa-solid fa-folder-tree"></i>
-              </div>
-              <div class="card-title-row">
-                <h2>檔案整理大師</h2>
-                <span class="version-badge">v1.0</span>
-              </div>
-              <p class="card-desc">
-                即時操作型檔案總管，結合批次改名、拖曳搬移與智慧過濾，高效管理大量混亂檔案。
-              </p>
-              <div class="card-tags">
-                <span class="tag">Python</span>
-                <span class="tag">PyQt5</span>
-                <span class="tag">檔案管理</span>
-              </div>
-              <span class="card-link"
-                >前往專案 <span class="arrow">→</span></span
-              >
-            </div>
-          <!-- 8: AG-MONITOR Forensic Player -->
-          <a
-            href="https://github.com/lianghao02/Monitor-Filter-Tool"
-            class="project-card accent-2"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="--delay: 0.56s"
-          >
-            <div class="card-shine" aria-hidden="true"></div>
-            <div class="card-body">
-              <div class="card-icon-wrap" aria-hidden="true">
-                <i class="fa-solid fa-shield-halved"></i>
-              </div>
-              <div class="card-title-row">
-                <h2>AG-MONITOR 科技偵查</h2>
-                <span class="version-badge">v1.0</span>
-              </div>
-              <p class="card-desc">
-                萬用 AI 戰術播放器與數位鑑識超解析工作站，專為警務實戰設計的自動化影像過濾與證物強化神器。
-              </p>
-              <div class="card-tags">
-                <span class="tag">Python</span>
-                <span class="tag">AI 鑑識</span>
-                <span class="tag">YOLO</span>
-              </div>
-              <span class="card-link"
-                >前往專案 <span class="arrow">→</span></span
-              >
-            </div>
-          </a>
-        </div>
-      </section>
     </main>
 
-    <!-- ===== Footer ===== -->
+    <!-- Footer -->
     <footer>
-      <div class="footer-inner">
-        <div class="footer-links">
-          <a
-            href="https://github.com/lianghao02"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="footer-link"
-            aria-label="GitHub"
-          >
-            <i class="fa-brands fa-github"></i>
-          </a>
-        </div>
-        <p class="footer-copy">
-          © <span id="footer-year"></span> LiangHao. All rights reserved.
-        </p>
-      </div>
-    
-      <p style="text-align: center; font-size: 0.8rem; color: #888; margin-top: 10px; padding-bottom: 20px;">版本號碼：v1.0 (Build 23) | 開發者資訊：Chia-Hao</p>
+        <p>© <span id="year"></span> LiangHao (梁巡官). All rights reserved.</p>
+        <p style="font-size:0.8rem; margin-top:0.5rem; opacity:0.6;">全域開發與 Agent 實戰憲法 v3.0 | 專案總計：11 個獨立工具與應用</p>
     </footer>
 
-    <!-- ===== Scripts ===== -->
     <script>
-      /* ---- Footer Year ---- */
-      document.getElementById("footer-year").textContent =
-        new Date().getFullYear();
+        document.getElementById('year').textContent = new Date().getFullYear();
 
-      /* ---- Sticky Header Shadow on Scroll ---- */
-      const header = document.getElementById("site-header");
-      window.addEventListener(
-        "scroll",
-        () => {
-          header.classList.toggle("scrolled", window.scrollY > 20);
-        },
-        { passive: true },
-      );
+        // Canvas Particle Background
+        (function() {
+            const canvas = document.getElementById("particle-canvas");
+            const ctx = canvas.getContext("2d");
+            let W, H, particles = [];
+            const COUNT = 60;
+            const COLORS = ["rgba(56,189,248,", "rgba(129,140,248,", "rgba(167,139,250,"];
 
-
-      /* ---- Stagger Cards on IntersectionObserver ---- */
-      const cards = document.querySelectorAll(".project-card");
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("visible");
-              observer.unobserve(entry.target);
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
             }
-          });
-        },
-        { threshold: 0.1 },
-      );
-      cards.forEach((card) => observer.observe(card));
 
-      /* ---- Canvas Particle System ---- */
-      (function () {
-        const canvas = document.getElementById("particle-canvas");
-        const ctx = canvas.getContext("2d");
-        let W,
-          H,
-          particles = [];
-        const COUNT = 80;
-        const COLORS = [
-          "rgba(56,189,248,",
-          "rgba(129,140,248,",
-          "rgba(167,139,250,",
-          "rgba(96,165,250,",
-        ];
-
-        function resize() {
-          W = canvas.width = window.innerWidth;
-          H = canvas.height = window.innerHeight;
-        }
-
-        function rand(min, max) {
-          return Math.random() * (max - min) + min;
-        }
-
-        function createParticle() {
-          const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-          return {
-            x: rand(0, W),
-            y: rand(0, H),
-            r: rand(0.5, 2.2),
-            vx: rand(-0.25, 0.25),
-            vy: rand(-0.25, 0.25),
-            alpha: rand(0.15, 0.55),
-            alphaDir: rand(-0.003, 0.003),
-            color,
-          };
-        }
-
-        function init() {
-          resize();
-          particles = Array.from({ length: COUNT }, createParticle);
-        }
-
-        function draw() {
-          ctx.clearRect(0, 0, W, H);
-          for (const p of particles) {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.alpha += p.alphaDir;
-            if (p.alpha <= 0.08 || p.alpha >= 0.6) p.alphaDir *= -1;
-            if (p.x < -5) p.x = W + 5;
-            if (p.x > W + 5) p.x = -5;
-            if (p.y < -5) p.y = H + 5;
-            if (p.y > H + 5) p.y = -5;
-
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = p.color + p.alpha + ")";
-            ctx.fill();
-          }
-          requestAnimationFrame(draw);
-        }
-
-        // Draw connection lines between nearby particles
-        function drawConnections() {
-          /* Intentionally limited for performance */
-          for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-              const dx = particles[i].x - particles[j].x;
-              const dy = particles[i].y - particles[j].y;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < 110) {
-                ctx.beginPath();
-                ctx.moveTo(particles[i].x, particles[i].y);
-                ctx.lineTo(particles[j].x, particles[j].y);
-                ctx.strokeStyle = `rgba(148,163,184,${0.04 * (1 - dist / 110)})`;
-                ctx.lineWidth = 0.6;
-                ctx.stroke();
-              }
+            function createParticle() {
+                return {
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    r: Math.random() * 1.8 + 0.5,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    alpha: Math.random() * 0.4 + 0.1,
+                    color: COLORS[Math.floor(Math.random() * COLORS.length)]
+                };
             }
-          }
-        }
 
-        function loop() {
-          ctx.clearRect(0, 0, W, H);
-          drawConnections();
-          for (const p of particles) {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.alpha += p.alphaDir;
-            if (p.alpha <= 0.08 || p.alpha >= 0.6) p.alphaDir *= -1;
-            if (p.x < -5) p.x = W + 5;
-            if (p.x > W + 5) p.x = -5;
-            if (p.y < -5) p.y = H + 5;
-            if (p.y > H + 5) p.y = -5;
+            function init() {
+                resize();
+                particles = Array.from({ length: COUNT }, createParticle);
+                loop();
+            }
 
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = p.color + p.alpha + ")";
-            ctx.fill();
-          }
-          requestAnimationFrame(loop);
-        }
+            function loop() {
+                ctx.clearRect(0, 0, W, H);
+                for (const p of particles) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = W;
+                    if (p.x > W) p.x = 0;
+                    if (p.y < 0) p.y = H;
+                    if (p.y > H) p.y = 0;
 
-        window.addEventListener("resize", resize, { passive: true });
-        init();
-        loop();
-      })();
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color + p.alpha + ")";
+                    ctx.fill();
+                }
+                requestAnimationFrame(loop);
+            }
+
+            window.addEventListener('resize', resize);
+            init();
+        })();
     </script>
-  </body>
+</body>
 </html>
