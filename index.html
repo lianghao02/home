@@ -1,585 +1,585 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="description" content="LiangHao's Projects Portal - 探索我開發的 11 個實用 AI、警務與自動化專案。">
-    <meta name="author" content="LiangHao (梁巡官)">
-    <title>LiangHao's Projects | 專案作品集儀表板</title>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        :root {
-            --bg: #060b18;
-            --surface: rgba(15, 23, 42, 0.75);
-            --surface-card: rgba(15, 23, 42, 0.85);
-            --border: rgba(148, 163, 184, 0.15);
-            --border-glow: rgba(56, 189, 248, 0.4);
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #38bdf8;
-            --accent-purple: #818cf8;
-            --radius-card: 1.25rem;
-            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            --font: 'Inter', 'Noto Sans TC', sans-serif;
-        }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--font);
-            min-height: 100vh;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 75%, rgba(129, 140, 248, 0.08) 0%, transparent 40%);
-        }
-
-        #particle-canvas {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* ===== Header ===== */
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            background: rgba(6, 11, 24, 0.75);
-            border-bottom: 1px solid var(--border);
-        }
-        .header-inner {
-            max-width: 1320px;
-            margin: 0 auto;
-            padding: 1.1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: var(--text);
-        }
-        .brand-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #38bdf8, #818cf8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: #fff;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-        }
-        .brand-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* ===== Hero Section ===== */
-        .hero {
-            position: relative;
-            z-index: 1;
-            max-width: 1320px;
-            margin: 0 auto;
-            padding: 4rem 1.5rem 2rem;
-            text-align: center;
-        }
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 1rem;
-            border-radius: 999px;
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            color: var(--accent);
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-        .hero h1 {
-            font-size: clamp(2.2rem, 5vw, 3.5rem);
-            font-weight: 900;
-            line-height: 1.2;
-            margin-bottom: 1.2rem;
-            background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #818cf8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            max-width: 700px;
-            margin: 0 auto 2.5rem;
-            line-height: 1.7;
-        }
-
-        /* ===== Grid Layout ===== */
-        .main-container {
-            position: relative;
-            z-index: 1;
-            max-width: 1320px;
-            margin: 0 auto;
-            padding: 1rem 1.5rem 5rem;
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-            gap: 2rem;
-        }
-
-        /* ===== Project Card ===== */
-        .card {
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-card);
-            overflow: hidden;
-            text-decoration: none;
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
-            backdrop-filter: blur(12px);
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: var(--border-glow);
-            box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.7), 0 0 25px -5px rgba(56, 189, 248, 0.3);
-        }
-
-        .card-banner {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            overflow: hidden;
-            position: relative;
-            background: #020617;
-        }
-
-        .card-banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card:hover .card-banner img {
-            transform: scale(1.08);
-        }
-
-        .card-body {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0.75rem;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .badge {
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--accent);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-        }
-
-        .card-desc {
-            font-size: 0.92rem;
-            color: var(--text-muted);
-            line-height: 1.65;
-            margin-bottom: 1.25rem;
-            flex-grow: 1;
-        }
-
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .tags {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-        }
-
-        .tag {
-            font-size: 0.72rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #cbd5e1;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .btn-link {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: gap var(--transition);
-        }
-
-        .card:hover .btn-link {
-            gap: 0.7rem;
-        }
-
-        /* ===== Footer ===== */
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 2.5rem 1.5rem;
-            text-align: center;
-            background: rgba(4, 8, 18, 0.9);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <canvas id="particle-canvas"></canvas>
-
-    <!-- Header -->
-    <header>
-        <div class="header-inner">
-            <a href="#" class="brand">
-                <div class="brand-icon"><i class="fa-solid fa-code"></i></div>
-                <span class="brand-title">LiangHao's Projects</span>
-            </a>
-            <a href="https://github.com/lianghao02" target="_blank" class="brand" style="font-size: 1.3rem; color: var(--text-muted);">
-                <i class="fa-brands fa-github"></i>
-            </a>
-        </div>
-    </header>
-
-    <!-- Hero -->
-    <section class="hero">
-        <div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> 全域開發與 Agent 實戰憲法 v3.0 驅動</div>
-        <h1>AI、警務與自動化專案儀表板</h1>
-        <p>歡迎探索我開發的 11 個專業工具與應用程式。涵蓋 AI 視訊過濾、基地台地圖定位、金融資料解析與系統清理優化。</p>
-    </section>
-
-    <!-- Main Content Grid -->
-    <main class="main-container">
-        <div class="projects-grid">
-
-            <!-- 1. System Optimizer Tool -->
-            <a href="https://github.com/lianghao02/System-Optimizer-Tool" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_System-Optimizer-Tool.jpg" alt="清理" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-broom" style="color:#38bdf8;"></i> 系統清理與記憶體優化</h2>
-                        <span class="badge">v1.0</span>
-                    </div>
-                    <p class="card-desc">Windows 系統暫存與 RAM 記憶體釋放工具，CustomTkinter 深色 UI，100% 絕不更動系統設定，附帶安全過濾白名單。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Python</span><span class="tag">CustomTkinter</span><span class="tag">RAM 釋放</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 2. Monitor Filter Tool -->
-            <a href="https://github.com/lianghao02/Monitor-Filter-Tool" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Monitor-Filter-Tool.jpg" alt="監控" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-video" style="color:#34d399;"></i> AG-MONITOR 科技偵查</h2>
-                        <span class="badge">v1.0</span>
-                    </div>
-                    <p class="card-desc">萬用 AI 戰術播放器與數位鑑識超解析工作站，專為警務實戰設計的自動化 YOLO 影像過濾與證物強化神器。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Python</span><span class="tag">YOLOv8</span><span class="tag">AI 鑑識</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 3. Calendar Card App -->
-            <a href="https://lianghao02.github.io/Calendar-Card-App/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Calendar-Card-App.jpg" alt="行事曆" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-calendar-days" style="color:#a78bfa;"></i> 卡片式行事曆 App</h2>
-                        <span class="badge">v1.0</span>
-                    </div>
-                    <p class="card-desc">Mobile-First Split View 卡片式日程管理，內建 Smart NLP 自然語言自動解析時間與地點，搭配 Google Sheets 儲存。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">JavaScript</span><span class="tag">Smart NLP</span><span class="tag">Google Sheets</span></div>
-                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 4. Cell Tower Map Locator -->
-            <a href="https://lianghao02.github.io/Cell-Tower-Map-Locator/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Cell-Tower-Map-Locator.jpg" alt="基地台" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-tower-cell" style="color:#fb923c;"></i> 基地台地圖即時定位</h2>
-                        <span class="badge">v1.0</span>
-                    </div>
-                    <p class="card-desc">警務門號即時定位工具，離線運算與 Leaflet 扇形涵蓋區域繪製，支援台灣邊界驗證與 XSS 防衛。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Leaflet</span><span class="tag">地圖定位</span><span class="tag">離線安全</span></div>
-                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 5. Financial Data Parser -->
-            <a href="https://lianghao02.github.io/Financial-Data-Parser/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Financial-Data-Parser.jpg" alt="金融" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-file-csv" style="color:#10b981;"></i> 金融資料 CSV 轉 Excel</h2>
-                        <span class="badge">v1.0</span>
-                    </div>
-                    <p class="card-desc">高容錯金融數據轉換器，SheetJS 帳號字串強型別保護 (前導零防護)、智慧金額清理與 ZIP 遞迴解壓縮。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">SheetJS</span><span class="tag">金融轉檔</span><span class="tag">ZIP 解壓</span></div>
-                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 6. Photo Report Generator -->
-            <a href="https://lianghao02.github.io/Photo-Report-Generator/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Photo-Report-Generator.jpg" alt="清冊" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-file-word" style="color:#f59e0b;"></i> 現況照片清冊生成器</h2>
-                        <span class="badge">v1.1</span>
-                    </div>
-                    <p class="card-desc">現況照片清冊自動整理與套印工具，結合 Excel VBA 自動將相片嵌入 Word 範本，大幅提升報告製作效率。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Excel VBA</span><span class="tag">Word 巨集</span><span class="tag">清冊套印</span></div>
-                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 7. Image Format Converter -->
-            <a href="https://lianghao02.github.io/Image-Format-Converter/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Image-Format-Converter.jpg" alt="轉檔" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-file-image" style="color:#ec4899;"></i> 警務影像轉檔與銳化器</h2>
-                        <span class="badge">v4.0</span>
-                    </div>
-                    <p class="card-desc">100% 瀏覽器本機離線運算，支援 HEIC 轉檔、長截圖智慧分段切片、3x3 卷積核銳化與 JSZip 壓縮打包。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Canvas</span><span class="tag">HEIC 轉檔</span><span class="tag">卷積濾鏡</span></div>
-                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 8. Smart Photo Organizer -->
-            <a href="https://github.com/lianghao02/Smart-Photo-Organizer" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Smart-Photo-Organizer.jpg" alt="分類" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-images" style="color:#6366f1;"></i> 智慧相片自動分類助手</h2>
-                        <span class="badge">v2.7</span>
-                    </div>
-                    <p class="card-desc">Python 智慧相片分類與整理助手，依拍攝日期、地點 EXIF 或自訂邏輯進行批次排序與安全重命名。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Python</span><span class="tag">EXIF 解析</span><span class="tag">相片歸檔</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 9. Fruit Ninja Motion -->
-            <a href="https://lianghao02.github.io/Fruit-Ninja-Motion/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Fruit-Ninja-Motion.jpg" alt="切水果" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-gamepad" style="color:#ef4444;"></i> 體感切水果遊戲</h2>
-                        <span class="badge">v1.0</span>
-                    </div>
-                    <p class="card-desc">Web 體感手勢互動遊戲，結合視訊鏡頭與即時動作追蹤，輕鬆在瀏覽器體驗切水果斬擊快感。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">HTML5</span><span class="tag">Canvas</span><span class="tag">手勢追蹤</span></div>
-                        <span class="btn-link">開啟遊戲 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 10. Auto Learning Bot -->
-            <a href="https://github.com/lianghao02/auto-learning-bot" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_auto-learning-bot.jpg" alt="機器人" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-robot" style="color:#8b5cf6;"></i> 自動學習機器人</h2>
-                        <span class="badge">v1.0</span>
-                    </div>
-                    <p class="card-desc">自動化學習測驗與題庫解析 Bot，具備智慧題庫分析、答案匹配與學習歷程追蹤邏輯。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Python</span><span class="tag">自動化 Bot</span><span class="tag">題庫解析</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- 11. Home Portal -->
-            <a href="https://lianghao02.github.io/home/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_home.jpg" alt="首頁" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-house" style="color:#3b82f6;"></i> LiangHao 首頁門戶</h2>
-                        <span class="badge">v2.0</span>
-                    </div>
-                    <p class="card-desc">個人作品集與專案儀表板入口，整合全域憲法 v3.0 規範、粒子動畫背景與動態響應式卡片。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">儀表板</span></div>
-                        <span class="btn-link">當前頁面 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <p>© <span id="year"></span> LiangHao (梁巡官). All rights reserved.</p>
-        <p style="font-size:0.8rem; margin-top:0.5rem; opacity:0.6;">全域開發與 Agent 實戰憲法 v3.0 | 專案總計：11 個獨立工具與應用</p>
-    </footer>
-
-    <script>
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        // Canvas Particle Background
-        (function() {
-            const canvas = document.getElementById("particle-canvas");
-            const ctx = canvas.getContext("2d");
-            let W, H, particles = [];
-            const COUNT = 60;
-            const COLORS = ["rgba(56,189,248,", "rgba(129,140,248,", "rgba(167,139,250,"];
-
-            function resize() {
-                W = canvas.width = window.innerWidth;
-                H = canvas.height = window.innerHeight;
-            }
-
-            function createParticle() {
-                return {
-                    x: Math.random() * W,
-                    y: Math.random() * H,
-                    r: Math.random() * 1.8 + 0.5,
-                    vx: (Math.random() - 0.5) * 0.4,
-                    vy: (Math.random() - 0.5) * 0.4,
-                    alpha: Math.random() * 0.4 + 0.1,
-                    color: COLORS[Math.floor(Math.random() * COLORS.length)]
-                };
-            }
-
-            function init() {
-                resize();
-                particles = Array.from({ length: COUNT }, createParticle);
-                loop();
-            }
-
-            function loop() {
-                ctx.clearRect(0, 0, W, H);
-                for (const p of particles) {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    if (p.x < 0) p.x = W;
-                    if (p.x > W) p.x = 0;
-                    if (p.y < 0) p.y = H;
-                    if (p.y > H) p.y = 0;
-
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = p.color + p.alpha + ")";
-                    ctx.fill();
-                }
-                requestAnimationFrame(loop);
-            }
-
-            window.addEventListener('resize', resize);
-            init();
-        })();
-    </script>
-</body>
-</html>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="LiangHao's Projects Portal - 探索我開發的 11 個實用 AI、警務與自動化專案。">
+    <meta name="author" content="LiangHao (梁巡官)">
+    <title>LiangHao's Projects | 專案作品集儀表板</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #060b18;
+            --surface: rgba(15, 23, 42, 0.75);
+            --surface-card: rgba(15, 23, 42, 0.85);
+            --border: rgba(148, 163, 184, 0.15);
+            --border-glow: rgba(56, 189, 248, 0.4);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-purple: #818cf8;
+            --radius-card: 1.25rem;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 75%, rgba(129, 140, 248, 0.08) 0%, transparent 40%);
+        }
+
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== Header ===== */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(6, 11, 24, 0.75);
+            border-bottom: 1px solid var(--border);
+        }
+        .header-inner {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            position: relative;
+            z-index: 1;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem 2rem;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        /* ===== Grid Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem 5rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 2rem;
+        }
+
+        /* ===== Project Card ===== */
+        .card {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+            backdrop-filter: blur(12px);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--border-glow);
+            box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.7), 0 0 25px -5px rgba(56, 189, 248, 0.3);
+        }
+
+        .card-banner {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            position: relative;
+            background: #020617;
+        }
+
+        .card-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover .card-banner img {
+            transform: scale(1.08);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .card-desc {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 1.25rem;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.72rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-link {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: gap var(--transition);
+        }
+
+        .card:hover .btn-link {
+            gap: 0.7rem;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            background: rgba(4, 8, 18, 0.9);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Header -->
+    <header>
+        <div class="header-inner">
+            <a href="#" class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-code"></i></div>
+                <span class="brand-title">LiangHao's Projects</span>
+            </a>
+            <a href="https://github.com/lianghao02" target="_blank" class="brand" style="font-size: 1.3rem; color: var(--text-muted);">
+                <i class="fa-brands fa-github"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> 全域開發與 Agent 實戰憲法 v3.0 驅動</div>
+        <h1>AI、警務與自動化專案儀表板</h1>
+        <p>歡迎探索我開發的 11 個專業工具與應用程式。涵蓋 AI 視訊過濾、基地台地圖定位、金融資料解析與系統清理優化。</p>
+    </section>
+
+    <!-- Main Content Grid -->
+    <main class="main-container">
+        <div class="projects-grid">
+
+            <!-- 1. System Optimizer Tool -->
+            <a href="https://github.com/lianghao02/System-Optimizer-Tool" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_System-Optimizer-Tool.jpg" alt="清理" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-broom" style="color:#38bdf8;"></i> 系統清理與記憶體優化</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">Windows 系統暫存與 RAM 記憶體釋放工具，CustomTkinter 深色 UI，100% 絕不更動系統設定，附帶安全過濾白名單。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Python</span><span class="tag">CustomTkinter</span><span class="tag">RAM 釋放</span></div>
+                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 2. Monitor Filter Tool -->
+            <a href="https://github.com/lianghao02/Monitor-Filter-Tool" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Monitor-Filter-Tool.jpg" alt="監控" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-video" style="color:#34d399;"></i> AG-MONITOR 科技偵查</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">萬用 AI 戰術播放器與數位鑑識超解析工作站，專為警務實戰設計的自動化 YOLO 影像過濾與證物強化神器。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Python</span><span class="tag">YOLOv8</span><span class="tag">AI 鑑識</span></div>
+                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 3. Calendar Card App -->
+            <a href="https://lianghao02.github.io/Calendar-Card-App/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Calendar-Card-App.jpg" alt="行事曆" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-calendar-days" style="color:#a78bfa;"></i> 卡片式行事曆 App</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">Mobile-First Split View 卡片式日程管理，內建 Smart NLP 自然語言自動解析時間與地點，搭配 Google Sheets 儲存。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">JavaScript</span><span class="tag">Smart NLP</span><span class="tag">Google Sheets</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 4. Cell Tower Map Locator -->
+            <a href="https://lianghao02.github.io/Cell-Tower-Map-Locator/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Cell-Tower-Map-Locator.jpg" alt="基地台" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-tower-cell" style="color:#fb923c;"></i> 基地台地圖即時定位</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">警務門號即時定位工具，離線運算與 Leaflet 扇形涵蓋區域繪製，支援台灣邊界驗證與 XSS 防衛。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Leaflet</span><span class="tag">地圖定位</span><span class="tag">離線安全</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 5. Financial Data Parser -->
+            <a href="https://lianghao02.github.io/Financial-Data-Parser/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Financial-Data-Parser.jpg" alt="金融" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-file-csv" style="color:#10b981;"></i> 金融資料 CSV 轉 Excel</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">高容錯金融數據轉換器，SheetJS 帳號字串強型別保護 (前導零防護)、智慧金額清理與 ZIP 遞迴解壓縮。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">SheetJS</span><span class="tag">金融轉檔</span><span class="tag">ZIP 解壓</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 6. Photo Report Generator -->
+            <a href="https://lianghao02.github.io/Photo-Report-Generator/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Photo-Report-Generator.jpg" alt="清冊" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-file-word" style="color:#f59e0b;"></i> 現況照片清冊生成器</h2>
+                        <span class="badge">v1.1</span>
+                    </div>
+                    <p class="card-desc">現況照片清冊自動整理與套印工具，結合 Excel VBA 自動將相片嵌入 Word 範本，大幅提升報告製作效率。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Excel VBA</span><span class="tag">Word 巨集</span><span class="tag">清冊套印</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 7. Image Format Converter -->
+            <a href="https://lianghao02.github.io/Image-Format-Converter/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Image-Format-Converter.jpg" alt="轉檔" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-file-image" style="color:#ec4899;"></i> 警務影像轉檔與銳化器</h2>
+                        <span class="badge">v4.0</span>
+                    </div>
+                    <p class="card-desc">100% 瀏覽器本機離線運算，支援 HEIC 轉檔、長截圖智慧分段切片、3x3 卷積核銳化與 JSZip 壓縮打包。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Canvas</span><span class="tag">HEIC 轉檔</span><span class="tag">卷積濾鏡</span></div>
+                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 8. Smart Photo Organizer -->
+            <a href="https://github.com/lianghao02/Smart-Photo-Organizer" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Smart-Photo-Organizer.jpg" alt="分類" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-images" style="color:#6366f1;"></i> 智慧相片自動分類助手</h2>
+                        <span class="badge">v2.7</span>
+                    </div>
+                    <p class="card-desc">Python 智慧相片分類與整理助手，依拍攝日期、地點 EXIF 或自訂邏輯進行批次排序與安全重命名。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Python</span><span class="tag">EXIF 解析</span><span class="tag">相片歸檔</span></div>
+                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 9. Fruit Ninja Motion -->
+            <a href="https://lianghao02.github.io/Fruit-Ninja-Motion/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_Fruit-Ninja-Motion.jpg" alt="切水果" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-gamepad" style="color:#ef4444;"></i> 體感切水果遊戲</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">Web 體感手勢互動遊戲，結合視訊鏡頭與即時動作追蹤，輕鬆在瀏覽器體驗切水果斬擊快感。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">HTML5</span><span class="tag">Canvas</span><span class="tag">手勢追蹤</span></div>
+                        <span class="btn-link">開啟遊戲 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 10. Auto Learning Bot -->
+            <a href="https://github.com/lianghao02/auto-learning-bot" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_auto-learning-bot.jpg" alt="機器人" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-robot" style="color:#8b5cf6;"></i> 自動學習機器人</h2>
+                        <span class="badge">v1.0</span>
+                    </div>
+                    <p class="card-desc">自動化學習測驗與題庫解析 Bot，具備智慧題庫分析、答案匹配與學習歷程追蹤邏輯。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">Python</span><span class="tag">自動化 Bot</span><span class="tag">題庫解析</span></div>
+                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 11. Home Portal -->
+            <a href="https://lianghao02.github.io/home/" target="_blank" class="card">
+                <div class="card-banner">
+                    <img src="images/banner_home.jpg" alt="首頁" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-house" style="color:#3b82f6;"></i> LiangHao 首頁門戶</h2>
+                        <span class="badge">v2.0</span>
+                    </div>
+                    <p class="card-desc">個人作品集與專案儀表板入口，整合全域憲法 v3.0 規範、粒子動畫背景與動態響應式卡片。</p>
+                    <div class="card-footer">
+                        <div class="tags"><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">儀表板</span></div>
+                        <span class="btn-link">當前頁面 <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© <span id="year"></span> LiangHao (梁巡官). All rights reserved.</p>
+        <p style="font-size:0.8rem; margin-top:0.5rem; opacity:0.6;">全域開發與 Agent 實戰憲法 v3.0 | 專案總計：11 個獨立工具與應用</p>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Canvas Particle Background
+        (function() {
+            const canvas = document.getElementById("particle-canvas");
+            const ctx = canvas.getContext("2d");
+            let W, H, particles = [];
+            const COUNT = 60;
+            const COLORS = ["rgba(56,189,248,", "rgba(129,140,248,", "rgba(167,139,250,"];
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+
+            function createParticle() {
+                return {
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    r: Math.random() * 1.8 + 0.5,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    alpha: Math.random() * 0.4 + 0.1,
+                    color: COLORS[Math.floor(Math.random() * COLORS.length)]
+                };
+            }
+
+            function init() {
+                resize();
+                particles = Array.from({ length: COUNT }, createParticle);
+                loop();
+            }
+
+            function loop() {
+                ctx.clearRect(0, 0, W, H);
+                for (const p of particles) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = W;
+                    if (p.x > W) p.x = 0;
+                    if (p.y < 0) p.y = H;
+                    if (p.y > H) p.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color + p.alpha + ")";
+                    ctx.fill();
+                }
+                requestAnimationFrame(loop);
+            }
+
+            window.addEventListener('resize', resize);
+            init();
+        })();
+    </script>
+</body>
+</html>

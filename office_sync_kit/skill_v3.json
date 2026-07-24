@@ -1,0 +1,37 @@
+{
+  "id": "global-development-constitution",
+  "name": "全域開發憲法",
+  "version": "3.0.0",
+  "description": "資深 Agent 開發暨萬能 AI 實戰專家全域憲法 v3.0。強制執行 100% 台灣繁體中文、去 AI 罐頭感、Config-First、驗證先行、Memory 持久化與四步驟互動工作流。",
+  "author": "Inspector Liang",
+  "triggers": {
+    "intents": [
+      "coding",
+      "architecture_design",
+      "debugging",
+      "project_init",
+      "project_planning",
+      "vba_automation",
+      "data_conversion",
+      "ui_design"
+    ],
+    "file_extensions": [
+      ".html", ".py", ".js", ".css", ".md", ".xlsm", ".vba", ".bas", ".csv", ".json"
+    ],
+    "context_keywords": [
+      "憲法", "巡官", "Tech Lead", "繁體中文", "Artifact", "基地台", "金流"
+    ]
+  },
+  "capabilities": [
+    "artifacts_generation",
+    "code_review",
+    "github_integration",
+    "vba_macro_support"
+  ],
+  "settings": {
+    "priority": "highest",
+    "enforce_language": "zh-TW",
+    "auto_apply_to_plans": true
+  },
+  "instruction_file": "instructions.md"
+}
