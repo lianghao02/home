@@ -12,9 +12,9 @@
 - **關鍵功能**：電信基站文字解析、座標擷取、角度扇形繪製、台灣座標界線驗證。
 - **實務優勢**：資料完全不上傳雲端，保障高敏感度個資安全。
 
-### 2. 警務影像格式轉換工具 (Image-Format-Converter)
+### 2. 警務影像格式轉換工具 (Police-Image-Toolkit)
 - **架構模式**：純前端 Web HTML5 + Canvas + JSZip + HEIC2any。
-- **線上網址**：https://lianghao02.github.io/Image-Format-Converter/
+- **線上網址**：https://lianghao02.github.io/Police-Image-Toolkit/
 - **關鍵功能**：HEIC/PNG/WebP 轉 JPG、長截圖依公分重疊自動切片、3x3 卷積核影像銳化。
 - **實務優勢**：針對公務報表系統格式限制優化，免安裝任何軟體即可使用。
 
@@ -44,19 +44,19 @@
 
 ### 7. 檔案整理大師 (System-Optimizer-Tool)
 - **架構模式**：Python 3.11 + OS 檔案系統 API。
-- **儲存庫路徑**：`C:\Users\chia-hao\Documents\GitHub\System-Optimizer-Tool.antigravity`
+- **儲存庫路徑**：`C:\Users\chia-hao\Documents\GitHub\System-Optimizer-Tool`
 - **關鍵功能**：批量檔名自然排序重命名、系統暫存檔案清理、目錄防無窮迴圈安全控制。
 - **實務優勢**：提昇本機檔案維護效率與硬碟空間回收。
 
-### 8. AG-MONITOR 科技偵查工作站 (Monitor-Filter-Tool)
+### 8. AG-MONITOR 科技偵查工作站 (AG-Monitor-Forensics)
 - **架構模式**：Python 3.11 + PyAV 零拷貝解碼 + YOLOv8 + ByteTrack + Eel (HTML/WebSocket UI)。
-- **儲存庫路徑**：`C:\Users\chia-hao\Documents\GitHub\Monitor-Filter-Tool`
+- **儲存庫路徑**：`C:\Users\chia-hao\Documents\GitHub\AG-Monitor-Forensics`
 - **關鍵功能**：非標準監視器裸流 (.dav/.264/.avi) 無損播放、人車目標辨識追蹤、智慧空景快轉、鑑識日誌自動寫入。
 - **實務優勢**：警務鑑識實戰利器，免長時間人工盯看監視器。
 
-### 9. 體感切水果 (Fruit-Ninja-Motionindex)
+### 9. 體感切水果 (Fruit-Ninja-Motion)
 - **架構模式**：Python 3.11 + OpenCV 影像處理 + 視覺軌跡辨識。
-- **儲存庫路徑**：`C:\Users\chia-hao\Documents\GitHub\Fruit-Ninja-Motionindex`
+- **儲存庫路徑**：`C:\Users\chia-hao\Documents\GitHub\Fruit-Ninja-Motion`
 - **關鍵功能**：視訊鏡頭動態追蹤、免手持體感遊戲互動。
 
 ### 10. 行政效能領航員 (auto-learning-bot)
