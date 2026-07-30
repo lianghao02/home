@@ -1,49 +1,22 @@
-# LiangHao's Projects Portal
-
-這是我個人的專案作品集入口網站，展示了各種實用的網頁工具與應用程式。
-
-🌐 **線上瀏覽**: [https://lianghao02.github.io/](https://lianghao02.github.io/)
-
-## 🚀 收錄專案
-
-### 1. [手機門號定位 (Cell-Tower-Map-Locator)](https://lianghao02.github.io/Cell-Tower-Map-Locator/)
-* **功能**: 專業 GIS 定位輔助工具，能快速解析電信查詢回傳的文字，自動提取座標、時間與門號並進行地圖定位。
-* **特點**: 支援地圖導航、方位角繪製、歷史紀錄與一鍵分享。
-
-### 2. [CSV to Excel Converter (Financial-Data-Parser)](https://lianghao02.github.io/Financial-Data-Parser/)
-* **功能**: 簡單易用的線上轉檔工具，可將 CSV 檔案快速轉換為 Excel (.xlsx) 格式。
-* **特點**: 支援大量數據處理、解決中文亂碼問題。
-
-### 3. [Image Converter (Police-Image-Toolkit)](https://lianghao02.github.io/Police-Image-Toolkit/)
-* **功能**: 專為警務需求設計的影像自動化工具，支援 PDF、長截圖、影像裁切與壓縮。
-* **特點**: 針對公務系統相容性優化，確保照片可順利上傳與使用。
-
-### 4. [Photo Report (Photo-Report-Generator)](https://lianghao02.github.io/Photo-Report-Generator/)
-* **功能**: 現況照片清冊生成與整理工具，快速將照片匯入 Word 排版。
-* **特點**: 輕鬆整合現場蒐證照片，自動排版產出報表，減少人工作業。
-
-### 5. [Calendar Card (Calendar-Card-App)](https://lianghao02.github.io/Calendar-Card-App/)
-* **功能**: 排班表與行事曆小卡產生器。
-* **特點**: 快速將排班資訊轉為易於閱讀的卡片格式並匯出圖片。
-
-### 6. [Smart Photo (Smart-Photo-Organizer)](https://lianghao02.github.io/Smart-Photo-Organizer/)
-* **功能**: 智慧照片整理工具，依照日期、地點自動分類歸檔。
-* **特點**: 提供快速分類與整理大量照片的功能，節省日常手動分類時間。
-
-### 7. [檔案整理大師 (System-Optimizer-Tool)](https://lianghao02.github.io/System-Optimizer-Tool/)
-* **功能**: 系統檔案優化與整理，提供即時操作的直覺式介面。
-* **特點**: 提供進階的檔案批量重命名、分類與系統優化操作。
-
-### 8. [AG-MONITOR 科技偵查 (AG-Monitor-Forensics)](https://lianghao02.github.io/AG-Monitor-Forensics/)
-* **功能**: 科技偵查監控與過濾工具，利用 AI 技術輔助分析。
-* **特點**: 針對特殊監控數據提供專業的過濾與分析功能。
-
----
-
-## 🛠️ 技術棧
-
-* **HTML5 / CSS3 / JavaScript**
-* **Tailwind CSS**
-* **Responsive Design (RWD)**
-* **Python / PyQt5 / VBA (部分專案)**
-* **GitHub Pages** Hosting
+# 🏠 LiangHao 專案儀表板與全域憲法門戶 home (v3.0)
+
+[![Version](https://img.shields.io/badge/version-v3.0-blue.svg)](https://github.com/lianghao02/home)
+[![Constitution](https://img.shields.io/badge/Constitution-v7.0-purple.svg)](https://github.com/lianghao02/home)
+
+## 🏆 v3.0 里程碑：全域開發憲法 v7.0 整合與極致黑科技門戶
+
+## 📖 重大更新摘要 (Summary)
+
+本版本為個人作品集門戶網站與 Agent 全域開發憲法之終極大一統版本，整合最新 **全域開發憲法 v7.0** 與動態響應式卡片 dashboard。
+
+過往多專案展示頁面樣式陳舊、連結失效且缺少版本狀態監控。本版本採用現代化玻璃擬物 (Glassmorphism) 設計語言與動態 Canvas 粒子背景，在 **1 秒內** 為使用者呈現所有 11 個專案之即時版本號標籤與部署狀態，展現軍規級作品集質感。
+
+## ✨ 重點更新特色
+
+- 📜 **全域開發憲法 v7.0 載入 (Global Agent Rules)**：
+  - 整合去 AI 罐頭感鐵律、8 核心文件分工、硬核五步驟工作流與 AI Release Note 寫作規範。
+  - 為所有專案提供 100% 台灣繁體中文與工程化標準引導。
+
+- ✨ **玻璃擬物視覺與粒子動畫 (Glassmorphism & Particle Canvas)**：
+  - 採用 Vanilla CSS 與 HTML5 Canvas 實作互動式背景粒子聯網動畫與動態光澤卡片。
+  - 打造讓人一見鍾情 (WOW Effect) 的現代化前端門戶體驗。
