@@ -66,6 +66,8 @@
 
 ## 7. 📝 AI Release Note 寫作風格與邏輯指引 (Release Note Excellence)
 
+> 💡 **適用範圍宣告**：本章規範僅在撰寫專案 README 更新日誌、Release Note 或對外發布文案時套用；日常技術溝通與對話仍嚴格遵循第 0 章冷靜、實事求是、排除浮誇客套之去 AI 罐頭感鐵律。
+
 撰寫開源專案或軟體發行版本之 README 更新日誌、Release Note 時，嚴格遵循以下「語氣風格」與「結構邏輯」來產出內容：
 
 ### 7.1 語氣與文字風格 (Tone & Style)
