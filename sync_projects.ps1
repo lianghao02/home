@@ -13,7 +13,9 @@ Write-Host "=========================================="
 
 # 1. 自動複製 home/configs/AGENTS.md 到 .gemini/config/AGENTS.md
 if (Test-Path (Join-Path $homeConfigsDir "AGENTS.md")) {
-    if (-not (Test-Path $globalConfigDir)) { New-Item -ItemType Directory -Path $globalConfigDir -Force | Out-Null }
+    if (-not (Test-Path $globalConfigDir)) { 
+        New-Item -ItemType Directory -Path $globalConfigDir -Force | Out-Null 
+    }
     Copy-Item -Path (Join-Path $homeConfigsDir "AGENTS.md") -Destination (Join-Path $globalConfigDir "AGENTS.md") -Force
     Write-Host "✅ 已同步全域憲法 v7.1 AGENTS.md 至 $globalConfigDir"
 }
@@ -21,7 +23,9 @@ if (Test-Path (Join-Path $homeConfigsDir "AGENTS.md")) {
 # 2. 自動複製 home/configs/skills/ 到 .gemini/config/skills/
 if (Test-Path (Join-Path $homeConfigsDir "skills")) {
     $targetSkillsDir = Join-Path $globalConfigDir "skills"
-    if (-not (Test-Path $targetSkillsDir)) { New-Item -ItemType Directory -Path $targetSkillsDir -Force | Out-Null }
+    if (-not (Test-Path $targetSkillsDir)) { 
+        New-Item -ItemType Directory -Path $targetSkillsDir -Force | Out-Null 
+    }
     Copy-Item -Path (Join-Path $homeConfigsDir "skills\*") -Destination $targetSkillsDir -Recurse -Force
     Write-Host "✅ 已同步 5 大 Agent Skills 至 $targetSkillsDir"
 }
@@ -32,14 +36,15 @@ Write-Host "=========================================="
 
 # 3. 取得 GitHub 上當前活躍的專案 Repo 清單
 $githubUser = "lianghao02"
+$activeRepoNames = $null
 
 try {
-    $repos = Invoke-RestMethod -Uri "https://api.github.com/users/$githubUser/repos?per_page=100" -Headers @{"Accept"="application/vnd.github+json"}
+    $headers = @{ "Accept" = "application/vnd.github+json" }
+    $repos = Invoke-RestMethod -Uri "https://api.github.com/users/$githubUser/repos?per_page=100" -Headers $headers
     $activeRepoNames = $repos.name
     Write-Host "✅ 找到 GitHub 雲端共 $($activeRepoNames.Count) 個專案"
 } catch {
     Write-Host "⚠️ 無法取得 GitHub 專案清單，將僅進行本地 Git 同步"
-    $activeRepoNames = $null
 }
 
 # 4. 本地資料夾掃描與清理
