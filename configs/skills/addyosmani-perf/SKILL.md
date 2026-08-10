@@ -1,6 +1,6 @@
 ---
 name: addyosmani-perf
-description: Google 前端主管 Addy Osmani 的 Agent Skills 精華。補充網頁效能指標（Core Web Vitals、LCP、CLS、INP）的量測與優化流程，適用於所有需要提升頁面速度與使用者體驗評分的專案。
+description: Google 前端主管 Addy Osmani 的 Agent Skills 精華。補充網頁效能指標（Core Web Vitals、LCP、CLS、INP）的量測與優化流程。適用於 Web 前端效能量測與體驗評分提升。
 ---
 
 # Addy Osmani 前端效能優化 Skill
@@ -13,94 +13,54 @@ description: Google 前端主管 Addy Osmani 的 Agent Skills 精華。補充網
 |:---|:---|:---|:---|
 | **LCP** | Largest Contentful Paint | ≤ 2.5s | 最大內容元素載入時間 |
 | **CLS** | Cumulative Layout Shift | ≤ 0.1 | 版面累積位移分數 |
-| **INP** | Interaction to Next Paint | ≤ 200ms | 互動到下一次繪製延遲（取代 FID） |
+| **INP** | Interaction to Next Paint | ≤ 200ms | 互動到下一次繪製延遲 |
 | **FCP** | First Contentful Paint | ≤ 1.8s | 首次有內容繪製時間 |
 | **TTFB** | Time to First Byte | ≤ 800ms | 伺服器首次回應時間 |
 
-## 效能量測流程
+---
 
-### 1. Lighthouse CI 整合
+## 效能量測與實作準則
 
-```bash
-# 安裝 Lighthouse CI
-npm install -g @lhci/cli
+⚠️ **架構適當原則**：依專案實際架構（如單檔 HTML、SPA 框架或多頁面 Web）按需採納相關優化技術。不為了符合清單而強制引入與專案需求無關的套件、Service Worker 或複雜建置工具。
 
-# 執行效能審計
-lhci autorun --upload.target=temporary-public-storage
+### 1. 常見效能問題與建議作法
 
-# 自訂設定（lhci-config.json）
-{
-  "ci": {
-    "assert": {
-      "assertions": {
-        "categories:performance": ["warn", {"minScore": 0.9}],
-        "first-contentful-paint": ["error", {"maxNumericValue": 1800}],
-        "largest-contentful-paint": ["error", {"maxNumericValue": 2500}],
-        "cumulative-layout-shift": ["error", {"maxNumericValue": 0.1}]
-      }
-    }
-  }
-}
-```
-
-### 2. 常見效能問題與修法
-
-| 問題 | 診斷方式 | 修法 |
+| 問題 | 診斷方式 | 修法與處理方式 |
 |:---|:---|:---|
-| **圖片未優化** | LCP > 2.5s | 改用 WebP/AVIF，加 `loading="lazy"` |
-| **版面位移** | CLS > 0.1 | 圖片加寬高屬性，字型加 `font-display: swap` |
-| **阻塞渲染的 JS** | FCP > 1.8s | `defer` / `async` 屬性，或移至 `</body>` |
-| **未壓縮資源** | TTFB > 800ms | 開啟 Gzip/Brotli 壓縮 |
-| **過多第三方腳本** | INP > 200ms | 審計並移除非必要第三方腳本 |
+| **圖片未優化** | LCP > 2.5s | 改用 WebP/AVIF，非首屏圖片加 `loading="lazy"` |
+| **版面位移** | CLS > 0.1 | 圖片與容器設定明確寬高/比例，關鍵字型加 `font-display: swap` |
+| **阻塞渲染的 JS** | FCP > 1.8s | 腳本使用 `defer` / `async` 屬性或置於底部 |
+| **未壓縮資源** | TTFB > 800ms | 開啟伺服器端 Gzip/Brotli 壓縮（若有後端） |
+| **過多第三方腳本** | INP > 200ms | 審計並延遲/移除非必要第三方腳本 |
 
-### 3. 程式碼層級優化清單
+### 2. 程式碼層級優化範例
 
-```javascript
-// ✅ 圖片懶加載
+```html
+<!-- ✅ 圖片懶加載與明確尺寸 -->
 <img loading="lazy" src="photo.jpg" width="400" height="300" alt="說明">
 
-// ✅ 字型預載
-<link rel="preload" href="inter.woff2" as="font" type="font/woff2" crossorigin>
-
-// ✅ 關鍵 CSS 內嵌
+<!-- ✅ 關鍵樣式內嵌（適合單 HTML 頁面） -->
 <style>/* 首屏必要樣式直接內嵌 */</style>
 
-// ✅ 非同步載入非關鍵 JS
-<script defer src="analytics.js"></script>
+<!-- ✅ 非同步載入非關鍵 JS -->
+<script defer src="app.js"></script>
 
-// ✅ 圖片格式現代化（使用 <picture> 提供多格式選擇）
+<!-- ✅ 現代化圖片格式 -->
 <picture>
   <source srcset="image.avif" type="image/avif">
   <source srcset="image.webp" type="image/webp">
-  <img src="image.jpg" alt="說明">
+  <img src="image.jpg" width="800" height="600" alt="說明">
 </picture>
 ```
 
-### 4. 效能預算（Performance Budget）設定
+---
 
-```json
-{
-  "resourceSizes": [
-    { "resourceType": "total", "budget": 500 },
-    { "resourceType": "script", "budget": 150 },
-    { "resourceType": "image", "budget": 200 },
-    { "resourceType": "font", "budget": 50 }
-  ]
-}
-```
+## 程式碼審查檢查項（按專案需要選用）
 
-## 程式碼審查清單（Code Review Checklist）
+進行 Web 效能審查時，按專案架構選擇適用項目：
 
-交付前必須確認：
-
-- [ ] LCP 元素是否有 `fetchpriority="high"` 屬性
-- [ ] 所有圖片是否有明確 `width` 和 `height`（防止 CLS）
-- [ ] Web Fonts 是否使用 `font-display: swap`
-- [ ] 是否移除未使用的 CSS（PurgeCSS 或 tree-shaking）
-- [ ] JavaScript bundle 是否有 code splitting
-- [ ] 是否有 Service Worker 快取靜態資源
-
-## 與全域憲法 v7.1 整合說明
-
-- **§3.3 現代化 UI/UX 審美底線**：效能是使用者體驗的一部分，此 Skill 補齊效能量化標準。
-- **§6.1 驗證先行**：Lighthouse CI 應整合至 §6.4 的 CI/CD 骨架中，作為 PR 合入的自動化門檻。
+- [ ] LCP 關鍵圖片/元素是否有優先載入機制
+- [ ] 圖片與影音容器是否具備明確寬高屬性（防 CLS）
+- [ ] 系統字型或 Web Fonts 是否具備適當渲染策略
+- [ ] 是否清理未使用的 CSS 與冗餘 JavaScript
+- [ ] 大型單頁應用或框架專案是否進行 Bundle 拆分（Code Splitting）

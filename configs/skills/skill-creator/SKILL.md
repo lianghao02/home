@@ -40,7 +40,7 @@ description: |                # 必填：觸發條件 + 功能說明（影響 AI
 - **使用祈使句**：「執行 X」「驗證 Y」「回傳 Z」，而非「你應該...」
 - **具體範例優先**：每個步驟附上程式碼片段或命令範例
 - **漸進式揭露**：從高層概覽開始，再深入細節
-- **台灣繁體中文**：符合全域憲法 §0 語言規範
+- **台灣繁體中文**：符合全域憲法語言規範
 
 ## 建立新 Skill 的步驟
 
@@ -55,7 +55,7 @@ description: |                # 必填：觸發條件 + 功能說明（影響 AI
 
 | 範疇 | 路徑 | 適用情境 |
 |:---|:---|:---|
-| **全域**（所有專案） | `C:\Users\chia-hao\.gemini\config\skills\` | 通用工具、語言規範、工程標準 |
+| **全域**（所有專案） | `C:\Users\chia-hao\.gemini\config\skills\` | 通用工具、工程標準 |
 | **專案層級** | `[專案]\.agents\skills\` | 專案特定的工作流程 |
 
 ### 步驟三：撰寫 SKILL.md
@@ -87,21 +87,18 @@ description: 一句話說明觸發條件。詳細說明此 Skill 覆蓋的任務
 ### 步驟四：測試驗證
 
 ```powershell
-# 確認 Antigravity 能偵測到新 Skill
+# 確認能偵測到新 Skill
 Get-ChildItem "C:\Users\chia-hao\.gemini\config\skills" -Recurse -Filter "SKILL.md"
 ```
 
 ## 現有 Skills 目錄一覽
 
-| Skill 名稱 | 存放路徑 | 用途 |
-|:---|:---|:---|
-| `webapp-testing` | `config\skills\webapp-testing\` | Playwright 瀏覽器自動化測試 |
-| `caveman` | `config\skills\caveman\` | 極簡省 Token 輸出模式 |
-| `accesslint` | `config\skills\accesslint\` | WCAG 無障礙掃描 |
-| `addyosmani-perf` | `config\skills\addyosmani-perf\` | Core Web Vitals 效能優化 |
-| `skill-creator` | `config\skills\skill-creator\` | 本技能（封裝新 Skill） |
-
-## 與全域憲法 v7.1 整合說明
-
-- **§1 九核心文件**：新建的 Skill 本身即是一種「技能型」架構文件，應記錄至 `MEMORY.md` 的 `## 📦 外部依賴追蹤` 區段。
-- **命名規範**：Skill 目錄名稱遵循 §6.3 Commit 語法精神，全小寫、語義明確。
+| Skill 名稱 | 用途 |
+|:---|:---|
+| `github-workflow` | GitHub 搜尋、PR、upstream 同步與 Release CI/CD |
+| `release-notes` | 撰寫發布說明 (Release Note) 與 `CHANGELOG.md` 格式化 |
+| `webapp-testing` | Playwright 瀏覽器自動化測試與 UI 視覺驗證 |
+| `caveman` | 省 Token 快速輸出模式（需使用者明確指定時啟用） |
+| `accesslint` | WCAG 無障礙規範合規檢測 |
+| `addyosmani-perf` | Core Web Vitals 效能量測與針對性優化 |
+| `skill-creator` | 本技能（封裝與維護 Skill） |

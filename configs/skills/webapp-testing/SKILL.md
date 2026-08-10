@@ -63,8 +63,8 @@ with sync_playwright() as p:
             print(f"  ❌ {e}")
 ```
 
-## 與全域憲法 v7.1 整合說明
+## 與全域憲法整合
 
-- **§6.1 驗證先行**：此 Skill 補齊「瀏覽器端」的驗證層，與憲法的「提交前必須跑驗證」原則完全吻合。
-- **安裝依賴**：`pip install playwright && playwright install chromium`
-- **DRY_RUN 相容**：測試腳本預設不修改任何資料，符合 §4.5 防禦性設計。
+- **真實驗證**：實際執行瀏覽器端驗證後才宣稱 UI 功能正常。
+- **測試隔離**：測試過程不得污染或破壞正式環境資料；必要時使用測試資料或模擬伺服器。
+- **套件依賴**：執行前確認環境已安裝必要套件（`pip install playwright && playwright install chromium`）。
