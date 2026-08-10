@@ -1,40 +1,39 @@
 # ============================================================
-# 全域專案雙向同步、Agent 設定還原與廢棄清理腳本
-# (Global Sync, Config Restoration & Cleanup Script)
+# ?��?專�??��??�步?�Agent 設�??��??�廢棄�??�腳??# (Global Sync, Config Restoration & Cleanup Script)
 # ============================================================
 
-$rootDir = "C:\Users\chia-hao\Documents\GitHub"
+$rootDir = Split-Path -Parent $PSScriptRoot
 $globalConfigDir = "C:\Users\chia-hao\.gemini\config"
-$homeConfigsDir = Join-Path $rootDir "home\configs"
+$homeConfigsDir = Join-Path $PSScriptRoot "configs"
 
 Write-Host "=========================================="
-Write-Host "⚙️ 正在同步 Antigravity 全域憲法與 Agent Skills 設定..."
+Write-Host "?��? �?��?�步 Antigravity ?��??��???Agent Skills 設�?..."
 Write-Host "=========================================="
 
-# 1. 自動複製 home/configs/AGENTS.md 到 .gemini/config/AGENTS.md
+# 1. ?��?複製 home/configs/AGENTS.md ??.gemini/config/AGENTS.md
 if (Test-Path (Join-Path $homeConfigsDir "AGENTS.md")) {
     if (-not (Test-Path $globalConfigDir)) { 
         New-Item -ItemType Directory -Path $globalConfigDir -Force | Out-Null 
     }
     Copy-Item -Path (Join-Path $homeConfigsDir "AGENTS.md") -Destination (Join-Path $globalConfigDir "AGENTS.md") -Force
-    Write-Host "✅ 已同步全域憲法 v7.1 AGENTS.md 至 $globalConfigDir"
+    Write-Host "??已�?步全?�憲�?v7.1 AGENTS.md ??$globalConfigDir"
 }
 
-# 2. 自動複製 home/configs/skills/ 到 .gemini/config/skills/
+# 2. ?��?複製 home/configs/skills/ ??.gemini/config/skills/
 if (Test-Path (Join-Path $homeConfigsDir "skills")) {
     $targetSkillsDir = Join-Path $globalConfigDir "skills"
     if (-not (Test-Path $targetSkillsDir)) { 
         New-Item -ItemType Directory -Path $targetSkillsDir -Force | Out-Null 
     }
     Copy-Item -Path (Join-Path $homeConfigsDir "skills\*") -Destination $targetSkillsDir -Recurse -Force
-    Write-Host "✅ 已同步 5 大 Agent Skills 至 $targetSkillsDir"
+    Write-Host "??已�?�?5 �?Agent Skills ??$targetSkillsDir"
 }
 
 Write-Host "`n=========================================="
-Write-Host "🔍 正在查詢 GitHub (lianghao02) 當前活躍專案清單..."
+Write-Host "?? �?��?�詢 GitHub (lianghao02) ?��?活�?專�?清單..."
 Write-Host "=========================================="
 
-# 3. 取得 GitHub 上當前活躍的專案 Repo 清單
+# 3. ?��? GitHub 上當?�活躍�?專�? Repo 清單
 $githubUser = "lianghao02"
 $activeRepoNames = $null
 
@@ -42,30 +41,30 @@ try {
     $headers = @{ "Accept" = "application/vnd.github+json" }
     $repos = Invoke-RestMethod -Uri "https://api.github.com/users/$githubUser/repos?per_page=100" -Headers $headers
     $activeRepoNames = $repos.name
-    Write-Host "✅ 找到 GitHub 雲端共 $($activeRepoNames.Count) 個專案"
+    Write-Host "???�到 GitHub ?�端??$($activeRepoNames.Count) ?��?�?
 } catch {
-    Write-Host "⚠️ 無法取得 GitHub 專案清單，將僅進行本地 Git 同步"
+    Write-Host "?��? ?��??��? GitHub 專�?清單，�??�進�??�地 Git ?�步"
 }
 
-# 4. 本地資料夾掃描與清理
+# 4. ?�地資�?夾�??��?清�?
 $localDirs = Get-ChildItem -Path $rootDir -Directory
 
 foreach ($dir in $localDirs) {
     $dirName = $dir.Name
     
-    # 如果 GitHub 上的 Repo 已被刪除，自動清理本地資料夾
+    # 如�? GitHub 上�? Repo 已被?�除，自?��??�本?��??�夾
     if ($activeRepoNames -and ($dirName -notin $activeRepoNames)) {
-        Write-Host "🗑️ 發現已在 GitHub 廢棄刪除之專案：$dirName → 正在自動清理本機資料夾..."
+        Write-Host "??�??�現已在 GitHub 廢�??�除之�?案�?$dirName ??�?��?��?清�??��?資�?�?.."
         Remove-Item -Path $dir.FullName -Recurse -Force -ErrorAction SilentlyContinue
-        Write-Host "✅ 已清除本機廢棄專案：$dirName"
+        Write-Host "??已�??�本機廢棄�?案�?$dirName"
         continue
     }
 
-    # 正常專案進行 Git 拉取同步
+    # �?��專�??��? Git ?��??�步
     $gitPath = Join-Path $dir.FullName ".git"
     if (Test-Path $gitPath) {
         Write-Host "------------------------------------------"
-        Write-Host "🔄 正在同步專案：$dirName"
+        Write-Host "?? �?��?�步專�?�?dirName"
         Set-Location $dir.FullName
         git pull --ff-only 2>&1
     }
@@ -73,5 +72,7 @@ foreach ($dir in $localDirs) {
 
 Set-Location $rootDir
 Write-Host "`n=========================================="
-Write-Host "🎉 全域憲法、Agent Skills、專案同步與廢棄清理全數完成！"
+Write-Host "?? ?��??��??�Agent Skills?��?案�?步�?廢�?清�??�數完�?�?
 Write-Host "=========================================="
+
+
