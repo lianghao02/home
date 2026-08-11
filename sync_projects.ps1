@@ -2,7 +2,8 @@
 param(
     [string]$DevelopmentRoot = 'D:\Development\GitHub',
     [switch]$Execute,
-    [switch]$SkipAgentSetup
+    [switch]$SkipAgentSetup,
+    [switch]$Force
 )
 
 $ErrorActionPreference = 'Stop'
@@ -11,6 +12,7 @@ Set-StrictMode -Version Latest
 $config = [ordered]@{
     Manifest = Join-Path $PSScriptRoot 'development-repositories.json'
     AgentSetup = Join-Path $PSScriptRoot 'sync_codex.ps1'
+    RootAgents = Join-Path $PSScriptRoot 'configs\AGENTS.md'
 }
 
 function Write-Status([string]$Level, [string]$Message) {
@@ -31,6 +33,26 @@ Write-Status 'ROOT' $root
 
 if ($Execute -and -not (Test-Path -LiteralPath $root)) {
     New-Item -ItemType Directory -Path $root -Force | Out-Null
+}
+
+$rootAgentsTarget = Join-Path $root 'AGENTS.md'
+$sourceAgentsHash = (Get-FileHash -LiteralPath $config.RootAgents -Algorithm SHA256).Hash
+$targetAgentsHash = if (Test-Path -LiteralPath $rootAgentsTarget -PathType Leaf) {
+    (Get-FileHash -LiteralPath $rootAgentsTarget -Algorithm SHA256).Hash
+} else { $null }
+if ($targetAgentsHash -eq $sourceAgentsHash) {
+    Write-Status 'CURRENT' $rootAgentsTarget
+} elseif ($targetAgentsHash -and -not $Force) {
+    Write-Status 'SKIP' "Root AGENTS.md differs; use -Force to back up and replace: $rootAgentsTarget"
+} else {
+    Write-Status 'AGENTS' "Pending root guidance: $rootAgentsTarget"
+    if ($Execute) {
+        if ($targetAgentsHash) {
+            $backup = Join-Path $root ('AGENTS.backup-{0}.md' -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
+            Copy-Item -LiteralPath $rootAgentsTarget -Destination $backup -Force
+        }
+        Copy-Item -LiteralPath $config.RootAgents -Destination $rootAgentsTarget -Force
+    }
 }
 
 foreach ($item in $manifest.repositories) {
