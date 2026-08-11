@@ -1,78 +1,75 @@
-# ============================================================
-# ?®Â?Â∞àÊ??ôÂ??åÊ≠•?ÅAgent Ë®≠Â??ÑÂ??áÂª¢Ê£ÑÊ??ÜËÖ≥??# (Global Sync, Config Restoration & Cleanup Script)
-# ============================================================
+[CmdletBinding()]
+param(
+    [string]$DevelopmentRoot = 'D:\Development\GitHub',
+    [switch]$Execute,
+    [switch]$SkipAgentSetup
+)
 
-$rootDir = Split-Path -Parent $PSScriptRoot
-$globalConfigDir = "C:\Users\chia-hao\.gemini\config"
-$homeConfigsDir = Join-Path $PSScriptRoot "configs"
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
 
-Write-Host "=========================================="
-Write-Host "?ôÔ? Ê≠?ú®?åÊ≠• Antigravity ?®Â??≤Ê???Agent Skills Ë®≠Â?..."
-Write-Host "=========================================="
-
-# 1. ?™Â?Ë§áË£Ω home/configs/AGENTS.md ??.gemini/config/AGENTS.md
-if (Test-Path (Join-Path $homeConfigsDir "AGENTS.md")) {
-    if (-not (Test-Path $globalConfigDir)) { 
-        New-Item -ItemType Directory -Path $globalConfigDir -Force | Out-Null 
-    }
-    Copy-Item -Path (Join-Path $homeConfigsDir "AGENTS.md") -Destination (Join-Path $globalConfigDir "AGENTS.md") -Force
-    Write-Host "??Â∑≤Â?Ê≠•ÂÖ®?üÊÜ≤Ê≥?v7.1 AGENTS.md ??$globalConfigDir"
+$config = [ordered]@{
+    Manifest = Join-Path $PSScriptRoot 'development-repositories.json'
+    AgentSetup = Join-Path $PSScriptRoot 'sync_codex.ps1'
 }
 
-# 2. ?™Â?Ë§áË£Ω home/configs/skills/ ??.gemini/config/skills/
-if (Test-Path (Join-Path $homeConfigsDir "skills")) {
-    $targetSkillsDir = Join-Path $globalConfigDir "skills"
-    if (-not (Test-Path $targetSkillsDir)) { 
-        New-Item -ItemType Directory -Path $targetSkillsDir -Force | Out-Null 
-    }
-    Copy-Item -Path (Join-Path $homeConfigsDir "skills\*") -Destination $targetSkillsDir -Recurse -Force
-    Write-Host "??Â∑≤Â?Ê≠?5 Â§?Agent Skills ??$targetSkillsDir"
+function Write-Status([string]$Level, [string]$Message) {
+    Write-Host ('[{0}] {1}' -f $Level, $Message)
 }
 
-Write-Host "`n=========================================="
-Write-Host "?? Ê≠?ú®?•Ë©¢ GitHub (lianghao02) ?∂Â?Ê¥ªË?Â∞àÊ?Ê∏ÖÂñÆ..."
-Write-Host "=========================================="
-
-# 3. ?ñÂ? GitHub ‰∏äÁï∂?çÊ¥ªË∫çÁ?Â∞àÊ? Repo Ê∏ÖÂñÆ
-$githubUser = "lianghao02"
-$activeRepoNames = $null
-
-try {
-    $headers = @{ "Accept" = "application/vnd.github+json" }
-    $repos = Invoke-RestMethod -Uri "https://api.github.com/users/$githubUser/repos?per_page=100" -Headers $headers
-    $activeRepoNames = $repos.name
-    Write-Host "???æÂà∞ GitHub ?≤Á´Ø??$($activeRepoNames.Count) ?ãÂ?Ê°?
-} catch {
-    Write-Host "?†Ô? ?°Ê??ñÂ? GitHub Â∞àÊ?Ê∏ÖÂñÆÔºåÂ??ÖÈÄ≤Ë??¨Âú∞ Git ?åÊ≠•"
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    throw 'Git was not found. Install Git for Windows first.'
+}
+if (-not (Test-Path -LiteralPath $config.Manifest -PathType Leaf)) {
+    throw "Repository manifest not found: $($config.Manifest)"
 }
 
-# 4. ?¨Âú∞Ë≥áÊ?Â§æÊ??èË?Ê∏ÖÁ?
-$localDirs = Get-ChildItem -Path $rootDir -Directory
+$manifest = Get-Content -LiteralPath $config.Manifest -Raw -Encoding UTF8 | ConvertFrom-Json
+$root = [IO.Path]::GetFullPath($DevelopmentRoot)
+Write-Status 'MODE' $(if ($Execute) { 'EXECUTE' } else { 'DRY_RUN' })
+Write-Status 'ROOT' $root
 
-foreach ($dir in $localDirs) {
-    $dirName = $dir.Name
-    
-    # Â¶ÇÊ? GitHub ‰∏äÁ? Repo Â∑≤Ë¢´?™Èô§ÔºåËá™?ïÊ??ÜÊú¨?∞Ë??ôÂ§æ
-    if ($activeRepoNames -and ($dirName -notin $activeRepoNames)) {
-        Write-Host "??Ô∏??ºÁèæÂ∑≤Âú® GitHub Âª¢Ê??™Èô§‰πãÂ?Ê°àÔ?$dirName ??Ê≠?ú®?™Â?Ê∏ÖÁ??¨Ê?Ë≥áÊ?Â§?.."
-        Remove-Item -Path $dir.FullName -Recurse -Force -ErrorAction SilentlyContinue
-        Write-Host "??Â∑≤Ê??§Êú¨Ê©üÂª¢Ê£ÑÂ?Ê°àÔ?$dirName"
+if ($Execute -and -not (Test-Path -LiteralPath $root)) {
+    New-Item -ItemType Directory -Path $root -Force | Out-Null
+}
+
+foreach ($item in $manifest.repositories) {
+    $target = Join-Path $root ([string]$item.folder)
+    $safeTarget = $target.Replace('\', '/')
+    $url = 'https://github.com/{0}/{1}.git' -f $manifest.githubOwner, $item.repository
+
+    if (-not (Test-Path -LiteralPath $target)) {
+        Write-Status 'CLONE' "$url -> $target"
+        if ($Execute) {
+            git clone $url $target
+            if ($LASTEXITCODE -ne 0) { throw "Clone failed: $url" }
+        }
         continue
     }
 
-    # Ê≠?∏∏Â∞àÊ??≤Ë? Git ?âÂ??åÊ≠•
-    $gitPath = Join-Path $dir.FullName ".git"
-    if (Test-Path $gitPath) {
-        Write-Host "------------------------------------------"
-        Write-Host "?? Ê≠?ú®?åÊ≠•Â∞àÊ?Ôº?dirName"
-        Set-Location $dir.FullName
-        git pull --ff-only 2>&1
+    if (-not (Test-Path -LiteralPath (Join-Path $target '.git'))) {
+        Write-Status 'WARN' "Existing directory is not a Git repository; skipped: $target"
+        continue
+    }
+
+    $changes = @(git -c "safe.directory=$safeTarget" -C $target status --porcelain)
+    if ($changes.Count -gt 0) {
+        Write-Status 'SKIP' "Working tree has uncommitted changes: $target"
+        continue
+    }
+
+    Write-Status 'READY' $target
+    if ($Execute) {
+        git -c "safe.directory=$safeTarget" -C $target pull --ff-only
+        if ($LASTEXITCODE -ne 0) { throw "Pull failed: $target" }
     }
 }
 
-Set-Location $rootDir
-Write-Host "`n=========================================="
-Write-Host "?? ?®Â??≤Ê??ÅAgent Skills?ÅÂ?Ê°àÂ?Ê≠•Ë?Âª¢Ê?Ê∏ÖÁ??®Êï∏ÂÆåÊ?Ôº?
-Write-Host "=========================================="
+if (-not $SkipAgentSetup) {
+    if (-not (Test-Path -LiteralPath $config.AgentSetup -PathType Leaf)) {
+        throw "Agent setup script not found: $($config.AgentSetup)"
+    }
+    if ($Execute) { & $config.AgentSetup } else { & $config.AgentSetup -CheckOnly }
+}
 
-
+Write-Status 'DONE' $(if ($Execute) { 'Projects and agent settings are synchronized.' } else { 'Preview only. No files changed. Run with -Execute to apply.' })

@@ -7,7 +7,8 @@ Set-StrictMode -Version Latest
 $homeRepo = Split-Path -Parent $PSCommandPath
 $githubRoot = Split-Path -Parent $homeRepo
 $codexHome = Join-Path $env:USERPROFILE '.codex'
-$skillRoot = Join-Path $env:USERPROFILE '.agents\skills'
+$codexSkillRoot = Join-Path $codexHome 'skills'
+$agentSkillRoot = Join-Path $env:USERPROFILE '.agents\skills'
 $manifestPath = Join-Path $codexHome 'antigravity-bridge.json'
 
 function Get-TreeHash([string]$Path) {
@@ -31,14 +32,14 @@ function Sync-ManagedItem([string]$Source, [string]$Target, [hashtable]$Old, [ha
     $targetHash = if (Test-Path -LiteralPath $Target) { Get-TreeHash $Target } else { $null }
     $knownHash = if ($Old.ContainsKey($Target)) { $Old[$Target] } else { $null }
 
+    $New[$Target] = $sourceHash
+    if ($targetHash -eq $sourceHash) { Write-Output "Current: $Target"; return }
     if ($targetHash -and -not $knownHash -and -not $Force) {
         throw "Target exists but is not managed; refusing overwrite: $Target"
     }
     if ($targetHash -and $knownHash -and $targetHash -ne $knownHash -and -not $Force) {
         throw "Target was modified after deployment; refusing overwrite: $Target"
     }
-    $New[$Target] = $sourceHash
-    if ($targetHash -eq $sourceHash) { Write-Output "Current: $Target"; return }
     if ($CheckOnly) { Write-Output "Pending: $Target"; return }
 
     New-Item -ItemType Directory -Path (Split-Path -Parent $Target) -Force | Out-Null
@@ -60,10 +61,19 @@ if (Test-Path -LiteralPath $manifestPath) {
 $new = @{}
 $items = @(
     @{ Source = Join-Path $homeRepo 'configs\AGENTS.md'; Target = Join-Path $codexHome 'AGENTS.md' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\accesslint'; Target = Join-Path $skillRoot 'accesslint' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\addyosmani-perf'; Target = Join-Path $skillRoot 'addyosmani-perf' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\caveman'; Target = Join-Path $skillRoot 'caveman' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\webapp-testing'; Target = Join-Path $skillRoot 'webapp-testing' }
+    @{ Source = Join-Path $homeRepo 'configs\skills\accesslint'; Target = Join-Path $codexSkillRoot 'accesslint' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\addyosmani-perf'; Target = Join-Path $codexSkillRoot 'addyosmani-perf' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\caveman'; Target = Join-Path $codexSkillRoot 'caveman' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\github-workflow'; Target = Join-Path $codexSkillRoot 'github-workflow' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\release-notes'; Target = Join-Path $codexSkillRoot 'release-notes' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\webapp-testing'; Target = Join-Path $codexSkillRoot 'webapp-testing' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\accesslint'; Target = Join-Path $agentSkillRoot 'accesslint' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\addyosmani-perf'; Target = Join-Path $agentSkillRoot 'addyosmani-perf' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\caveman'; Target = Join-Path $agentSkillRoot 'caveman' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\github-workflow'; Target = Join-Path $agentSkillRoot 'github-workflow' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\release-notes'; Target = Join-Path $agentSkillRoot 'release-notes' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\skill-creator'; Target = Join-Path $agentSkillRoot 'skill-creator' },
+    @{ Source = Join-Path $homeRepo 'configs\skills\webapp-testing'; Target = Join-Path $agentSkillRoot 'webapp-testing' }
 )
 foreach ($item in $items) { Sync-ManagedItem $item.Source $item.Target $old $new }
 
@@ -73,7 +83,7 @@ if (-not $CheckOnly) {
         source = $homeRepo
         generatedAt = (Get-Date).ToString('o')
         excluded = @{
-            skillCreator = 'Not deployed because it conflicts with the built-in Codex skill-creator.'
+            skillCreator = 'Only deployed to .agents because Codex already includes a built-in skill-creator.'
             formalWriting = 'Deployed separately because the repository package uses a POSIX symlink that is not materialized on Windows.'
         }
         items = @($new.Keys | Sort-Object | ForEach-Object { [ordered]@{ target = $_; hash = $new[$_] } })

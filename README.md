@@ -1,22 +1,59 @@
-# 🏠 LiangHao 專案儀表板與全域憲法門戶 home (v3.0)
+# LiangHao 開發環境入口
 
-[![Version](https://img.shields.io/badge/version-v3.0-blue.svg)](https://github.com/lianghao02/home)
-[![Constitution](https://img.shields.io/badge/Constitution-v7.0-purple.svg)](https://github.com/lianghao02/home)
+本 Repository 保存全域開發憲法 v8.0、共用 Agent Skills、12 個開發 Repository 清單，以及 Windows 環境重建腳本。
 
-## 🏆 v3.0 里程碑：全域開發憲法 v7.0 整合與極致黑科技門戶
+## 新電腦快速開始
 
-## 📖 重大更新摘要 (Summary)
+先安裝 Git for Windows，再於 PowerShell 執行：
 
-本版本為個人作品集門戶網站與 Agent 全域開發憲法之終極大一統版本，整合最新 **全域開發憲法 v7.0** 與動態響應式卡片 dashboard。
+```powershell
+New-Item -ItemType Directory -Path 'D:\Development\GitHub' -Force
+git clone https://github.com/lianghao02/home.git 'D:\Development\GitHub\00_home'
 
-過往多專案展示頁面樣式陳舊、連結失效且缺少版本狀態監控。本版本採用現代化玻璃擬物 (Glassmorphism) 設計語言與動態 Canvas 粒子背景，在 **1 秒內** 為使用者呈現所有 12 個專案（含最新上線之 [PaperSwitch](https://lianghao02.github.io/PaperSwitch/)）之即時版本號標籤與部署狀態，展現軍規級作品集質感。
+# 預覽，不修改檔案
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\sync_projects.ps1'
 
-## ✨ 重點更新特色
+# 正式複製／更新專案並部署 Codex、Antigravity 規則
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\sync_projects.ps1' -Execute
+```
 
-- 📜 **全域開發憲法 v7.0 載入 (Global Agent Rules)**：
-  - 整合去 AI 罐頭感鐵律、8 核心文件分工、硬核五步驟工作流與 AI Release Note 寫作規範。
-  - 為所有專案提供 100% 台灣繁體中文與工程化標準引導。
+腳本會依 [development-repositories.json](development-repositories.json) 處理 12 個 Repository。遇到既有未提交變更時會略過，不會自動刪除任何本機資料夾，也不會強制覆蓋 Git 歷史。
 
-- ✨ **玻璃擬物視覺與粒子動畫 (Glassmorphism & Particle Canvas)**：
-  - 採用 Vanilla CSS 與 HTML5 Canvas 實作互動式背景粒子聯網動畫與動態光澤卡片。
-  - 打造讓人一見鍾情 (WOW Effect) 的現代化前端門戶體驗。
+## Agent 設定
+
+`sync_codex.ps1` 會同步：
+
+- 全域憲法至 `%USERPROFILE%\.codex\AGENTS.md`
+- Codex Skills 至 `%USERPROFILE%\.codex\skills`
+- Antigravity Skills 至 `%USERPROFILE%\.agents\skills`
+
+Codex 內建已有 `skill-creator`，因此自訂版本只部署至 Antigravity，避免同名 Skill 衝突。
+
+單獨檢查或同步 Agent 設定：
+
+```powershell
+# 唯讀檢查
+.\sync_codex.ps1 -CheckOnly
+
+# 正式同步
+.\sync_codex.ps1
+```
+
+## 本機專屬資料
+
+以下資料不得提交至 GitHub，必須在每台電腦個別設定：
+
+- `.env`、API Key、Token、密碼
+- Python `.venv`
+- `node_modules`
+- 瀏覽器登入狀態與 Cookie
+- 大型模型快取、pip 快取、應用程式快取
+
+各 Python 專案應依自己的 `requirements.txt` 或 `pyproject.toml` 重新建立虛擬環境，不得直接複製其他電腦的 `.venv`。
+
+## 路徑架構
+
+- 實體開發路徑：`D:\Development\GitHub`
+- 舊工具相容路徑：`C:\Users\<使用者名稱>\Documents\GitHub`
+
+Junction 屬於選用的本機相容設定，不儲存在 Git 中。詳細規範請參閱 [DEVELOPMENT_ENVIRONMENT.md](DEVELOPMENT_ENVIRONMENT.md)。
