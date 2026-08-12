@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Planning"
+  short_description: "大型需求探索、檔案式規劃、工作拆解與跨工作階段進度保存"
+  default_prompt: "Use $project-planning to clarify this large project and create a durable implementation plan."

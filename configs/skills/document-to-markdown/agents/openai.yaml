@@ -1,0 +1,4 @@
+interface:
+  display_name: "Document to Markdown"
+  short_description: "將 PDF、Word、Excel 與簡報轉成分析用 Markdown"
+  default_prompt: "Use $document-to-markdown to convert these local documents into analysis-ready Markdown."

@@ -24,10 +24,18 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\0
 `sync_codex.ps1` 會同步：
 
 - 全域憲法至 `%USERPROFILE%\.codex\AGENTS.md`
-- Codex Skills 至 `%USERPROFILE%\.codex\skills`
-- Antigravity Skills 至 `%USERPROFILE%\.agents\skills`
+- 全域憲法至 `%USERPROFILE%\.gemini\config\AGENTS.md`
+- Codex 自訂 Skills 至 `%USERPROFILE%\.agents\skills`
+- Antigravity Skills 至 `%USERPROFILE%\.gemini\config\skills`
 
-Codex 內建已有 `skill-creator`，因此自訂版本只部署至 Antigravity，避免同名 Skill 衝突。
+`configs\skills` 是唯一維護來源。共用 Skill 會分別部署至 Codex 與 Antigravity；Codex 內建已有 `skill-creator`，因此自訂版本只部署至 Antigravity，避免同名 Skill 衝突。`%USERPROFILE%\.codex\skills\.system` 僅保留 Codex 系統內建 Skill，不由同步腳本修改。
+
+目前的核心能力已完成去重：
+
+- `project-planning`：合併 Brainstorming 與 Planning with Files，只在大型或跨階段工作啟用。
+- `webapp-testing`：沿用既有 Playwright 自動化測試，不另裝同功能 Skill。
+- `document-to-markdown`：使用 Microsoft MarkItDown 做文件分析前處理；正式文件編輯仍交由格式專屬工具。
+- `skill-creator`：Codex 使用系統原生版本，Antigravity 使用中央來源的自訂版本。
 
 單獨檢查或同步 Agent 設定：
 

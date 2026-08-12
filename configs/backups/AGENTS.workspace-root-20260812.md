@@ -1,7 +1,7 @@
-# 📜 全域開發憲法 (Global Development Constitution) v8.0
+﻿# 📜 全域開發憲法 (Global Development Constitution) v8.0
 
 > **版本歷程**：v7.1 → v8.0 (正式版)
-> **核心定位**：所有 Codex 與 Antigravity 開發工作階段皆須遵循的核心行為準則；與當前任務無關的工程條款不強制套用。
+> **核心定位**：所有 Antigravity 開發工作階段皆須遵循的核心行為準則；與當前任務無關的工程條款不強制套用。
 
 ---
 
@@ -124,8 +124,6 @@
 | 撰寫版本發布說明 (Release Note)、更新 `CHANGELOG.md` | `release-notes` |
 | Web 前端 Core Web Vitals 效能量測與針對性優化 | `addyosmani-perf` |
 | 公務/對外系統之 WCAG 無障礙合規需求或明確要求無障礙掃描 | `accesslint` |
-| 大型新專案、跨模組功能、架構重構或需要跨工作階段保存進度 | `project-planning` |
 | Playwright 瀏覽器自動化測試、UI 視覺驗證 | `webapp-testing` |
-| PDF、Word、Excel、PowerPoint 等本機文件轉為分析用 Markdown | `document-to-markdown` |
 | 建立、重構或驗證新的 Skill 本身 | `skill-creator` |
 | **使用者明確指定** `caveman` / 極簡 / 省 Token 模式時 | `caveman` |

@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param([switch]$CheckOnly, [switch]$Force)
 
 $ErrorActionPreference = 'Stop'
@@ -7,8 +7,10 @@ Set-StrictMode -Version Latest
 $homeRepo = Split-Path -Parent $PSCommandPath
 $githubRoot = Split-Path -Parent $homeRepo
 $codexHome = Join-Path $env:USERPROFILE '.codex'
-$codexSkillRoot = Join-Path $codexHome 'skills'
-$agentSkillRoot = Join-Path $env:USERPROFILE '.agents\skills'
+# Codex 官方個人自訂 Skill 位置；.codex\skills\.system 保留給系統內建 Skill。
+$agentHome = Join-Path $env:USERPROFILE '.agents'
+$antigravityHome = Join-Path $env:USERPROFILE '.gemini\config'
+$antigravitySkillRoot = Join-Path $antigravityHome 'skills'
 $manifestPath = Join-Path $codexHome 'antigravity-bridge.json'
 
 function Get-TreeHash([string]$Path) {
@@ -25,7 +27,6 @@ function Get-TreeHash([string]$Path) {
     try { return (Get-FileHash -InputStream $stream -Algorithm SHA256).Hash }
     finally { $stream.Dispose() }
 }
-
 function Sync-ManagedItem([string]$Source, [string]$Target, [hashtable]$Old, [hashtable]$New) {
     if (-not (Test-Path -LiteralPath $Source)) { throw "Source does not exist: $Source" }
     $sourceHash = Get-TreeHash $Source
@@ -59,22 +60,29 @@ if (Test-Path -LiteralPath $manifestPath) {
     foreach ($item in $saved.items) { $old[[string]$item.target] = [string]$item.hash }
 }
 $new = @{}
+$sharedSkills = @(
+    'accesslint',
+    'addyosmani-perf',
+    'caveman',
+    'document-to-markdown',
+    'github-workflow',
+    'project-planning',
+    'release-notes',
+    'webapp-testing'
+)
 $items = @(
     @{ Source = Join-Path $homeRepo 'configs\AGENTS.md'; Target = Join-Path $codexHome 'AGENTS.md' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\accesslint'; Target = Join-Path $codexSkillRoot 'accesslint' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\addyosmani-perf'; Target = Join-Path $codexSkillRoot 'addyosmani-perf' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\caveman'; Target = Join-Path $codexSkillRoot 'caveman' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\github-workflow'; Target = Join-Path $codexSkillRoot 'github-workflow' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\release-notes'; Target = Join-Path $codexSkillRoot 'release-notes' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\webapp-testing'; Target = Join-Path $codexSkillRoot 'webapp-testing' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\accesslint'; Target = Join-Path $agentSkillRoot 'accesslint' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\addyosmani-perf'; Target = Join-Path $agentSkillRoot 'addyosmani-perf' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\caveman'; Target = Join-Path $agentSkillRoot 'caveman' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\github-workflow'; Target = Join-Path $agentSkillRoot 'github-workflow' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\release-notes'; Target = Join-Path $agentSkillRoot 'release-notes' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\skill-creator'; Target = Join-Path $agentSkillRoot 'skill-creator' },
-    @{ Source = Join-Path $homeRepo 'configs\skills\webapp-testing'; Target = Join-Path $agentSkillRoot 'webapp-testing' }
+    @{ Source = Join-Path $homeRepo 'configs\AGENTS.md'; Target = Join-Path $antigravityHome 'AGENTS.md' }
 )
+foreach ($skill in $sharedSkills) {
+    $source = Join-Path $homeRepo "configs\skills\$skill"
+    $items += @{ Source = $source; Target = Join-Path (Join-Path $agentHome 'skills') $skill }
+    $items += @{ Source = $source; Target = Join-Path $antigravitySkillRoot $skill }
+}
+$items += @{
+    Source = Join-Path $homeRepo 'configs\skills\skill-creator'
+    Target = Join-Path $antigravitySkillRoot 'skill-creator'
+}
 foreach ($item in $items) { Sync-ManagedItem $item.Source $item.Target $old $new }
 
 if (-not $CheckOnly) {
@@ -83,8 +91,9 @@ if (-not $CheckOnly) {
         source = $homeRepo
         generatedAt = (Get-Date).ToString('o')
         excluded = @{
-            skillCreator = 'Only deployed to .agents because Codex already includes a built-in skill-creator.'
-            formalWriting = 'Deployed separately because the repository package uses a POSIX symlink that is not materialized on Windows.'
+            skillCreator = 'Custom version is Antigravity-only because Codex includes .system\skill-creator.'
+            codexSystemSkills = '.codex\skills\.system is managed by Codex and is never overwritten.'
+            legacyCodexCustomSkills = '.codex\skills custom Skill deployments were retired in favor of .agents\skills.'
         }
         items = @($new.Keys | Sort-Object | ForEach-Object { [ordered]@{ target = $_; hash = $new[$_] } })
     }
