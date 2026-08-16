@@ -108,7 +108,14 @@ foreach ($item in $manifest.repositories) {
     if (-not (Test-Path -LiteralPath $target)) {
         if ($Execute) {
             Write-Host "$prefix : 📥 正在從 GitHub 下載專案 (git clone)..."
-            git clone "$url" "$target" 2>$null
+            $oldEap = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            try {
+                $null = git clone "$url" "$target" 2>$null
+            } finally {
+                $ErrorActionPreference = $oldEap
+            }
+
             if ($LASTEXITCODE -ne 0) { throw "下載失敗：$url" }
             Write-Host "$prefix : ✅ 下載完成"
         } else {
@@ -122,7 +129,15 @@ foreach ($item in $manifest.repositories) {
         continue
     }
 
-    $changes = @(git -c "safe.directory=$safeTarget" -C "$target" status --porcelain 2>$null)
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $changes = @()
+    try {
+        $changes = @(git -c "safe.directory=$safeTarget" -C "$target" status --porcelain 2>$null)
+    } finally {
+        $ErrorActionPreference = $oldEap
+    }
+
     if ($LASTEXITCODE -ne 0) {
         Write-Host "$prefix : ⚠️  無法讀取 Git 狀態，已略過"
         continue
@@ -134,7 +149,14 @@ foreach ($item in $manifest.repositories) {
 
     if ($Execute) {
         Write-Host "$prefix : 🔄 正在從 GitHub 更新 (git pull)..."
-        $null = git -c "safe.directory=$safeTarget" -C "$target" pull --ff-only 2>$null
+        $oldEap = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+            $null = git -c "safe.directory=$safeTarget" -C "$target" pull --ff-only 2>$null
+        } finally {
+            $ErrorActionPreference = $oldEap
+        }
+
         if ($LASTEXITCODE -ne 0) { throw "更新失敗：$target" }
         Write-Host "$prefix : ✅ 已更新至最新進度"
     } else {
