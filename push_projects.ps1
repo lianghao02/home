@@ -137,7 +137,14 @@ foreach ($item in $manifest.repositories) {
     Write-Host "$prefix : ⏳ 正在處理推送 ($descStr)..."
 
     if ($hasWorkingChanges) {
-        git -c "safe.directory=$safeTarget" -C "$target" add -A 2>$null
+        $oldEap = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+            $null = git -c "safe.directory=$safeTarget" -C "$target" add -A 2>$null
+        } finally {
+            $ErrorActionPreference = $oldEap
+        }
+
         if ($LASTEXITCODE -ne 0) {
             Write-Host "$prefix : ❌ 暫存檔案失敗 (git add)"
             $totalSkipped++
@@ -150,7 +157,14 @@ foreach ($item in $manifest.repositories) {
             "sync: 自動同步本機專案更新 ($(Get-Date -Format 'yyyy-MM-dd HH:mm'))"
         }
 
-        $null = git -c "safe.directory=$safeTarget" -C "$target" commit -m "$msg" 2>$null
+        $oldEap = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+            $null = git -c "safe.directory=$safeTarget" -C "$target" commit -m "$msg" 2>$null
+        } finally {
+            $ErrorActionPreference = $oldEap
+        }
+
         if ($LASTEXITCODE -ne 0) {
             Write-Host "$prefix : ❌ 建立版本紀錄失敗 (git commit)"
             $totalSkipped++
@@ -158,8 +172,15 @@ foreach ($item in $manifest.repositories) {
         }
     }
 
-    # 執行 git push（靜音底層技術訊息，只捕捉結果）
-    $pushOutput = git -c "safe.directory=$safeTarget" -C "$target" push 2>&1
+    # 執行 git push（安全隔離 stderr，防範 PowerShell 5.1 NativeCommandError）
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $null = git -c "safe.directory=$safeTarget" -C "$target" push 2>$null
+    } finally {
+        $ErrorActionPreference = $oldEap
+    }
+
     if ($LASTEXITCODE -ne 0) {
         Write-Host "$prefix : ❌ 上傳推送失敗（可能有網路問題或遠端衝突）"
         $totalSkipped++
