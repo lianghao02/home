@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$DevelopmentRoot = '',
     [switch]$Execute,
@@ -13,10 +13,6 @@ $config = [ordered]@{
     Manifest = Join-Path $PSScriptRoot 'development-repositories.json'
     AgentSetup = Join-Path $PSScriptRoot 'sync_codex.ps1'
     RootAgents = Join-Path $PSScriptRoot 'configs\AGENTS.md'
-}
-
-function Write-Status([string]$Level, [string]$Message) {
-    Write-Host ('[{0}] {1}' -f $Level, $Message)
 }
 
 function Test-IsDangerousPath([string]$PathToCheck) {
@@ -36,10 +32,10 @@ function Test-IsDangerousPath([string]$PathToCheck) {
 }
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    throw 'Git was not found. Install Git for Windows first.'
+    throw '找不到 Git 工具，請先安裝 Git for Windows。'
 }
 if (-not (Test-Path -LiteralPath $config.Manifest -PathType Leaf)) {
-    throw "Repository manifest not found: $($config.Manifest)"
+    throw "找不到專案清單檔案：$($config.Manifest)"
 }
 
 if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
@@ -59,74 +55,107 @@ $root = [IO.Path]::GetFullPath($DevelopmentRoot)
 if (Test-IsDangerousPath $root) {
     throw "安全防禦阻擋：指定的開發根目錄 [$root] 屬於危險或系統敏感目錄（如桌面、下載、使用者根目錄或磁碟根目錄），已強制終止以防污染！"
 }
-Write-Status 'MODE' $(if ($Execute) { 'EXECUTE' } else { 'DRY_RUN' })
-Write-Status 'ROOT' $root
+
+Write-Host '================================================================='
+if ($Execute) {
+    Write-Host '🚀 【執行模式】正式從 GitHub 拉取／下載最新專案與部署'
+} else {
+    Write-Host '🔍 【預覽模式】僅掃描本機專案與 GitHub 同步狀態（尚未修改檔案）'
+}
+Write-Host "📁 【工作目錄】$root"
+Write-Host '================================================================='
+Write-Host ''
 
 if ($Execute -and -not (Test-Path -LiteralPath $root)) {
     New-Item -ItemType Directory -Path $root -Force | Out-Null
 }
 
+# 根目錄全域憲法維護
 $rootAgentsTarget = Join-Path $root 'AGENTS.md'
 $sourceAgentsHash = (Get-FileHash -LiteralPath $config.RootAgents -Algorithm SHA256).Hash
 $targetAgentsHash = if (Test-Path -LiteralPath $rootAgentsTarget -PathType Leaf) {
     (Get-FileHash -LiteralPath $rootAgentsTarget -Algorithm SHA256).Hash
 } else { $null }
+
 if ($targetAgentsHash -eq $sourceAgentsHash) {
-    Write-Status 'CURRENT' $rootAgentsTarget
+    Write-Host "📌 根目錄憲法：✨ 已是最新版本 (AGENTS.md)"
 } elseif ($targetAgentsHash -and -not $Force) {
-    Write-Status 'SKIP' "Root AGENTS.md differs; use -Force to back up and replace: $rootAgentsTarget"
+    Write-Host "📌 根目錄憲法：⚠️  本機內容有異，已略過（可加 -Force 強制更新）"
 } else {
-    Write-Status 'AGENTS' "Pending root guidance: $rootAgentsTarget"
+    Write-Host "📌 根目錄憲法：📝 準備同步寫入至 $rootAgentsTarget"
     if ($Execute) {
         if ($targetAgentsHash) {
             $backup = Join-Path $root ('AGENTS.backup-{0}.md' -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
             Copy-Item -LiteralPath $rootAgentsTarget -Destination $backup -Force
         }
         Copy-Item -LiteralPath $config.RootAgents -Destination $rootAgentsTarget -Force
+        Write-Host "📌 根目錄憲法：✅ 已成功部署至根目錄"
     }
 }
+Write-Host '-----------------------------------------------------------------'
+
+$repoIndex = 0
+$totalRepos = $manifest.repositories.Count
 
 foreach ($item in $manifest.repositories) {
-    $target = Join-Path $root ([string]$item.folder)
+    $repoIndex++
+    $folderName = [string]$item.folder
+    $target = Join-Path $root $folderName
     $safeTarget = $target.Replace('\', '/')
     $url = 'https://github.com/{0}/{1}.git' -f $manifest.githubOwner, $item.repository
+    $prefix = "[$repoIndex/$totalRepos] $folderName"
 
     if (-not (Test-Path -LiteralPath $target)) {
-        Write-Status 'CLONE' "$url -> $target"
         if ($Execute) {
-            git clone "$url" "$target"
-            if ($LASTEXITCODE -ne 0) { throw "Clone failed: $url" }
+            Write-Host "$prefix : 📥 正在從 GitHub 下載專案 (git clone)..."
+            git clone "$url" "$target" 2>$null
+            if ($LASTEXITCODE -ne 0) { throw "下載失敗：$url" }
+            Write-Host "$prefix : ✅ 下載完成"
+        } else {
+            Write-Host "$prefix : 📥 待下載（新電腦缺少此專案）"
         }
         continue
     }
 
     if (-not (Test-Path -LiteralPath (Join-Path $target '.git'))) {
-        Write-Status 'WARN' "Existing directory is not a Git repository; skipped: $target"
+        Write-Host "$prefix : ⚠️  已略過（本機已存在但非 Git 專案）"
         continue
     }
 
-    $changes = @(git -c "safe.directory=$safeTarget" -C "$target" status --porcelain)
+    $changes = @(git -c "safe.directory=$safeTarget" -C "$target" status --porcelain 2>$null)
     if ($LASTEXITCODE -ne 0) {
-        Write-Status 'WARN' "Failed to query Git status for: $target"
+        Write-Host "$prefix : ⚠️  無法讀取 Git 狀態，已略過"
         continue
     }
     if ($changes.Count -gt 0) {
-        Write-Status 'SKIP' "Working tree has uncommitted changes: $target"
+        Write-Host "$prefix : 🛡️  保護略過（本機有未提交的修改，不強制覆蓋）"
         continue
     }
 
-    Write-Status 'READY' $target
     if ($Execute) {
-        git -c "safe.directory=$safeTarget" -C "$target" pull --ff-only
-        if ($LASTEXITCODE -ne 0) { throw "Pull failed: $target" }
+        Write-Host "$prefix : 🔄 正在從 GitHub 更新 (git pull)..."
+        $null = git -c "safe.directory=$safeTarget" -C "$target" pull --ff-only 2>$null
+        if ($LASTEXITCODE -ne 0) { throw "更新失敗：$target" }
+        Write-Host "$prefix : ✅ 已更新至最新進度"
+    } else {
+        Write-Host "$prefix : ✨ 準備就緒（本機工作區乾淨，可安全更新）"
     }
 }
 
+Write-Host '-----------------------------------------------------------------'
 if (-not $SkipAgentSetup) {
+    Write-Host '🤖 正在同步 AI Agent 設定與 Skills...'
     if (-not (Test-Path -LiteralPath $config.AgentSetup -PathType Leaf)) {
-        throw "Agent setup script not found: $($config.AgentSetup)"
+        throw "找不到 Agent 設定腳本：$($config.AgentSetup)"
     }
     if ($Execute) { & $config.AgentSetup } else { & $config.AgentSetup -CheckOnly }
 }
 
-Write-Status 'DONE' $(if ($Execute) { 'Projects and agent settings are synchronized.' } else { 'Preview only. No files changed. Run with -Execute to apply.' })
+Write-Host ''
+Write-Host '================================================================='
+if ($Execute) {
+    Write-Host '🎉 【完成】所有專案與 AI Agent 設定已全數同步更新完畢！'
+} else {
+    Write-Host '💡 【完成】預覽掃描結束。若要正式拉取下載，請雙擊【2_從GitHub更新所有專案.bat】。'
+}
+Write-Host '================================================================='

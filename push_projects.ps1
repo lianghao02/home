@@ -33,10 +33,10 @@ function Test-IsDangerousPath([string]$PathToCheck) {
 }
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    throw 'Git was not found. Install Git for Windows first.'
+    throw '找不到 Git 工具，請先安裝 Git for Windows。'
 }
 if (-not (Test-Path -LiteralPath $config.Manifest -PathType Leaf)) {
-    throw "Repository manifest not found: $($config.Manifest)"
+    throw "找不到專案清單檔案：$($config.Manifest)"
 }
 
 if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
@@ -58,34 +58,45 @@ if (Test-IsDangerousPath $root) {
 
 $manifest = Get-Content -LiteralPath $config.Manifest -Raw -Encoding UTF8 | ConvertFrom-Json
 
-Write-Status 'MODE' $(if ($Execute) { 'EXECUTE (實際推送至 GitHub)' } else { 'DRY_RUN (僅預覽檢查，未推送)' })
-Write-Status 'ROOT' $root
+Write-Host '================================================================='
+if ($Execute) {
+    Write-Host '🚀 【執行模式】正式批次推送至 GitHub 雲端版本庫'
+} else {
+    Write-Host '🔍 【預覽模式】僅掃描專案更新狀態（尚未推送至 GitHub）'
+}
+Write-Host "📁 【工作目錄】$root"
+Write-Host '================================================================='
+Write-Host ''
 
 $totalClean = 0
 $totalUpdated = 0
 $totalSkipped = 0
+$repoIndex = 0
+$totalRepos = $manifest.repositories.Count
 
 foreach ($item in $manifest.repositories) {
+    $repoIndex++
     $folderName = [string]$item.folder
     $target = Join-Path $root $folderName
     $safeTarget = $target.Replace('\', '/')
+    $prefix = "[$repoIndex/$totalRepos] $folderName"
 
     if (-not (Test-Path -LiteralPath $target)) {
-        Write-Status 'SKIP' "資料夾不存在：$folderName"
+        Write-Host "$prefix : ⚠️  跳過（本機資料夾不存在）"
         $totalSkipped++
         continue
     }
 
     if (-not (Test-Path -LiteralPath (Join-Path $target '.git'))) {
-        Write-Status 'SKIP' "非 Git 版本庫：$folderName"
+        Write-Host "$prefix : ⚠️  跳過（非 Git 版本庫）"
         $totalSkipped++
         continue
     }
 
     # 檢查是否有未 Commit 的檔案變更
-    $changes = @(git -c "safe.directory=$safeTarget" -C "$target" status --porcelain)
+    $changes = @(git -c "safe.directory=$safeTarget" -C "$target" status --porcelain 2>$null)
     if ($LASTEXITCODE -ne 0) {
-        Write-Status 'WARN' "無法讀取 Git 狀態：$folderName"
+        Write-Host "$prefix : ⚠️  無法讀取 Git 狀態，已跳過"
         $totalSkipped++
         continue
     }
@@ -105,30 +116,30 @@ foreach ($item in $manifest.repositories) {
     $hasUnpushedCommits = ($unpushed.Count -gt 0)
 
     if (-not $hasWorkingChanges -and -not $hasUnpushedCommits) {
-        Write-Status 'UP-TO-DATE' "無更新，已是最新進度：$folderName"
+        Write-Host "$prefix : ✨ 無任何修改，已是最新進度"
         $totalClean++
         continue
     }
 
     # 有變更或待推送 commit
     $statusDesc = @()
-    if ($hasWorkingChanges) { $statusDesc += "$($changes.Count) 個未提交變更" }
-    if ($hasUnpushedCommits) { $statusDesc += "$($unpushed.Count) 個待推送 Commit" }
+    if ($hasWorkingChanges) { $statusDesc += "$($changes.Count) 個檔案變更" }
+    if ($hasUnpushedCommits) { $statusDesc += "$($unpushed.Count) 個待推送版本" }
     $descStr = $statusDesc -join '、'
 
     if (-not $Execute) {
-        Write-Status 'PENDING' "偵測到更新 ($descStr) -> 待推送：$folderName"
+        Write-Host "$prefix : 📝 偵測到更新 ($descStr) ➜ 等待推送"
         $totalUpdated++
         continue
     }
 
     # 執行實際 Commit 與 Push
-    Write-Status 'SYNCING' "正在處理推送 ($descStr)：$folderName"
+    Write-Host "$prefix : ⏳ 正在處理推送 ($descStr)..."
 
     if ($hasWorkingChanges) {
-        git -c "safe.directory=$safeTarget" -C "$target" add -A
+        git -c "safe.directory=$safeTarget" -C "$target" add -A 2>$null
         if ($LASTEXITCODE -ne 0) {
-            Write-Status 'ERROR' "git add 失敗：$folderName"
+            Write-Host "$prefix : ❌ 暫存檔案失敗 (git add)"
             $totalSkipped++
             continue
         }
@@ -139,28 +150,35 @@ foreach ($item in $manifest.repositories) {
             "sync: 自動同步本機專案更新 ($(Get-Date -Format 'yyyy-MM-dd HH:mm'))"
         }
 
-        git -c "safe.directory=$safeTarget" -C "$target" commit -m "$msg"
+        $null = git -c "safe.directory=$safeTarget" -C "$target" commit -m "$msg" 2>$null
         if ($LASTEXITCODE -ne 0) {
-            Write-Status 'ERROR' "git commit 失敗：$folderName"
+            Write-Host "$prefix : ❌ 建立版本紀錄失敗 (git commit)"
             $totalSkipped++
             continue
         }
     }
 
-    # 執行 git push
-    git -c "safe.directory=$safeTarget" -C "$target" push
+    # 執行 git push（靜音底層技術訊息，只捕捉結果）
+    $pushOutput = git -c "safe.directory=$safeTarget" -C "$target" push 2>&1
     if ($LASTEXITCODE -ne 0) {
-        Write-Status 'ERROR' "git push 推送失敗（請確認網路或 remote 衝突）：$folderName"
+        Write-Host "$prefix : ❌ 上傳推送失敗（可能有網路問題或遠端衝突）"
         $totalSkipped++
         continue
     }
 
-    Write-Status 'PUSHED' "已成功同步並推送到 GitHub：$folderName"
+    Write-Host "$prefix : ✅ 【成功】已完成同步並推送到 GitHub 雲端"
     $totalUpdated++
 }
 
 Write-Host ''
-Write-Status 'SUMMARY' "掃描完成：$totalClean 個專案已是最新、 $totalUpdated 個專案$(if ($Execute) { '已成功推送' } else { '有待推送更新' })、 $totalSkipped 個專案略過。"
+Write-Host '================================================================='
+Write-Host "📊 【掃描完成】共 $totalRepos 個專案："
+Write-Host "   • ✨ $totalClean 個專案已是最新進度"
+Write-Host "   • $(if ($Execute) { '✅ ' + $totalUpdated + ' 個專案已成功推送至 GitHub' } else { '📝 ' + $totalUpdated + ' 個專案有更新等待推送' })"
+if ($totalSkipped -gt 0) {
+    Write-Host "   • ⚠️  $totalSkipped 個專案略過或推送失敗"
+}
+Write-Host '================================================================='
 if (-not $Execute) {
-    Write-Status 'NOTE' "目前為預覽模式，未對 GitHub 進行任何推送。若確認推送請加上 -Execute 參數。"
+    Write-Host '💡 提示：目前為預覽模式，未對 GitHub 進行任何推送。若確認推送請雙擊【1_推送所有專案至GitHub.bat】。'
 }
