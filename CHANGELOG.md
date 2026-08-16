@@ -1,5 +1,9 @@
 # 📜 變更歷史 (CHANGELOG)
 
+## 🚀 v1.2.2 (2026-08-16)
+- **智慧偵測**：`sync_projects.ps1` 升級自動磁碟判斷機制（優先判定 `D:\Development\GitHub`，無 D 槽電腦自動自適應至 `C:\Development\GitHub`）。
+- **防禦安全**：新增危險路徑黑名單防禦（`Test-IsDangerousPath`），阻擋誤在桌面（Desktop）、下載（Downloads）、使用者目錄或系統根目錄執行，杜絕檔案污染。
+
 ## 🚀 v1.2.1 (2026-08-13)
 - **修復**：修正 `CHANGELOG.md` UTF-8 無 BOM 檔案編碼，排除歷史文字亂碼問題。
 - **文件**：更新 README，補充同步腳本的安全邊界、版本資訊與編碼原則。

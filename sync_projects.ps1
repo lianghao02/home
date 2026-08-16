@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$DevelopmentRoot = 'D:\Development\GitHub',
+    [string]$DevelopmentRoot = '',
     [switch]$Execute,
     [switch]$SkipAgentSetup,
     [switch]$Force
@@ -19,6 +19,22 @@ function Write-Status([string]$Level, [string]$Message) {
     Write-Host ('[{0}] {1}' -f $Level, $Message)
 }
 
+function Test-IsDangerousPath([string]$PathToCheck) {
+    $resolved = [IO.Path]::GetFullPath($PathToCheck).TrimEnd('\', '/')
+    $userProfile = [IO.Path]::GetFullPath($env:USERPROFILE).TrimEnd('\', '/')
+    $desktop = [IO.Path]::GetFullPath([Environment]::GetFolderPath('Desktop')).TrimEnd('\', '/')
+    $downloads = [IO.Path]::GetFullPath((Join-Path $env:USERPROFILE 'Downloads')).TrimEnd('\', '/')
+    $temp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+
+    if ($resolved -eq $userProfile -or $resolved -eq $desktop -or $resolved -eq $downloads -or $resolved -eq $temp) {
+        return $true
+    }
+    if ($resolved -match '^[a-zA-Z]:$') {
+        return $true
+    }
+    return $false
+}
+
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw 'Git was not found. Install Git for Windows first.'
 }
@@ -26,8 +42,23 @@ if (-not (Test-Path -LiteralPath $config.Manifest -PathType Leaf)) {
     throw "Repository manifest not found: $($config.Manifest)"
 }
 
+if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
+    $parent = Split-Path -Parent $PSScriptRoot
+    if ($parent -and ((Split-Path -Leaf $parent) -match '(?i)^GitHub$')) {
+        $DevelopmentRoot = $parent
+    } elseif (Test-Path -LiteralPath 'D:\') {
+        $DevelopmentRoot = 'D:\Development\GitHub'
+    } else {
+        $DevelopmentRoot = 'C:\Development\GitHub'
+    }
+}
+
 $manifest = Get-Content -LiteralPath $config.Manifest -Raw -Encoding UTF8 | ConvertFrom-Json
 $root = [IO.Path]::GetFullPath($DevelopmentRoot)
+
+if (Test-IsDangerousPath $root) {
+    throw "安全防禦阻擋：指定的開發根目錄 [$root] 屬於危險或系統敏感目錄（如桌面、下載、使用者根目錄或磁碟根目錄），已強制終止以防污染！"
+}
 Write-Status 'MODE' $(if ($Execute) { 'EXECUTE' } else { 'DRY_RUN' })
 Write-Status 'ROOT' $root
 
