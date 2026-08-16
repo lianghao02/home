@@ -1,6 +1,6 @@
 # LiangHao 開發環境入口
 
-本 Repository 保存全域開發憲法 v8.0、共用 Agent Skills、12 個開發 Repository 清單，以及 Windows 環境重建腳本。目前版本為 **v1.2.1**。
+本 Repository 保存全域開發憲法 v8.0、共用 Agent Skills、12 個開發 Repository 清單，以及 Windows 環境重建腳本。目前版本為 **v1.2.2**。
 
 ## 新電腦快速開始
 
