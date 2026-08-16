@@ -86,6 +86,14 @@ $items += @{
 foreach ($item in $items) { Sync-ManagedItem $item.Source $item.Target $old $new }
 
 if (-not $CheckOnly) {
+    $backupBase = Join-Path $codexHome 'bridge-backups'
+    if (Test-Path -LiteralPath $backupBase) {
+        $oldBackups = Get-ChildItem -LiteralPath $backupBase -Directory | Sort-Object CreationTime -Descending | Select-Object -Skip 10
+        foreach ($oldBackup in $oldBackups) {
+            Remove-Item -LiteralPath $oldBackup.FullName -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
     $result = [ordered]@{
         schemaVersion = 1
         source = $homeRepo
@@ -97,6 +105,7 @@ if (-not $CheckOnly) {
         }
         items = @($new.Keys | Sort-Object | ForEach-Object { [ordered]@{ target = $_; hash = $new[$_] } })
     }
-    $result | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
+    $json = $result | ConvertTo-Json -Depth 5
+    [System.IO.File]::WriteAllText($manifestPath, $json, [System.Text.UTF8Encoding]::new($false))
     Write-Output "Manifest: $manifestPath"
 }

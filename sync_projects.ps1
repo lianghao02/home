@@ -63,7 +63,7 @@ foreach ($item in $manifest.repositories) {
     if (-not (Test-Path -LiteralPath $target)) {
         Write-Status 'CLONE' "$url -> $target"
         if ($Execute) {
-            git clone $url $target
+            git clone "$url" "$target"
             if ($LASTEXITCODE -ne 0) { throw "Clone failed: $url" }
         }
         continue
@@ -74,7 +74,11 @@ foreach ($item in $manifest.repositories) {
         continue
     }
 
-    $changes = @(git -c "safe.directory=$safeTarget" -C $target status --porcelain)
+    $changes = @(git -c "safe.directory=$safeTarget" -C "$target" status --porcelain)
+    if ($LASTEXITCODE -ne 0) {
+        Write-Status 'WARN' "Failed to query Git status for: $target"
+        continue
+    }
     if ($changes.Count -gt 0) {
         Write-Status 'SKIP' "Working tree has uncommitted changes: $target"
         continue
@@ -82,7 +86,7 @@ foreach ($item in $manifest.repositories) {
 
     Write-Status 'READY' $target
     if ($Execute) {
-        git -c "safe.directory=$safeTarget" -C $target pull --ff-only
+        git -c "safe.directory=$safeTarget" -C "$target" pull --ff-only
         if ($LASTEXITCODE -ne 0) { throw "Pull failed: $target" }
     }
 }

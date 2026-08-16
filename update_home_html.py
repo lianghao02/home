@@ -36,6 +36,8 @@ def main() -> None:
         raise FileNotFoundError(f"找不到入口頁：{SOURCE_INDEX}")
     if destination == SOURCE_INDEX:
         raise ValueError("目標不可與來源 index.html 相同。")
+    if destination.is_symlink() or args.destination.is_symlink():
+        raise PermissionError("拒絕寫入：目標路徑為符號連結 (Symlink)。")
     if destination.exists() and not args.force:
         raise FileExistsError("目標已存在；確認後請加上 --force 覆寫。")
 

@@ -1,6 +1,6 @@
 # LiangHao 開發環境入口
 
-本 Repository 保存全域開發憲法 v8.0、共用 Agent Skills、12 個開發 Repository 清單，以及 Windows 環境重建腳本。
+本 Repository 保存全域開發憲法 v8.0、共用 Agent Skills、12 個開發 Repository 清單，以及 Windows 環境重建腳本。目前版本為 **v1.2.1**。
 
 ## 新電腦快速開始
 
@@ -58,6 +58,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\0
 - 大型模型快取、pip 快取、應用程式快取
 
 各 Python 專案應依自己的 `requirements.txt` 或 `pyproject.toml` 重新建立虛擬環境，不得直接複製其他電腦的 `.venv`。
+
+## 安全設計
+
+- 同步專案前先檢查 Git 狀態；有未提交變更時直接略過。
+- 只允許 `pull --ff-only`，不自動合併、rebase 或 force push。
+- 產生 JSON 與部署文件時使用 UTF-8 無 BOM，避免 PowerShell 5.1 編碼差異。
+- 部署前保留可復原備份，並限制備份數量，避免長期累積。
 
 ## 路徑架構
 
