@@ -147,3 +147,43 @@
 
 - Windows BAT、PowerShell `$PSScriptRoot`、PyInstaller／可攜版清單及 GitHub Pages 根目錄均依賴相對路徑。
 - Python `src-layout` 若只注入 `sys.path` 而沒有正式 package，容易造成測試環境與實際啟動行為不一致。
+
+---
+
+## 2026-08-17 全專案 GitHub 發布文件與版本一致化
+
+### 目標與驗收條件
+
+- 12 個 Repository 的 README 都能讓首次下載者看懂功能、依賴、安裝、啟動、打包或部署方式。
+- 版本號依實際異動採語意化版本調整，README、CHANGELOG、程式內版本與套件清單保持一致。
+- Python 專案清楚區分 `RUN.bat` 自癒啟動、手動 Python 3.13 安裝及可攜版用途。
+- 完成適用的語法、測試、文件一致性與 Git 差異驗證後，才提交並推送各 Repository。
+
+### 不做範圍
+
+- 不更動核心功能流程，不新增非必要執行依賴。
+- 不建立虛構的安裝或打包流程；沒有建置步驟的靜態網站明確標示無須打包。
+- 不 force push、不改 remote、不提交密碼、Token、使用者資料或快取。
+
+### 工作清單
+
+- [x] 盤點 12 個專案的版本來源、依賴與入口檔｜README、CHANGELOG、manifest 與程式版本交叉核對。
+- [x] 更新 README、CHANGELOG 與版本號｜依功能／修訂幅度套用語意化版本。
+- [x] 執行各專案適用驗證｜Python、Node、PowerShell、Office 檔案存在性與文件一致性。
+- [ ] 確認 main／origin 後逐一提交與推送｜禁止 force push。
+
+### 風險與因應
+
+- 可攜式 Python 依賴與開發環境不同：文件分開說明，不混用 requirements。
+- 靜態網站仍可能使用 CDN：README 明列網路依賴與核心離線能力邊界。
+- 版本散落於 HTML、Python、package manifest：以全文搜尋及測試確認沒有殘留舊版號。
+
+### 驗證紀錄
+
+- `05_tw-formal-writing`：建置 `STANDALONE.md`、一致性與封裝清單檢查通過；另修復 CP950 主控台不支援核取符號造成的崩潰。
+- `06_System-Optimizer-Tool`：8 項單元測試通過。
+- `07_auto-learning-bot`：19 項單元測試及 Python 編譯檢查通過。
+- `10_Smart-Photo-Organizer`：140 項單元測試通過，1 項因 Windows symlink 權限略過。
+- `02`、`08`、`11`：JavaScript／npm 語法檢查通過；5 個自癒啟動器與 00 管理腳本通過 PowerShell Parser。
+- 全部異動文字檔均為有效 UTF-8、未含 U+FFFD，且 12 個 Repository 均通過 `git diff --check`。
+- `01_AG-Monitor-Forensics`：Python 編譯通過；完整測試因目前沙箱無法提供 Torch 載入所需記憶體而未完成，列為環境驗證限制。

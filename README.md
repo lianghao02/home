@@ -1,6 +1,15 @@
 # LiangHao 開發環境入口
 
-本 Repository 保存全域開發憲法 v8.0、共用 Agent Skills、12 個開發 Repository 清單，以及 Windows 環境重建與一鍵自癒佈置腳本。目前版本為 **v1.2.3**。
+本 Repository 保存全域開發憲法 v8.0、共用 Agent Skills、12 個開發 Repository 清單，以及 Windows 環境重建與一鍵自癒佈置腳本。目前版本為 **v1.3.0**。
+
+## 下載、需求與執行入口
+
+- **用途**：集中管理專案清單、Git 同步、Codex／Antigravity 規則與 5 個 Python 專案的可攜環境。
+- **必要軟體**：Windows 10/11、Git for Windows、Windows PowerShell 5.1 以上；管理功能本身不要求先安裝 Python。
+- **下載**：`git clone https://github.com/lianghao02/home.git 00_home`。
+- **主要入口**：一般使用者直接雙擊根目錄的 `0_`～`4_` 批次檔；進階使用者可執行 `scripts/` 下對應 PowerShell 腳本。
+- **網路需求**：Clone、Pull、Push 與首次下載 Python 可攜核心時需要網路；若 `downloads/` 已有安裝母檔，Python 環境可離線建置。
+- **打包方式**：本專案是管理腳本集合，不需編譯或安裝；備份時保留完整資料夾即可。
 
 ## 雙擊快捷捷徑 (One-Click Batch Tools)
 
@@ -20,10 +29,10 @@ New-Item -ItemType Directory -Path 'D:\Development\GitHub' -Force
 git clone https://github.com/lianghao02/home.git 'D:\Development\GitHub\00_home'
 
 # 預覽，不修改檔案
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\sync_projects.ps1'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\scripts\sync_projects.ps1'
 
 # 正式複製／更新專案並部署 Codex、Antigravity 規則
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\sync_projects.ps1' -Execute
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\scripts\sync_projects.ps1' -Execute
 ```
 
 腳本會依 [development-repositories.json](development-repositories.json) 處理 12 個 Repository。遇到既有未提交變更時會略過，不會自動刪除任何本機資料夾，也不會強制覆蓋 Git 歷史。
