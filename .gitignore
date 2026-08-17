@@ -23,3 +23,5 @@ Thumbs.db
 
 # Local agent backups
 bridge-backups/
+python_embed/
+python-embed/
