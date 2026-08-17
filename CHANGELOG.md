@@ -1,5 +1,10 @@
 # 📜 變更歷史 (CHANGELOG)
 
+## 🚀 v1.2.3 (2026-08-17)
+- **環境自癒系統**：新增 `setup_all_envs.ps1` 與 `4_建置所有Python專案環境.bat`，支援一鍵為 5 個 Python 專案佈置免安裝可攜版 Python 3.13。
+- **單一專案獨立發布**：各 Python 專案（`01`, `06`, `07`, `09`, `10`）全面配備 `RUN.bat` 與 `setup_and_run.ps1`，支援隨身碟即插即用、本機 ZIP 優先解壓與線上自動自癒下載。
+- **相容性修復**：解決可攜版 Python `._pth` 載入編碼問題，採用嚴格 ASCII 無 BOM 格式，杜絕 `ModuleNotFoundError: No module named 'encodings'` 崩潰。
+
 ## 🚀 v1.2.2 (2026-08-16)
 - **智慧偵測**：`scripts/sync_projects.ps1` 升級自動磁碟判斷機制（優先判定 `D:\Development\GitHub`，無 D 槽電腦自動自適應至 `C:\Development\GitHub`）。
 - **防禦安全**：新增危險路徑黑名單防禦（`Test-IsDangerousPath`），阻擋誤在桌面（Desktop）、下載（Downloads）、使用者目錄或系統根目錄執行，杜絕檔案污染。
