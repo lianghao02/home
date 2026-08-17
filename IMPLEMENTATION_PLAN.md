@@ -170,7 +170,7 @@
 - [x] 盤點 12 個專案的版本來源、依賴與入口檔｜README、CHANGELOG、manifest 與程式版本交叉核對。
 - [x] 更新 README、CHANGELOG 與版本號｜依功能／修訂幅度套用語意化版本。
 - [x] 執行各專案適用驗證｜Python、Node、PowerShell、Office 檔案存在性與文件一致性。
-- [ ] 確認 main／origin 後逐一提交與推送｜禁止 force push。
+- [x] 確認 main／origin 後逐一提交與推送｜禁止 force push。
 
 ### 風險與因應
 
