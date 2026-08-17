@@ -1,9 +1,9 @@
 # 📜 變更歷史 (CHANGELOG)
 
 ## 🚀 v1.2.2 (2026-08-16)
-- **智慧偵測**：`sync_projects.ps1` 升級自動磁碟判斷機制（優先判定 `D:\Development\GitHub`，無 D 槽電腦自動自適應至 `C:\Development\GitHub`）。
+- **智慧偵測**：`scripts/sync_projects.ps1` 升級自動磁碟判斷機制（優先判定 `D:\Development\GitHub`，無 D 槽電腦自動自適應至 `C:\Development\GitHub`）。
 - **防禦安全**：新增危險路徑黑名單防禦（`Test-IsDangerousPath`），阻擋誤在桌面（Desktop）、下載（Downloads）、使用者目錄或系統根目錄執行，杜絕檔案污染。
-- **批次推播與捷徑**：新增 `push_projects.ps1` 批次推播腳本與 4 個一鍵雙擊 `.bat` 啟動捷徑，內建 ANSI/CP950 中文詳細註解。
+- **批次推播與捷徑**：新增 `scripts/push_projects.ps1` 批次推播腳本與 4 個一鍵雙擊 `.bat` 啟動捷徑；批次檔統一使用 UTF-8（無 BOM），啟動時切換至 UTF-8 字碼頁以顯示繁體中文。
 - **體驗中文化**：全面升級推播與同步腳本之控制台輸出為 100% 繁體中文，並隔離 Git 底層 stderr 避免 PowerShell 5.1 `NativeCommandError` 誤判中斷。
 - **門戶頁面校準**：`index.html` 修正卡片標籤嵌套問題，依專案編號排序 12 個作品卡片並同步最新版本號。
 

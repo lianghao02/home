@@ -108,3 +108,42 @@
 - [x] 更新入口頁的 12 個 Banner 引用｜只變更圖片副檔名與公文範本的後備圖片。
 - [x] 以 Playwright 驗證首頁 Banner、第二階段空狀態與桌面／行動版版面｜16 組桌面／行動版截圖完成；首頁 12 張 Banner 載入與空狀態互動通過。
 - [x] 檢查共用 Token 的文字與底色對比｜調整為符合 WCAG 2.1 AA 的莫蘭迪深灰調，正文最小對比 4.58:1。
+
+---
+
+## 2026-08-16 跨專案目錄架構整理
+
+### 目標與驗收條件
+
+- 採用「共通根目錄規則＋依專案類型調整」，不強迫靜態網站、Skill 與 Python 應用程式使用相同目錄。
+- 根目錄只保留 Repository 契約文件、主要入口、必要設定與使用者直接操作的啟動器。
+- 將內部文件、維護腳本、Apps Script 後端及大型 Python 模組移至語意清楚的位置。
+- 所有移動都更新引用路徑，並通過適用的語法、單元、建置或 Playwright 驗證。
+
+### 保護邊界
+
+- 不刪除或搬移使用者資料、模型、輸入影片、資料庫、設定備份與執行紀錄，除非確認為 Git 可復原的一次性工具檔。
+- 不為單頁靜態網站或 Skill Repository 硬加低價值的 `src/`、`docs/` 空目錄。
+- 不改變 Git 遠端、分支或歷史，不執行 force push。
+
+### 分類決策
+
+- `00_home`：文件移至 `docs/`，維護程式移至 `scripts/`，根目錄保留四個操作捷徑。
+- `01_AG-Monitor-Forensics`：規劃文件移至 `docs/`；保留可攜式入口、模型與 Web 資源位置。
+- `02`、`03`、`04`、`05`、`06`、`08`：既有結構符合專案類型，只處理確定的雜項，不為一致外觀重構。
+- `07_auto-learning-bot`：先保留可攜版根目錄契約，僅移動不影響封裝的文件或維護工具。
+- `09_PaperSwitch`：工程文件移至 `docs/`，`app.py` 在尚未真正拆模組前保留根目錄。
+- `10_Smart-Photo-Organizer`：完成 `src/smart_photo_organizer/` 正式 package、package 匯入與測試路徑。
+- `11_Calendar-Card-App`：Apps Script 後端移至 `apps-script/`，清除已完成使命的歷史改寫工具。
+
+### 工作清單
+
+- [x] 整理低風險文件、腳本與 Apps Script 路徑｜引用搜尋、PowerShell parser 與 Node 語法檢查通過。
+- [x] 完成 Smart-Photo-Organizer 正式 package 化｜Python 3.13 共 140 項測試通過、1 項因 Windows 權限限制略過，SQLite ResourceWarning 已排除。
+- [x] 驗證 auto-learning-bot 可攜版與測試引用後再決定安全移動範圍｜保留根目錄執行契約，僅移動發行文件與建置工具；12 項測試通過。
+- [x] 執行各專案適用驗證並檢查 Git 差異｜Calendar Card 以 Playwright 產生 42 個日期格；未納入快取或使用者資料。
+
+### 已知風險
+
+- Windows BAT、PowerShell `$PSScriptRoot`、PyInstaller／可攜版清單及 GitHub Pages 根目錄均依賴相對路徑。
+- Python `src-layout` 若只注入 `sys.path` 而沒有正式 package，容易造成測試環境與實際啟動行為不一致。

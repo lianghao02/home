@@ -4,7 +4,7 @@ param([switch]$CheckOnly, [switch]$Force)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$homeRepo = Split-Path -Parent $PSCommandPath
+$homeRepo = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
 $githubRoot = Split-Path -Parent $homeRepo
 $codexHome = Join-Path $env:USERPROFILE '.codex'
 # Codex 官方個人自訂 Skill 位置；.codex\skills\.system 保留給系統內建 Skill。

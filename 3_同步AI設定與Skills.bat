@@ -1,18 +1,19 @@
 @echo off
+chcp 65001 >nul
 REM ==============================================================================
-REM  ±M®×¦WºÙ¡G00_home - ¤@Áä¦P¨B AI Agent ¥ş°ì¾Ëªk»P Skills
-REM  ¥D­n¥\¯à¡G±N configs/ ¤ºªº¤¤¥¡¥ş°ì¾Ëªk»P 8 ­Ó Skills ³¡¸p¦Ü Codex »P Antigravity
-REM  ¨Ï¥Î®É¾÷¡G­×§ï¤F¥ş°ì¾Ëªk AGENTS.md ©Î§ó·s¤F¦Û­q Skill ®É¨Ï¥Î
-REM  ³¡¸p¦ì¸m¡G
-REM    - ¥ş°ì¾Ëªk¡G~/.codex/AGENTS.md »P ~/.gemini/config/AGENTS.md
-REM    - ¦Û­qSkills¡G~/.agents/skills/ »P ~/.gemini/config/skills/
-REM  °õ¦æ©R¥O¡Gpowershell.exe °õ¦æ sync_codex.ps1
+REM  å°ˆæ¡ˆåç¨±ï¼š00_home - ä¸€éµåŒæ­¥ AI Agent å…¨åŸŸæ†²æ³•èˆ‡ Skills
+REM  ä¸»è¦åŠŸèƒ½ï¼šå°‡ configs/ å…§çš„ä¸­å¤®å…¨åŸŸæ†²æ³•èˆ‡ 8 å€‹ Skills éƒ¨ç½²è‡³ Codex èˆ‡ Antigravity
+REM  ä½¿ç”¨æ™‚æ©Ÿï¼šä¿®æ”¹äº†å…¨åŸŸæ†²æ³• AGENTS.md æˆ–æ›´æ–°äº†è‡ªè¨‚ Skill æ™‚ä½¿ç”¨
+REM  éƒ¨ç½²ä½ç½®ï¼š
+REM    - å…¨åŸŸæ†²æ³•ï¼š~/.codex/AGENTS.md èˆ‡ ~/.gemini/config/AGENTS.md
+REM    - è‡ªè¨‚Skillsï¼š~/.agents/skills/ èˆ‡ ~/.gemini/config/skills/
+REM  åŸ·è¡Œå‘½ä»¤ï¼špowershell.exe åŸ·è¡Œ sync_codex.ps1
 REM ==============================================================================
 
-title [3] ¦P¨B AI ³]©w»P Skills
+title [3] åŒæ­¥ AI è¨­å®šèˆ‡ Skills
 
-REM ©I¥s PowerShell °õ¦æ¥ş°ì¾Ëªk»P¦@¥Î Skills ªº¤@­P©ÊÂø´êÀË¬d»P¥¿¦¡³¡¸p
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0sync_codex.ps1"
+REM å‘¼å« PowerShell åŸ·è¡Œå…¨åŸŸæ†²æ³•èˆ‡å…±ç”¨ Skills çš„ä¸€è‡´æ€§é›œæ¹Šæª¢æŸ¥èˆ‡æ­£å¼éƒ¨ç½²
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\sync_codex.ps1"
 
-REM °õ¦æ§¹²¦«á¼È°±¡A«O¯dµøµ¡Åã¥Ü³¡¸p²M³æ
+REM åŸ·è¡Œå®Œç•¢å¾Œæš«åœï¼Œä¿ç•™è¦–çª—é¡¯ç¤ºéƒ¨ç½²æ¸…å–®
 pause

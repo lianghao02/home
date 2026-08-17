@@ -8,8 +8,9 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+$projectRoot = Split-Path -Parent $PSScriptRoot
 $config = [ordered]@{
-    Manifest = Join-Path $PSScriptRoot 'development-repositories.json'
+    Manifest = Join-Path $projectRoot 'development-repositories.json'
 }
 
 function Write-Status([string]$Level, [string]$Message) {
@@ -40,7 +41,7 @@ if (-not (Test-Path -LiteralPath $config.Manifest -PathType Leaf)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
-    $parent = Split-Path -Parent $PSScriptRoot
+    $parent = Split-Path -Parent $projectRoot
     if ($parent -and ((Split-Path -Leaf $parent) -match '(?i)^GitHub$')) {
         $DevelopmentRoot = $parent
     } elseif (Test-Path -LiteralPath 'D:\') {

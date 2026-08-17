@@ -1,15 +1,16 @@
 @echo off
+chcp 65001 >nul
 REM ==============================================================================
-REM  �M�צW�١G00_home - �M�ק�s���A�ˬd���| (�w���Ҧ�)
-REM  �D�n�\��G���y 12 �� GitHub �M�ת������ק�P�����e���A�]���ˬd�A���ק��ɮס^
-REM  �ϥήɾ��G�Q���D�ثe�����ǱM�ק�L�{���X�B�ǳƦn���e�ɨϥ�
-REM  ����R�O�Gpowershell.exe ���� push_projects.ps1 (�w�]�� Dry-Run �w���Ҧ�)
+REM  專案名稱：00_home - 專案更新狀態檢查捷徑 (預覽模式)
+REM  主要功能：掃描 12 個 GitHub 專案的本機修改與未推送狀態（僅檢查，不修改檔案）
+REM  使用時機：想知道目前有哪些專案改過程式碼、準備好推送時使用
+REM  執行命令：powershell.exe 執行 push_projects.ps1 (預設為 Dry-Run 預覽模式)
 REM ==============================================================================
 
-title [0] �ˬd�M�ק�s���A (�w���Ҧ�)
+title [0] 檢查專案更新狀態 (預覽模式)
 
-REM �H¶�L�����h (ExecutionPolicy Bypass) �I�s PowerShell �i��M�ת��A���y
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0push_projects.ps1"
+REM 以繞過執行原則 (ExecutionPolicy Bypass) 呼叫 PowerShell 進行專案狀態掃描
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\push_projects.ps1"
 
-REM ���槹����Ȱ��A�O�d�������ϥΪ̬ݲM�����y���G
+REM 執行完畢後暫停，保留視窗讓使用者看清楚掃描結果
 pause

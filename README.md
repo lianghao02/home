@@ -11,17 +11,17 @@ New-Item -ItemType Directory -Path 'D:\Development\GitHub' -Force
 git clone https://github.com/lianghao02/home.git 'D:\Development\GitHub\00_home'
 
 # 預覽，不修改檔案
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\sync_projects.ps1'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\scripts\sync_projects.ps1'
 
 # 正式複製／更新專案並部署 Codex、Antigravity 規則
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\sync_projects.ps1' -Execute
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\scripts\sync_projects.ps1' -Execute
 ```
 
 腳本會依 [development-repositories.json](development-repositories.json) 處理 12 個 Repository。遇到既有未提交變更時會略過，不會自動刪除任何本機資料夾，也不會強制覆蓋 Git 歷史。
 
 ## Agent 設定
 
-`sync_codex.ps1` 會同步：
+`scripts/sync_codex.ps1` 會同步：
 
 - 全域憲法至 `%USERPROFILE%\.codex\AGENTS.md`
 - 全域憲法至 `%USERPROFILE%\.gemini\config\AGENTS.md`
@@ -41,10 +41,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\0
 
 ```powershell
 # 唯讀檢查
-.\sync_codex.ps1 -CheckOnly
+.\scripts\sync_codex.ps1 -CheckOnly
 
 # 正式同步
-.\sync_codex.ps1
+.\scripts\sync_codex.ps1
 ```
 
 ## 本機專屬資料
@@ -71,4 +71,4 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\0
 - 實體開發路徑：`D:\Development\GitHub`
 - 舊工具相容路徑：`C:\Users\<使用者名稱>\Documents\GitHub`
 
-Junction 屬於選用的本機相容設定，不儲存在 Git 中。詳細規範請參閱 [DEVELOPMENT_ENVIRONMENT.md](DEVELOPMENT_ENVIRONMENT.md)。
+Junction 屬於選用的本機相容設定，不儲存在 Git 中。詳細規範請參閱 [docs/DEVELOPMENT_ENVIRONMENT.md](docs/DEVELOPMENT_ENVIRONMENT.md)。
