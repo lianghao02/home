@@ -170,18 +170,61 @@
             line-height: 1.7;
         }
 
-        /* ===== Main Container & Cards Grid ===== */
+        /* ===== Main Container & Sections ===== */
         main {
             position: relative;
             z-index: 1;
             max-width: 1320px;
             margin: 0 auto;
             padding: 0 1.5rem 5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4rem;
         }
+
+        .section-header {
+            margin-bottom: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .section-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            color: var(--text);
+        }
+        .section-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .section-count-badge {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            background: rgba(107, 139, 176, 0.12);
+            color: var(--accent);
+            border: 1px solid rgba(107, 139, 176, 0.25);
+        }
+
+        /* ===== Cards Grid (Fixed 3-Column on desktop, responsive) ===== */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 1.75rem;
+            align-items: stretch;
         }
         .card {
             background: var(--surface-card);
@@ -195,6 +238,7 @@
             transition: var(--transition);
             backdrop-filter: blur(12px);
             position: relative;
+            height: 100%;
         }
         .card:hover {
             transform: translateY(-6px);
@@ -231,11 +275,18 @@
             margin-bottom: 0.75rem;
         }
         .card-title {
-            font-size: 1.15rem;
+            font-size: 1.12rem;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            line-height: 1.35;
+        }
+        .badge-group {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-shrink: 0;
         }
         .badge {
             font-size: 0.75rem;
@@ -246,6 +297,16 @@
             color: var(--accent);
             border: 1px solid rgba(107, 139, 176, 0.3);
             white-space: nowrap;
+        }
+        .badge-web {
+            background: rgba(82, 116, 95, 0.12);
+            color: var(--success);
+            border-color: rgba(82, 116, 95, 0.3);
+        }
+        .badge-native {
+            background: rgba(154, 144, 168, 0.18);
+            color: #6b5b82;
+            border-color: rgba(154, 144, 168, 0.4);
         }
         .card-desc {
             color: var(--text-muted);
@@ -260,6 +321,7 @@
             justify-content: space-between;
             padding-top: 1rem;
             border-top: 1px solid var(--border);
+            margin-top: auto;
         }
         .tags {
             display: flex;
@@ -281,6 +343,7 @@
             align-items: center;
             gap: 0.3rem;
             transition: gap 0.2s ease;
+            white-space: nowrap;
         }
         .card:hover .btn-link {
             gap: 0.6rem;
@@ -301,6 +364,9 @@
         @media (max-width: 640px) {
             .grid {
                 grid-template-columns: 1fr;
+            }
+            main {
+                gap: 3rem;
             }
         }
     </style>
@@ -333,227 +399,295 @@
         </p>
     </section>
 
-    <!-- Projects Grid (12 Projects) -->
+    <!-- Projects Sections (12 Projects) -->
     <main>
-        <div class="grid">
 
-            <!-- 00. Home Portal -->
-            <a href="https://lianghao02.github.io/home/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_home.png" alt="首頁" loading="lazy">
+        <!-- Section 1: Pure Web / Zero Install (6 Projects) -->
+        <section id="section-web">
+            <div class="section-header">
+                <div class="section-title-row">
+                    <h2 class="section-title">
+                        <i class="fa-solid fa-globe" style="color: #3b82f6;"></i> 免安裝．瀏覽器即開即用
+                    </h2>
+                    <span class="section-count-badge">6 個純網頁應用</span>
                 </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-house" style="color:#3b82f6;"></i> LiangHao 首頁門戶</h2>
-                        <span class="badge">v1.3.0</span>
-                    </div>
-                    <p class="card-desc">個人作品集與專案儀表板入口，整合全域開發憲法 v8.0 規範、共用 Agent Skills、一鍵環境自癒佈置與動態響應式卡片。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">儀表板</span></div>
-                        <span class="btn-link">當前頁面 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
+                <p class="section-desc">點擊即可在瀏覽器直接運作，完全由純前端技術驅動，不需本機安裝 Python 或相依環境。</p>
+            </div>
 
-            <!-- 01. AG Monitor Forensics -->
-            <a href="https://github.com/lianghao02/AG-Monitor-Forensics" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_AG-Monitor-Forensics.png" alt="鑑識" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-microscope" style="color:#ec4899;"></i> AG-MONITOR 科技偵查鑑識</h2>
-                        <span class="badge">v3.1.0</span>
-                    </div>
-                    <p class="card-desc">科技偵查與智慧雙軌鑑識工作站，整合數位鑑識、軌跡分析與即時監控過濾工具。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Python</span><span class="tag">偵查鑑識</span><span class="tag">YOLOv8</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
+            <div class="grid">
 
-            <!-- 02. Cell Tower Map Locator -->
-            <a href="https://lianghao02.github.io/Cell-Tower-Map-Locator/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Cell-Tower-Map-Locator.png" alt="基地台" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-tower-cell" style="color:#06b6d4;"></i> 基地台地圖即時定位</h2>
-                        <span class="badge">v3.1.2</span>
+                <!-- 00. Home Portal -->
+                <a href="https://lianghao02.github.io/home/" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_home.png" alt="首頁" loading="lazy">
                     </div>
-                    <p class="card-desc">基地台地理資訊地圖定位與涵蓋範圍分析工具，支援多家電信業者與繪圖分析。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Leaflet.js</span><span class="tag">GIS</span><span class="tag">電信定位</span></div>
-                        <span class="btn-link">開啟地圖 <i class="fa-solid fa-arrow-right"></i></span>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-house" style="color:#3b82f6;"></i> LiangHao 首頁門戶</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-web">免安裝</span>
+                                <span class="badge">v1.4.0</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">個人作品集與專案儀表板入口，整合全域開發憲法 v8.0 規範、共用 Agent Skills、一鍵環境自癒佈置與分類儀表板。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">儀表板</span></div>
+                            <span class="btn-link">當前頁面 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- 03. Police Image Toolkit -->
-            <a href="https://lianghao02.github.io/Police-Image-Toolkit/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Police-Image-Toolkit.png" alt="影像工具" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-shield-cat" style="color:#3b82f6;"></i> 警務影像轉檔與銳化器</h2>
-                        <span class="badge">v10.0.2</span>
+                <!-- 02. Cell Tower Map Locator -->
+                <a href="https://lianghao02.github.io/Cell-Tower-Map-Locator/" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_Cell-Tower-Map-Locator.png" alt="基地台" loading="lazy">
                     </div>
-                    <p class="card-desc">警務鑑識影像轉檔、對比增強與銳化處理工具箱，全網頁高質感處理介面。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Canvas</span><span class="tag">影像處理</span><span class="tag">警務工具</span></div>
-                        <span class="btn-link">開啟工具 <i class="fa-solid fa-arrow-right"></i></span>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-tower-cell" style="color:#06b6d4;"></i> 基地台地圖即時定位</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-web">免安裝</span>
+                                <span class="badge">v3.1.2</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">基地台地理資訊地圖定位與涵蓋範圍分析工具，支援多家電信業者、多筆匯入與地圖繪製分析。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">Leaflet.js</span><span class="tag">GIS</span><span class="tag">電信定位</span></div>
+                            <span class="btn-link">開啟地圖 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- 04. Photo Report Generator -->
-            <a href="https://lianghao02.github.io/Photo-Report-Generator/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Photo-Report-Generator.png" alt="照片清冊" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-camera-retro" style="color:#14b8a6;"></i> 現況照片清冊生成器</h2>
-                        <span class="badge">v1.1.2</span>
+                <!-- 03. Police Image Toolkit -->
+                <a href="https://lianghao02.github.io/Police-Image-Toolkit/" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_Police-Image-Toolkit.png" alt="影像工具" loading="lazy">
                     </div>
-                    <p class="card-desc">現場調查與照片清冊自動套印工具，支援批次照片導入與標準報表匯出。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">HTML5</span><span class="tag">VBA</span><span class="tag">報表生成</span></div>
-                        <span class="btn-link">開啟工具 <i class="fa-solid fa-arrow-right"></i></span>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-shield-cat" style="color:#3b82f6;"></i> 警務影像轉檔與銳化器</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-web">免安裝</span>
+                                <span class="badge">v10.0.2</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">警務鑑識影像轉檔、對比增強、去識別化與銳化處理工具箱，支援純瀏覽器離線安全處理。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">Canvas</span><span class="tag">EXIF 鑑識</span><span class="tag">影像處理</span></div>
+                            <span class="btn-link">開啟工具 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- 05. Taiwan Formal Writing AI Skill -->
-            <a href="https://github.com/lianghao02/tw-formal-writing" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_tw-formal-writing.png" alt="公文範本" loading="lazy" onerror="this.src='images/banner_home.png'">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-pen-nib" style="color:#10b981;"></i> 臺灣警政公文與刑事範本庫</h2>
-                        <span class="badge">v2.0.1</span>
+                <!-- 04. Photo Report Generator -->
+                <a href="https://lianghao02.github.io/Photo-Report-Generator/" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_Photo-Report-Generator.png" alt="照片清冊" loading="lazy">
                     </div>
-                    <p class="card-desc">臺灣正式公文、存證信函與陳情書 AI 寫作技能庫，支援 ChatGPT / Claude / Gemini 匯入即可使用。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">AI Skill</span><span class="tag">公文寫作</span><span class="tag">刑事偵查</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-camera-retro" style="color:#14b8a6;"></i> 現況照片清冊生成器</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-web">免安裝</span>
+                                <span class="badge">v1.1.2</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">現場調查與照片清冊自動套印工具，支援批次照片導入、欄位編輯與標準報表匯出。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">HTML5</span><span class="tag">VBA 範本</span><span class="tag">報表生成</span></div>
+                            <span class="btn-link">開啟工具 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- 06. System Optimizer Tool -->
-            <a href="https://github.com/lianghao02/System-Optimizer-Tool" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_System-Optimizer-Tool.png" alt="清理" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-bolt" style="color:#eab308;"></i> 系統清理與記憶體優化</h2>
-                        <span class="badge">v5.1.0</span>
+                <!-- 08. Financial Data Parser -->
+                <a href="https://lianghao02.github.io/Financial-Data-Parser/" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_Financial-Data-Parser.png" alt="金融" loading="lazy">
                     </div>
-                    <p class="card-desc">Python 系統快取清理與記憶體動態優化工具，專為 Windows 環境打造之全能清查助手 (v2.6 UI 美化全能版)。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Python</span><span class="tag">System</span><span class="tag">Memory</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:#f59e0b;"></i> 金融資料 CSV 轉 Excel</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-web">免安裝</span>
+                                <span class="badge">v1.7.0</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">金融交易與帳戶調閱 CSV 資料轉檔解析工具，支援前導零保護與自動報表分析，資料不落地安全解析。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">JavaScript</span><span class="tag">SheetJS</span><span class="tag">金融轉檔</span></div>
+                            <span class="btn-link">開啟轉檔 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- 07. Auto Learning Bot -->
-            <a href="https://github.com/lianghao02/auto-learning-bot" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_auto-learning-bot.png" alt="機器人" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-robot" style="color:#8b5cf6;"></i> 行政效能領航員自動化機器人</h2>
-                        <span class="badge">v2.4.0</span>
+                <!-- 11. Calendar Card App -->
+                <a href="https://lianghao02.github.io/Calendar-Card-App/" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_Calendar-Card-App.png" alt="行事曆" loading="lazy">
                     </div>
-                    <p class="card-desc">自動化學習測驗與題庫解析 Bot，全新搭載人機協同免 API Key 彈窗作答、剪貼簿智慧解析與進度管理 (v2.3.0)。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Python</span><span class="tag">自動化 Bot</span><span class="tag">題庫解析</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-calendar-days" style="color:#10b981;"></i> 卡片式行事曆 App</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-web">免安裝</span>
+                                <span class="badge">v1.1.2</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">卡片式月曆與活動排程 Web 應用程式，支援純前端本機離線運作與 Google Apps Script 雲端同步。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">JavaScript</span><span class="tag">GAS 整合</span><span class="tag">行事曆</span></div>
+                            <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- 08. Financial Data Parser -->
-            <a href="https://lianghao02.github.io/Financial-Data-Parser/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Financial-Data-Parser.png" alt="金融" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:#f59e0b;"></i> 金融資料 CSV 轉 Excel</h2>
-                        <span class="badge">v1.7.0</span>
-                    </div>
-                    <p class="card-desc">金融交易與帳戶 CSV 資料轉檔解析工具，支援前導零保護與自動報表分析。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">JavaScript</span><span class="tag">SheetJS</span><span class="tag">金融轉檔</span></div>
-                        <span class="btn-link">開啟轉檔 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
+            </div>
+        </section>
 
-            <!-- 09. PaperSwitch -->
-            <a href="https://github.com/lianghao02/PaperSwitch" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_PaperSwitch.png" alt="PaperSwitch" loading="lazy">
+        <!-- Section 2: Desktop, Native & AI Environments (6 Projects) -->
+        <section id="section-native">
+            <div class="section-header">
+                <div class="section-title-row">
+                    <h2 class="section-title">
+                        <i class="fa-solid fa-laptop-code" style="color: #8b5cf6;"></i> 本機應用．高效桌面與 AI 工具
+                    </h2>
+                    <span class="section-count-badge">6 個環境應用</span>
                 </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> PaperSwitch 萬能轉檔與 PDF 處理器</h2>
-                        <span class="badge">v1.2.0</span>
-                    </div>
-                    <p class="card-desc">Word / Excel / PPT / 圖片 轉 PDF 處理器，支援 Excel 欄寬自動不裁切縮放與多分頁獨立拆分匯出。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Python</span><span class="tag">PDF 轉檔</span><span class="tag">Office COM</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
+                <p class="section-desc">具備深度檔案處理、AI 模型推論、系統底層調校或 AI 技能庫，具備一鍵自癒啟動器（<code>RUN.bat</code>）。</p>
+            </div>
 
-            <!-- 10. Smart Photo Organizer -->
-            <a href="https://github.com/lianghao02/Smart-Photo-Organizer" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Smart-Photo-Organizer.png" alt="分類" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-images" style="color:#6366f1;"></i> 智慧相片自動分類助手</h2>
-                        <span class="badge">v3.2.0</span>
-                    </div>
-                    <p class="card-desc">Python 智慧相片整理助手，支援 Takeout ZIP 串流解壓、dHash 相似辨識、Windows 捷徑審核與 MediaGroup 安全隔離歸檔 (v3.2.0)。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">Python</span><span class="tag">EXIF 解析</span><span class="tag">相片歸檔</span></div>
-                        <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
+            <div class="grid">
 
-            <!-- 11. Calendar Card App -->
-            <a href="https://lianghao02.github.io/Calendar-Card-App/" target="_blank" class="card">
-                <div class="card-banner">
-                    <img src="images/banner_Calendar-Card-App.png" alt="行事曆" loading="lazy">
-                </div>
-                <div class="card-body">
-                    <div class="card-header">
-                        <h2 class="card-title"><i class="fa-solid fa-calendar-days" style="color:#10b981;"></i> 卡片式行事曆 App</h2>
-                        <span class="badge">v1.1.2</span>
+                <!-- 01. AG Monitor Forensics -->
+                <a href="https://github.com/lianghao02/AG-Monitor-Forensics" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_AG-Monitor-Forensics.png" alt="鑑識" loading="lazy">
                     </div>
-                    <p class="card-desc">卡片式月曆與活動排程 Web 應用程式，支援純前端本機離線運作與 Google Apps Script 雲端同步。</p>
-                    <div class="card-footer">
-                        <div class="tags"><span class="tag">JavaScript</span><span class="tag">ES2020</span><span class="tag">行事曆</span></div>
-                        <span class="btn-link">開啟應用 <i class="fa-solid fa-arrow-right"></i></span>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-microscope" style="color:#ec4899;"></i> AG-MONITOR 科技偵查鑑識</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-native">Python</span>
+                                <span class="badge">v3.1.0</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">科技偵查與智慧雙軌鑑識工作站，整合數位鑑識、軌跡分析與即時監控過濾工具，支援 YOLOv8 目標偵測。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">Python 3.13</span><span class="tag">PyAV</span><span class="tag">YOLOv8</span></div>
+                            <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
 
-        </div>
+                <!-- 05. Taiwan Formal Writing AI Skill -->
+                <a href="https://github.com/lianghao02/tw-formal-writing" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_tw-formal-writing.png" alt="公文範本" loading="lazy" onerror="this.src='images/banner_home.png'">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-pen-nib" style="color:#10b981;"></i> 臺灣警政公文與刑事範本庫</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-native">AI Skill</span>
+                                <span class="badge">v2.0.1</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">臺灣正式公文、存證信函與陳情書 AI 寫作技能庫，支援 ChatGPT / Claude / Gemini 匯入即可使用。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">AI Skill</span><span class="tag">公文寫作</span><span class="tag">刑事偵查</span></div>
+                            <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 06. System Optimizer Tool -->
+                <a href="https://github.com/lianghao02/System-Optimizer-Tool" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_System-Optimizer-Tool.png" alt="清理" loading="lazy">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-bolt" style="color:#eab308;"></i> 系統清理與記憶體優化</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-native">Python</span>
+                                <span class="badge">v5.1.0</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">Python 系統快取清理與記憶體動態優化工具，專為 Windows 環境打造之全能清查助手，雙擊 RUN.bat 即開即用。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">Python 3.13</span><span class="tag">psutil</span><span class="tag">自癒啟動</span></div>
+                            <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 07. Auto Learning Bot -->
+                <a href="https://github.com/lianghao02/auto-learning-bot" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_auto-learning-bot.png" alt="機器人" loading="lazy">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-robot" style="color:#8b5cf6;"></i> 行政效能領航員自動化機器人</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-native">Python</span>
+                                <span class="badge">v2.4.0</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">自動化學習測驗與題庫解析 Bot，全新搭載人機協同免 API Key 彈窗作答、剪貼簿智慧解析與進度管理。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">Python 3.13</span><span class="tag">Selenium</span><span class="tag">題庫解析</span></div>
+                            <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 09. PaperSwitch -->
+                <a href="https://github.com/lianghao02/PaperSwitch" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_PaperSwitch.png" alt="PaperSwitch" loading="lazy">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> PaperSwitch 萬能轉檔處理器</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-native">Python</span>
+                                <span class="badge">v1.2.0</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">Word / Excel / PPT / 圖片 轉 PDF 處理器，支援 Excel 欄寬自動不裁切縮放與多分頁獨立拆分匯出。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">Python 3.13</span><span class="tag">Flask WebUI</span><span class="tag">Office COM</span></div>
+                            <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 10. Smart Photo Organizer -->
+                <a href="https://github.com/lianghao02/Smart-Photo-Organizer" target="_blank" class="card">
+                    <div class="card-banner">
+                        <img src="images/banner_Smart-Photo-Organizer.png" alt="分類" loading="lazy">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-images" style="color:#6366f1;"></i> 智慧相片自動分類助手</h3>
+                            <div class="badge-group">
+                                <span class="badge badge-native">Python</span>
+                                <span class="badge">v3.2.0</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">Python 智慧相片整理助手，支援 Takeout ZIP 串流解壓、dHash 相似辨識、Windows 捷徑審核與安全隔離歸檔。</p>
+                        <div class="card-footer">
+                            <div class="tags"><span class="tag">Python 3.13</span><span class="tag">Eel 前端</span><span class="tag">EXIF 解析</span></div>
+                            <span class="btn-link">查看專案 <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
     </main>
 
     <!-- Footer -->
