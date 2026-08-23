@@ -21,7 +21,9 @@ Thumbs.db
 .vscode/
 *.log
 
-# Local agent backups
+# Local agent backups & downloads
 bridge-backups/
 python_embed/
 python-embed/
+downloads/*.zip
+
