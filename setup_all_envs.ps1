@@ -28,8 +28,11 @@ $pyProjects = @(
 )
 
 Write-Host '=================================================================' -ForegroundColor Cyan
-Write-Host '🛠️  【批次環境建置】正在為所有 Python 專案建置獨立自癒環境' -ForegroundColor Yellow
-Write-Host "📁 【開發根目錄】$root"
+Write-Host '🚀 【批次環境建置】正在為所有 Python 專案建置獨立環境' -ForegroundColor Yellow
+Write-Host "📂 【開發根目錄】$root"
+if ($Force) {
+    Write-Host '⚡ 【模式】強制重建所有環境 (-Force)' -ForegroundColor Magenta
+}
 Write-Host '=================================================================' -ForegroundColor Cyan
 Write-Host ''
 
@@ -56,7 +59,11 @@ foreach ($p in $pyProjects) {
     $oldEap = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
-        powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$setupScript" -NoLaunch
+        $argList = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $setupScript, '-NoLaunch')
+        if ($Force) {
+            $argList += '-Force'
+        }
+        & powershell.exe $argList
     } finally {
         $ErrorActionPreference = $oldEap
     }
@@ -71,5 +78,27 @@ foreach ($p in $pyProjects) {
 
 Write-Host ''
 Write-Host '=================================================================' -ForegroundColor Cyan
-Write-Host '🎉 【完成】所有 5 個 Python 專案之環境建置程序已執行完畢！' -ForegroundColor Yellow
+Write-Host '📋 【環境完整性健檢報告】' -ForegroundColor Yellow
+Write-Host '=================================================================' -ForegroundColor Cyan
+
+foreach ($p in $pyProjects) {
+    $pdir = Join-Path $root $p
+    $py = Join-Path $pdir 'python_embed\python.exe'
+    if (Test-Path -LiteralPath $py) {
+        $oldEap = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        $diag = & $py -c "import sys, sqlite3; print('Python ' + sys.version.split()[0] + ' | sqlite3:OK')" 2>&1
+        $ErrorActionPreference = $oldEap
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "  ✅ $p -> $diag" -ForegroundColor Green
+        } else {
+            Write-Host "  ❌ $p -> $diag" -ForegroundColor Red
+        }
+    } else {
+        Write-Host "  ⚠️  $p -> 未安裝 python_embed" -ForegroundColor Yellow
+    }
+}
+
+Write-Host '=================================================================' -ForegroundColor Cyan
+Write-Host '🎉 所有 Python 專案之環境建置程序已執行完畢！' -ForegroundColor Yellow
 Write-Host '=================================================================' -ForegroundColor Cyan
