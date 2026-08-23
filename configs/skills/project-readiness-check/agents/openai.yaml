@@ -1,0 +1,4 @@
+interface:
+  display_name: 專案交付前檢查
+  short_description: 檢查 Git、測試、瀏覽器實測與敏感資料
+  default_prompt: 請執行專案交付前檢查，回報 Git 狀態、測試、Web 實測、差異與敏感資料檢核；不要提交或推送，除非我另外同意。

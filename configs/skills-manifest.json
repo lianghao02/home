@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "shared": [
+    "accesslint",
+    "addyosmani-perf",
+    "caveman",
+    "document-to-markdown",
+    "github-workflow",
+    "project-planning",
+    "project-readiness-check",
+    "release-notes",
+    "webapp-testing"
+  ],
+  "codexOnly": [],
+  "antigravityOnly": [
+    "skill-creator"
+  ]
+}

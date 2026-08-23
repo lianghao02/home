@@ -7,11 +7,13 @@ Set-StrictMode -Version Latest
 $homeRepo = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
 $githubRoot = Split-Path -Parent $homeRepo
 $codexHome = Join-Path $env:USERPROFILE '.codex'
-# Codex 官方個人自訂 Skill 位置；.codex\skills\.system 保留給系統內建 Skill。
+# 此開發環境既有的 Codex 共用 Skill 位置。
 $agentHome = Join-Path $env:USERPROFILE '.agents'
+$codexSkillRoot = Join-Path $agentHome 'skills'
 $antigravityHome = Join-Path $env:USERPROFILE '.gemini\config'
 $antigravitySkillRoot = Join-Path $antigravityHome 'skills'
 $manifestPath = Join-Path $codexHome 'antigravity-bridge.json'
+$skillManifestPath = Join-Path $homeRepo 'configs\skills-manifest.json'
 
 function Get-TreeHash([string]$Path) {
     if (Test-Path -LiteralPath $Path -PathType Leaf) {
@@ -60,28 +62,39 @@ if (Test-Path -LiteralPath $manifestPath) {
     foreach ($item in $saved.items) { $old[[string]$item.target] = [string]$item.hash }
 }
 $new = @{}
-$sharedSkills = @(
-    'accesslint',
-    'addyosmani-perf',
-    'caveman',
-    'document-to-markdown',
-    'github-workflow',
-    'project-planning',
-    'release-notes',
-    'webapp-testing'
-)
+if (-not (Test-Path -LiteralPath $skillManifestPath -PathType Leaf)) {
+    throw "找不到 Skill 分流清單：$skillManifestPath"
+}
+$skillManifest = Get-Content -LiteralPath $skillManifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $items = @(
     @{ Source = Join-Path $homeRepo 'configs\AGENTS.md'; Target = Join-Path $codexHome 'AGENTS.md' },
     @{ Source = Join-Path $homeRepo 'configs\AGENTS.md'; Target = Join-Path $antigravityHome 'AGENTS.md' }
 )
-foreach ($skill in $sharedSkills) {
-    $source = Join-Path $homeRepo "configs\skills\$skill"
-    $items += @{ Source = $source; Target = Join-Path (Join-Path $agentHome 'skills') $skill }
-    $items += @{ Source = $source; Target = Join-Path $antigravitySkillRoot $skill }
+$skillSets = @(
+    @{ Name = '共用'; Skills = @($skillManifest.shared); Targets = @($codexSkillRoot, $antigravitySkillRoot) },
+    @{ Name = 'Codex 專用'; Skills = @($skillManifest.codexOnly); Targets = @($codexSkillRoot) },
+    @{ Name = 'Antigravity 專用'; Skills = @($skillManifest.antigravityOnly); Targets = @($antigravitySkillRoot) }
+)
+$assignedSkills = @{}
+foreach ($set in $skillSets) {
+    foreach ($skill in $set.Skills) {
+        $skillName = [string]$skill
+        if ([string]::IsNullOrWhiteSpace($skillName)) { continue }
+        if ($assignedSkills.ContainsKey($skillName)) {
+            throw "Skill [$skillName] 同時出現在 [$($assignedSkills[$skillName])] 與 [$($set.Name)]，請只保留一個分流類別。"
+        }
+        $assignedSkills[$skillName] = $set.Name
+        $source = Join-Path $homeRepo "configs\skills\$skillName"
+        foreach ($targetRoot in $set.Targets) {
+            $items += @{ Source = $source; Target = Join-Path $targetRoot $skillName }
+        }
+    }
 }
-$items += @{
-    Source = Join-Path $homeRepo 'configs\skills\skill-creator'
-    Target = Join-Path $antigravitySkillRoot 'skill-creator'
+$availableSkillDirs = Get-ChildItem -LiteralPath (Join-Path $homeRepo 'configs\skills') -Directory -ErrorAction SilentlyContinue
+foreach ($dir in $availableSkillDirs) {
+    if (-not $assignedSkills.ContainsKey($dir.Name)) {
+        Write-Warning "發現未分流的 Skill 目錄 [$($dir.Name)]，未包含於 configs\skills-manifest.json 中。"
+    }
 }
 foreach ($item in $items) { Sync-ManagedItem $item.Source $item.Target $old $new }
 
@@ -99,9 +112,9 @@ if (-not $CheckOnly) {
         source = $homeRepo
         generatedAt = (Get-Date).ToString('o')
         excluded = @{
-            skillCreator = 'Custom version is Antigravity-only because Codex includes .system\skill-creator.'
+            codexStandaloneSkills = '.codex\skills is preserved for individual local Skills and is not overwritten by this shared deployment.'
             codexSystemSkills = '.codex\skills\.system is managed by Codex and is never overwritten.'
-            legacyCodexCustomSkills = '.codex\skills custom Skill deployments were retired in favor of .agents\skills.'
+            routing = 'configs\skills-manifest.json controls shared, Codex-only, and Antigravity-only Skill deployment.'
         }
         items = @($new.Keys | Sort-Object | ForEach-Object { [ordered]@{ target = $_; hash = $new[$_] } })
     }

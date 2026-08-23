@@ -19,6 +19,7 @@
 - `2_從GitHub更新所有專案.bat`：一鍵從 GitHub 更新所有專案進度，自動 Clone 缺漏專案並部署 AI 規範。
 - `3_同步AI設定與Skills.bat`：獨立同步全域憲法與共用 Agent Skills 至 Codex / Antigravity。
 - `4_建置所有Python專案環境.bat`：一鍵自動為 5 個 Python 專案（`01`, `06`, `07`, `09`, `10`）佈置免安裝的可攜版 Python 3.13 獨立環境與相依套件。
+- `5_安裝GitHub與Playwright工具.bat`：新電腦首次使用時，安裝 Git、GitHub CLI、Playwright 與 Chromium；需要 GitHub 網頁登入授權。
 
 ## 新電腦快速開始
 
@@ -43,10 +44,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\0
 
 - 全域憲法至 `%USERPROFILE%\.codex\AGENTS.md`
 - 全域憲法至 `%USERPROFILE%\.gemini\config\AGENTS.md`
-- Codex 自訂 Skills 至 `%USERPROFILE%\.agents\skills`
-- Antigravity Skills 至 `%USERPROFILE%\.gemini\config\skills`
+- Codex 共用／專用 Skills 至 `%USERPROFILE%\.agents\skills`
+- Antigravity 共用／專用 Skills 至 `%USERPROFILE%\.gemini\config\skills`
 
-`configs\skills` 是唯一維護來源。共用 Skill 會分別部署至 Codex 與 Antigravity；Codex 內建已有 `skill-creator`，因此自訂版本只部署至 Antigravity，避免同名 Skill 衝突。`%USERPROFILE%\.codex\skills\.system` 僅保留 Codex 系統內建 Skill，不由同步腳本修改。
+`configs\skills` 是唯一維護來源，`configs\skills-manifest.json` 決定每個 Skill 的分流：`shared` 會同步至兩端、`codexOnly` 只同步 Codex、`antigravityOnly` 只同步 Antigravity。Codex 內建已有 `skill-creator`，因此自訂版本維持 Antigravity 專用，避免同名 Skill 衝突。`%USERPROFILE%\.codex\skills` 的個人獨立 Skill 與 `.system` 系統 Skill 均不會由同步腳本覆寫。
 
 目前的核心能力已完成去重：
 
@@ -54,6 +55,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\0
 - `webapp-testing`：沿用既有 Playwright 自動化測試，不另裝同功能 Skill。
 - `document-to-markdown`：使用 Microsoft MarkItDown 做文件分析前處理；正式文件編輯仍交由格式專屬工具。
 - `skill-creator`：Codex 使用系統原生版本，Antigravity 使用中央來源的自訂版本。
+- `project-readiness-check`：Git 狀態、測試、Web 實測、差異與敏感資料的交付前檢查，會同步至 Codex 與 Antigravity。
 
 單獨檢查或同步 Agent 設定：
 
