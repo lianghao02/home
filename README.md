@@ -13,13 +13,14 @@
 
 ## 雙擊快捷捷徑 (One-Click Batch Tools)
 
-在 `00_home` 根目錄提供 5 個一鍵雙擊 `.bat` 啟動捷徑：
+在 `00_home` 根目錄提供 7 個一鍵雙擊 `.bat` 啟動捷徑：
 - `0_檢查專案更新狀態_預覽.bat`：唯讀掃描 12 個專案 Git 變更狀態。
 - `1_推送所有專案至GitHub.bat`：一鍵自動 Commit 並推播所有修改至 GitHub。
 - `2_從GitHub更新所有專案.bat`：一鍵從 GitHub 更新所有專案進度，自動 Clone 缺漏專案並部署 AI 規範。
 - `3_同步AI設定與Skills.bat`：獨立同步全域憲法與共用 Agent Skills 至 Codex / Antigravity。
 - `4_建置所有Python專案環境.bat`：一鍵自動為 5 個 Python 專案（`01`, `06`, `07`, `09`, `10`）佈置免安裝的可攜版 Python 3.13 獨立環境與相依套件。
 - `5_安裝GitHub與Playwright工具.bat`：新電腦首次使用時，安裝 Git、GitHub CLI、Playwright 與 Chromium；需要 GitHub 網頁登入授權。
+- `6_建立雙Agent工作區.bat`：選單式一鍵建立指定專案的 `*-codex` 與 `*-ag` 獨立 Worktree，支援自動預覽與確認機制。
 
 ## 新電腦快速開始
 

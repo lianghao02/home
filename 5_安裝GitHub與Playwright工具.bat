@@ -1,7 +1,10 @@
 @echo off
 REM ==============================================================================
-REM  00_home - 安裝 Git、GitHub CLI 與 Playwright/Chromium
-REM  僅供新電腦首次設定；已安裝的工具會自動略過。
+REM  00_home - [5] 安裝 GitHub 與 Playwright 工具
+REM
+REM  【用途說明】：
+REM  新電腦環境初始化專用。自動檢查並安裝 Git for Windows、
+REM  GitHub CLI (gh) 以及 Web 自動化測試所需的 Playwright 與 Chromium 核心。
 REM ==============================================================================
 
 title [5] 安裝 GitHub 與 Playwright 工具
