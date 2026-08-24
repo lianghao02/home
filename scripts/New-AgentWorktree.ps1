@@ -1,4 +1,4 @@
-[CmdletBinding(SupportsShouldProcess)]
+﻿[CmdletBinding(SupportsShouldProcess)]
 param(
     [Parameter(Mandatory)] [string]$Project,
     [Parameter(Mandatory)] [ValidateSet('codex', 'ag', 'both')] [string]$Agent,
