@@ -22,8 +22,8 @@ Thumbs.db
 *.log
 
 # Local agent backups & downloads
+backups/
 bridge-backups/
 python_embed/
 python-embed/
 downloads/*.zip
-

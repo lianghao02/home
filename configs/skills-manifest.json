@@ -1,18 +1,12 @@
 {
-  "schemaVersion": 1,
-  "shared": [
-    "accesslint",
-    "addyosmani-perf",
-    "caveman",
-    "document-to-markdown",
-    "github-workflow",
-    "project-planning",
-    "project-readiness-check",
-    "release-notes",
-    "webapp-testing"
-  ],
+  "schemaVersion": 2,
+  "shared": ["accesslint", "addyosmani-perf", "caveman", "document-to-markdown", "github-workflow", "project-planning", "project-readiness-check", "release-notes", "webapp-testing"],
   "codexOnly": [],
-  "antigravityOnly": [
-    "skill-creator"
-  ]
+  "antigravityOnly": ["skill-creator"],
+  "projectAgentRouting": {
+    "sharedExecution": ["scripts/qa.ps1", "scripts/test.ps1", "scripts/security-check.ps1", "scripts/git-verify.ps1"],
+    "codexPrompt": ".agents/AGENTS.md",
+    "antigravityPrompt": ".gemini/AGENTS.md",
+    "policy": "Project prompts are maintained separately. This manifest deploys only global skills and never copies one project's prompt or SKILL.md to the other agent."
+  }
 }

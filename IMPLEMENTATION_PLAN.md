@@ -187,3 +187,33 @@
 - `02`、`08`、`11`：JavaScript／npm 語法檢查通過；5 個自癒啟動器與 00 管理腳本通過 PowerShell Parser。
 - 全部異動文字檔均為有效 UTF-8、未含 U+FFFD，且 12 個 Repository 均通過 `git diff --check`。
 - `01_AG-Monitor-Forensics`：Python 編譯通過；完整測試因目前沙箱無法提供 Torch 載入所需記憶體而未完成，列為環境驗證限制。
+
+---
+
+## 2026-08-24 雙 Agent Worktree 協作架構
+
+### 目標與驗收條件
+
+- 同一 Repository 內共用程式、測試、文件、驗證腳本與 CI；Codex 與 Antigravity 使用獨立工作區與專案指引。
+- `00_home` 提供可預覽、可重複執行且不覆寫既有目標的 Worktree 建立工具。
+- 先在 `10_Smart-Photo-Organizer` 套用並驗證，不一次重構所有專案。
+
+### 已確認決策
+
+- 全域 Skill 部署保持既有 `sync_codex.ps1` 行為；`skills-manifest.json` 僅新增專案層能力／路徑映射，不強制同步專案 Prompt 或 `SKILL.md`。
+- 專案層 Codex 指引放 `.agents/AGENTS.md`，Antigravity 指引放 `.gemini/AGENTS.md`；可執行驗證只維護在 `scripts/`。
+- Worktree 固定命名為 `<原專案>-codex` 與 `<原專案>-ag`，分支固定為 `codex/dev` 與 `ag/dev`。
+
+### 工作清單
+
+- [x] 新增共用規則、能力映射與 `New-AgentWorktree.ps1`｜PowerShell Parser、JSON 解析、`-WhatIf` 保護條件驗證。
+- [x] Smart-Photo-Organizer 套用 QA 腳本、分離 Agent 指引與 Linux CI｜腳本 Parser、敏感資料掃描與 Git 差異檢查通過。
+- [ ] 於乾淨的 main 執行實際 Worktree 建立｜本次架構檔尚未提交，工具正確阻擋髒工作區。
+- [ ] 在具備完整 Tkinter 的 Python 3.13 環境執行完整測試與推送後檢查 GitHub Actions｜目前可攜式 Python 缺少 `tkinter`，數個 UI 相關測試模組無法載入。
+
+### 驗證紀錄
+
+- `sync_codex.ps1 -CheckOnly`：既有全域 Skill 與 Agent 設定皆為 `Current`。
+- `security-check.ps1`：包含未追蹤檔案的掃描通過。
+- `git-verify.ps1`：通過 `git diff --check`；如預期列出本次尚未提交檔案。
+- `test.ps1`：可攜式 Python 已執行大部分單元測試；依賴 `main.py` 的測試因 `ModuleNotFoundError: tkinter` 未完成。
