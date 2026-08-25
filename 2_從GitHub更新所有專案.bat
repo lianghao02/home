@@ -1,17 +1,13 @@
 @echo off
-REM ==============================================================================
-REM  00_home - [2] ±q GitHub ¤U¸ü»P§ó·s±M®×
-REM
-REM  ¡i¥Î³~»¡©ú¡j¡G
-REM  1. ·s¹q¸£¶}¤u¡G¦Û°Ê Clone ¯Êº|ªº±M®×¦Ü¥»¾÷¡C
-REM  2. ¤é±`¦P¨B¡G©Ô¨ú (Pull) 12 ­Ó±M®×ªº³Ì·s¶³ºİ¶i«×¡C
-REM  3. ¦w¥ş¨¾Å@¡G­Y¥»¾÷¦³¥¼´£¥æªº­×§ï¡A·|¥D°Ê«OÅ@¸õ¹L¡A¤£±j¨îÂĞ»\¡C
-REM ==============================================================================
-
-title [2] ±q GitHub ¤U¸ü»P§ó·s±M®×
+chcp 65001 >nul
+title [2] å¾ GitHub æ›´æ–°æ‰€æœ‰å°ˆæ¡ˆ
 cd /d "%~dp0"
-
+echo æ­£åœ¨æª¢æŸ¥æ›´æ–°...
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\sync_projects.ps1"
+echo.
+set /p CONFIRM=è«‹è¼¸å…¥ YES ç¢ºèªæ›´æ–°: 
+if /I not "%CONFIRM%"=="YES" goto :end
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\sync_projects.ps1" -Execute
-
+:end
 echo.
 pause

@@ -1,16 +1,13 @@
 @echo off
-REM ==============================================================================
-REM  00_home - [1] §å¦¸±À°e±M®×¦Ü GitHub
-REM
-REM  ¡i¥Î³~»¡©ú¡j¡G
-REM  ¦Û°Ê±½´y 12 ­Ó±M®×¡A±N¦³ÅÜ§óªº±M®×¨Ì Conventional Commits ®æ¦¡
-REM  ¦Û°Ê§¹¦¨¥»¾÷ Commit ¨Ã±À¼½ (Push) ¦Ü»·ºİ GitHub ¶³ºİª©¥»®w¡C
-REM ==============================================================================
-
-title [1] §å¦¸±À°e±M®×¦Ü GitHub
+chcp 65001 >nul
+title [1] æ¨é€æ‰€æœ‰å°ˆæ¡ˆè‡³ GitHub
 cd /d "%~dp0"
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\push_projects.ps1" -Execute
-
+echo æ­£åœ¨è®€å–é è¦½è®Šæ›´...
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\push_projects.ps1"
+echo.
+set /p CONFIRM=è«‹è¼¸å…¥ YES ç¢ºèªæ¨é€æ‰€æœ‰å°ˆæ¡ˆ: 
+if /I not "%CONFIRM%"=="YES" goto :end
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\push_projects.ps1" -Execute -ConfirmEach
+:end
 echo.
 pause

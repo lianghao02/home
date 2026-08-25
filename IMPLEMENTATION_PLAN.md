@@ -217,3 +217,24 @@
 - `security-check.ps1`：包含未追蹤檔案的掃描通過。
 - `git-verify.ps1`：通過 `git diff --check`；如預期列出本次尚未提交檔案。
 - `test.ps1`：可攜式 Python 已執行大部分單元測試；依賴 `main.py` 的測試因 `ModuleNotFoundError: tkinter` 未完成。
+
+---
+
+## 2026-08-24 技術架構文件同步
+
+### 目標與驗收條件
+
+- 12 個專案 README 與 CHANGELOG 都記錄實際主力技術、已完成遷移及未實作的技術邊界。
+- 修正 `06_System-Optimizer-Tool` 對 0.30 MB Framework-dependent 發行模式的說明。
+
+### 工作清單
+
+- [x] 盤點各專案現行語言、框架與舊版隔離目錄。
+- [x] 更新 12 個 README 與 CHANGELOG 的技術架構條目。
+- [x] 以 README／CHANGELOG 標記搜尋與 `git diff --check` 檢核文件異動。
+
+### 驗證紀錄
+
+- README 技術架構標記：12 個專案均已存在。
+- CHANGELOG 未發布條目：12 個專案均已存在。
+- `06` 的發行腳本及專案設定均確認為 `--self-contained false`／`SelfContained=false`。

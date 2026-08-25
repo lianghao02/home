@@ -1,19 +1,7 @@
 @echo off
-REM ==============================================================================
-REM  00_home - [6] «Ø¥ßÂù Agent ¨ó§@¤u§@°Ï
-REM
-REM  ¡i¥Î³~»¡©ú¡j¡G
-REM  ¬°«ü©w±M®×¤@Áä«Ø¥ß *-codex »P *-ag ¿W¥ß Git Worktree¡C
-REM  
-REM  ¡i¦ó®É»İ­n«Ø¥ß§P©w¼Ğ·Ç¡j¡G
-REM  ¡E ¤£»İ­n (90% ¤é±`)¡G³æ¤@ Agent ¶}µo©Î½ü¬y±µ¤O¡Aª½±µ¶}­ì±M®×§Y¥i¡C
-REM  ¡E »İ­n (10% ¯S®í)¡GÂù Agent ¦P®É¦b½u¶}¤u©Î¯}Ãa©Ê¤j¹êÅç¡AÁ×§K¼È¦s½ò½ñ¡C
-REM ==============================================================================
-
-title [6] «Ø¥ßÂù Agent ¨ó§@¤u§@°Ï
+chcp 65001 >nul
+title [6] å»ºç«‹é›™ Agent ç¨ç«‹å·¥ä½œå€ (Worktree)
 cd /d "%~dp0"
-
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\interactive_worktree.ps1"
-
 echo.
 pause

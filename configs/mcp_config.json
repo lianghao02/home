@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx.cmd",
+      "args": [
+        "-y",
+        "@playwright/mcp",
+        "--browser",
+        "chrome",
+        "--allow-unrestricted-file-access"
+      ]
+    },
+    "sqlite": {
+      "command": "npx.cmd",
+      "args": [
+        "-y",
+        "mcp-server-sqlite-npx",
+        "D:/Development/GitHub/00_home/cases.db"
+      ]
+    }
+  }
+}

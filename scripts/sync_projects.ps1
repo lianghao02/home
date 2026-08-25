@@ -13,7 +13,6 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 $config = [ordered]@{
     Manifest = Join-Path $projectRoot 'development-repositories.json'
     AgentSetup = Join-Path $PSScriptRoot 'sync_codex.ps1'
-    RootAgents = Join-Path $projectRoot 'configs\AGENTS.md'
 }
 
 function Test-IsDangerousPath([string]$PathToCheck) {
@@ -70,30 +69,6 @@ Write-Host ''
 if ($Execute -and -not (Test-Path -LiteralPath $root)) {
     New-Item -ItemType Directory -Path $root -Force | Out-Null
 }
-
-# 根目錄全域憲法維護
-$rootAgentsTarget = Join-Path $root 'AGENTS.md'
-$sourceAgentsHash = (Get-FileHash -LiteralPath $config.RootAgents -Algorithm SHA256).Hash
-$targetAgentsHash = if (Test-Path -LiteralPath $rootAgentsTarget -PathType Leaf) {
-    (Get-FileHash -LiteralPath $rootAgentsTarget -Algorithm SHA256).Hash
-} else { $null }
-
-if ($targetAgentsHash -eq $sourceAgentsHash) {
-    Write-Host "📌 根目錄憲法：✨ 已是最新版本 (AGENTS.md)"
-} elseif ($targetAgentsHash -and -not $Force) {
-    Write-Host "📌 根目錄憲法：⚠️  本機內容有異，已略過（可加 -Force 強制更新）"
-} else {
-    Write-Host "📌 根目錄憲法：📝 準備同步寫入至 $rootAgentsTarget"
-    if ($Execute) {
-        if ($targetAgentsHash) {
-            $backup = Join-Path $root ('AGENTS.backup-{0}.md' -f (Get-Date -Format 'yyyyMMdd-HHmmss'))
-            Copy-Item -LiteralPath $rootAgentsTarget -Destination $backup -Force
-        }
-        Copy-Item -LiteralPath $config.RootAgents -Destination $rootAgentsTarget -Force
-        Write-Host "📌 根目錄憲法：✅ 已成功部署至根目錄"
-    }
-}
-Write-Host '-----------------------------------------------------------------'
 
 $repoIndex = 0
 $totalRepos = $manifest.repositories.Count

@@ -1,16 +1,7 @@
 @echo off
-REM ==============================================================================
-REM  00_home - [5] ¦w¸Ë GitHub »P Playwright ¤u¨ã
-REM
-REM  ¡i¥Î³~»¡©ú¡j¡G
-REM  ·s¹q¸£Àô¹Òªì©l¤Æ±M¥Î¡C¦Û°ÊÀË¬d¨Ã¦w¸Ë Git for Windows¡B
-REM  GitHub CLI (gh) ¥H¤Î Web ¦Û°Ê¤Æ´ú¸Õ©Ò»İªº Playwright »P Chromium ®Ö¤ß¡C
-REM ==============================================================================
-
-title [5] ¦w¸Ë GitHub »P Playwright ¤u¨ã
+chcp 65001 >nul
+title [5] å®‰è£é–‹ç™¼è€…å·¥å…·èˆ‡ Playwright
 cd /d "%~dp0"
-
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\setup_developer_tools.ps1" -Execute
-
 echo.
 pause

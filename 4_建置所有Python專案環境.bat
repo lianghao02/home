@@ -1,17 +1,7 @@
 @echo off
-REM ==============================================================================
-REM  00_home - [4] «Ø¸m©Ò¦³ Python ±M®×Àô¹Ò
-REM
-REM  ¡i¥Î³~»¡©ú¡j¡G
-REM  ¦Û°Ê¬° 5 ­Ó Python ±M®× (01, 06, 07, 09, 10) ³¡¸p§K¦w¸Ëªº¥iÄâª©
-REM  Python 3.13 ¿W¥ßÀô¹Ò¨Ã¦Û°Ê¸É»ô requirements.txt ¬Û¨Ì®M¥ó¡C
-REM  ¨ã³Æ¦ÛÂ¡¯à¤O¡A·s¹q¸£©ÎÀô¹Ò·lÃa®É°õ¦æ¤@¦¸§Y¥i¡C
-REM ==============================================================================
-
-title [4] «Ø¸m©Ò¦³ Python ±M®×Àô¹Ò
+chcp 65001 >nul
+title [4] å»ºç½®æ‰€æœ‰ Python å°ˆæ¡ˆå¯æ”œç’°å¢ƒ
 cd /d "%~dp0"
-
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0setup_all_envs.ps1" %*
-
 echo.
 pause

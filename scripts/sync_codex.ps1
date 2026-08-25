@@ -1,5 +1,5 @@
 ﻿[CmdletBinding()]
-param([switch]$CheckOnly, [switch]$Force)
+param([switch]$CheckOnly, [switch]$Force, [switch]$PruneBackups)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -70,6 +70,10 @@ $items = @(
     @{ Source = Join-Path $homeRepo 'configs\AGENTS.md'; Target = Join-Path $codexHome 'AGENTS.md' },
     @{ Source = Join-Path $homeRepo 'configs\AGENTS.md'; Target = Join-Path $antigravityHome 'AGENTS.md' }
 )
+$mcpConfigSrc = Join-Path $homeRepo 'configs\mcp_config.json'
+if (Test-Path -LiteralPath $mcpConfigSrc -PathType Leaf) {
+    $items += @{ Source = $mcpConfigSrc; Target = Join-Path $antigravityHome 'mcp_config.json' }
+}
 $skillSets = @(
     @{ Name = '共用'; Skills = @($skillManifest.shared); Targets = @($codexSkillRoot, $antigravitySkillRoot) },
     @{ Name = 'Codex 專用'; Skills = @($skillManifest.codexOnly); Targets = @($codexSkillRoot) },
@@ -98,7 +102,7 @@ foreach ($dir in $availableSkillDirs) {
 }
 foreach ($item in $items) { Sync-ManagedItem $item.Source $item.Target $old $new }
 
-if (-not $CheckOnly) {
+if (-not $CheckOnly -and $PruneBackups) {
     $backupBase = Join-Path $codexHome 'bridge-backups'
     if (Test-Path -LiteralPath $backupBase) {
         $oldBackups = Get-ChildItem -LiteralPath $backupBase -Directory | Sort-Object CreationTime -Descending | Select-Object -Skip 10
@@ -106,7 +110,9 @@ if (-not $CheckOnly) {
             Remove-Item -LiteralPath $oldBackup.FullName -Recurse -Force -ErrorAction SilentlyContinue
         }
     }
+}
 
+if (-not $CheckOnly) {
     $result = [ordered]@{
         schemaVersion = 1
         source = $homeRepo

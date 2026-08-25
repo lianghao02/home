@@ -2,7 +2,8 @@
 param(
     [string]$DevelopmentRoot = '',
     [string]$CommitMessage = '',
-    [switch]$Execute
+    [switch]$Execute,
+    [switch]$ConfirmEach
 )
 
 $ErrorActionPreference = 'Stop'
@@ -134,6 +135,24 @@ foreach ($item in $manifest.repositories) {
         continue
     }
 
+    if ($hasWorkingChanges) {
+        $diffCheck = @(git -c "safe.directory=$safeTarget" -C "$target" diff --check 2>$null)
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "$prefix : ❌ 格式檢查失敗 (git diff --check)，已略過"
+            $totalSkipped++
+            continue
+        }
+    }
+
+    if ($ConfirmEach) {
+        $confirm = Read-Host "$prefix : 確定提交並推送上述範圍嗎？(Y/N)"
+        if ($confirm -notmatch '^(?i)y$') {
+            Write-Host "$prefix : 已依使用者選擇略過"
+            $totalSkipped++
+            continue
+        }
+    }
+
     # 執行實際 Commit 與 Push
     Write-Host "$prefix : ⏳ 正在處理推送 ($descStr)..."
 
@@ -148,6 +167,15 @@ foreach ($item in $manifest.repositories) {
 
         if ($LASTEXITCODE -ne 0) {
             Write-Host "$prefix : ❌ 暫存檔案失敗 (git add)"
+            $totalSkipped++
+            continue
+        }
+
+        $stagedDiff = [string](git -c "safe.directory=$safeTarget" -C "$target" diff --cached --no-ext-diff 2>$null)
+        $sensitivePattern = '(?im)(api[_-]?key|secret|token|password|private[_-]?key)\s*[:=]\s*["'']?[A-Za-z0-9_\-]{12,}'
+        if ($stagedDiff -match $sensitivePattern) {
+            $stagedFiles = @(git -c "safe.directory=$safeTarget" -C "$target" diff --cached --name-only 2>$null) -join '、'
+            Write-Host "$prefix : ⚠️  偵測到疑似敏感資料，已停止 Commit／Push。請檢查已暫存檔案：$stagedFiles"
             $totalSkipped++
             continue
         }

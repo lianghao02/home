@@ -1,70 +1,20 @@
 ---
 name: webapp-testing
-description: Toolkit for interacting with and testing local web applications using Playwright. Use when verifying frontend functionality, debugging UI behavior, or capturing browser screenshots.
+description: 使用 Codex 內建 Browser 或專案既有 Playwright 設定，驗證本機網頁功能、除錯 UI 行為與擷取證據。適用於前端功能驗證、互動除錯、視覺檢查與交付前 Web 實測；不得為此臨時安裝 Python Playwright 或改動專案相依套件。
 ---
 
-# Web Application Testing with Playwright
+# 網頁應用程式測試
 
-This skill provides a standardized workflow for AI coding agents to perform end-to-end (E2E) testing, frontend verification, and UI debugging on local web applications.
+## 執行順序
 
-## Workflow & Capabilities
+1. 先讀取專案的測試與啟動設定；沿用既有 `package.json`、Playwright 設定、測試指令或本機伺服器。
+2. 優先使用 Codex 內建 Browser 開啟 `http://localhost` 或安全的 `file://` 靜態頁面；等待可驗證的 DOM 狀態，不只依賴固定等待時間。
+3. 專案已具備 Node.js Playwright 時，才執行它既有的測試指令。不得為單次驗證執行 `pip install playwright`、下載瀏覽器或新增測試框架。
+4. 優先使用 `data-testid`、accessible role、label 選擇器；驗證主要流程、網址狀態、關鍵文字與錯誤訊息。
+5. 記錄必要的截圖、console error、未捕捉例外與實際操作結果；測試資料不得影響正式資料。
 
-### 1. Server Management
-- Use helper scripts (e.g., `scripts/with_server.py`) to handle local server lifecycles (frontend/backend).
-- Ensure clean shutdown of processes after test runs.
+## 回報
 
-### 2. Reconnaissance & Navigation
-- Navigate to local `http://` or `file://` URLs.
-- Wait for `networkidle` or specific DOM state before assertion.
-
-### 3. Element Discovery
-- Prefer resilient selectors (`data-testid`, accessible role/label).
-- Avoid brittle CSS selectors that break on minor style changes.
-
-### 4. Execution & Debugging
-- Execute Playwright scripts to simulate user interactions (click, fill, hover, keyboard).
-- Capture DOM snapshots, screenshots, and browser console logs for reporting.
-- Log all `console.error` and uncaught exceptions automatically.
-
-### 5. Assertion Standards
-- Assert element presence, text content, URL state, and responsive breakpoints.
-- Report all failures with exact selector, expected vs. actual values, and screenshot path.
-
-## Usage Pattern
-
-```python
-# 標準 Playwright 驗證流程（台灣繁體中文標注版）
-from playwright.sync_api import sync_playwright
-
-with sync_playwright() as p:
-    browser = p.chromium.launch()
-    page = browser.new_page()
-
-    # 1. 導航至目標頁面
-    page.goto("http://localhost:3000")
-    page.wait_for_load_state("networkidle")
-
-    # 2. 捕捉 Console 錯誤
-    errors = []
-    page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
-
-    # 3. 驗證關鍵元素
-    assert page.locator("[data-testid='submit-btn']").is_visible()
-
-    # 4. 截圖留存
-    page.screenshot(path="test_result.png")
-
-    browser.close()
-
-    # 5. 報告錯誤
-    if errors:
-        print(f"⚠️ Console 錯誤數量：{len(errors)}")
-        for e in errors:
-            print(f"  ❌ {e}")
-```
-
-## 與全域憲法整合
-
-- **真實驗證**：實際執行瀏覽器端驗證後才宣稱 UI 功能正常。
-- **測試隔離**：測試過程不得污染或破壞正式環境資料；必要時使用測試資料或模擬伺服器。
-- **套件依賴**：執行前確認環境已安裝必要套件（`pip install playwright && playwright install chromium`）。
+- 清楚標示通過、失敗或略過，以及實際測試情境。
+- 失敗時提供可重現步驟、預期與實際結果、相關選擇器或畫面證據。
+- 沒有可用伺服器、既有測試或 Browser 存取權限時，如實標示限制，不宣稱已完成 UI 驗證。

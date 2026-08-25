@@ -27,3 +27,6 @@ bridge-backups/
 python_embed/
 python-embed/
 downloads/*.zip
+*.db
+*.sqlite
+*.sqlite3

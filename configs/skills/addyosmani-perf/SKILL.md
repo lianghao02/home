@@ -36,7 +36,7 @@ description: Google 前端主管 Addy Osmani 的 Agent Skills 精華。補充網
 ### 2. 程式碼層級優化範例
 
 ```html
-<!-- ✅ 圖片懶加載與明確尺寸 -->
+<!-- ✅ 圖片延遲載入與明確尺寸 -->
 <img loading="lazy" src="photo.jpg" width="400" height="300" alt="說明">
 
 <!-- ✅ 關鍵樣式內嵌（適合單 HTML 頁面） -->

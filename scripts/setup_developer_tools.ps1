@@ -1,5 +1,5 @@
 ﻿[CmdletBinding()]
-param([switch]$Execute)
+param([switch]$Execute, [switch]$WithPlaywright)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -26,7 +26,8 @@ if (Test-Tool 'gh') { Write-Host 'GitHub CLI：已安裝' } else { Install-Winge
 if (Test-Tool 'node') { Write-Host 'Node.js：已安裝' } else { Install-WingetPackage 'OpenJS.NodeJS.LTS' 'Node.js LTS' }
 
 if (-not $Execute) {
-    Write-Host '預覽完成；加入 -Execute 才會安裝工具與瀏覽器。'
+    Write-Host '預覽完成；加入 -Execute 才會安裝 Git、GitHub CLI 與 Node.js。'
+    Write-Host 'Playwright 為選用工具；只有明確加入 -WithPlaywright 才會全域安裝。'
     exit 0
 }
 
@@ -38,10 +39,14 @@ if ($LASTEXITCODE -ne 0) {
     if ($LASTEXITCODE -ne 0) { throw 'GitHub 登入未完成。' }
 }
 
-Write-Host '正在安裝或更新 Playwright 與 Chromium…'
-& npm install --global playwright
-if ($LASTEXITCODE -ne 0) { throw 'Playwright 安裝失敗。' }
-& npx playwright install chromium
-if ($LASTEXITCODE -ne 0) { throw 'Chromium 安裝失敗。' }
+if ($WithPlaywright) {
+    Write-Host '正在安裝或更新選用的 Playwright 與 Chromium…'
+    & npm install --global playwright
+    if ($LASTEXITCODE -ne 0) { throw 'Playwright 安裝失敗。' }
+    & npx playwright install chromium
+    if ($LASTEXITCODE -ne 0) { throw 'Chromium 安裝失敗。' }
+} else {
+    Write-Host '已略過全域 Playwright；網頁驗證優先使用 Codex 內建 Browser 或專案既有測試設定。'
+}
 
-Write-Host '完成：Git、GitHub CLI、Playwright 與 Chromium 已可使用。'
+Write-Host '完成：Git、GitHub CLI 與 Node.js 已可使用。'

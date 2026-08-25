@@ -1,17 +1,13 @@
 @echo off
-REM ==============================================================================
-REM  00_home - [3] ¦P¨B¥ş°ì AI ¾Ëªk»P Skills
-REM
-REM  ¡i¥Î³~»¡©ú¡j¡G
-REM  ±N configs/ ªº¡u¥ş°ì¶}µo¾Ëªk v8.0¡v»P¡u10 ­Ó®Ö¤ß Skills¡v
-REM  ¨Ì¤À¬y²M³æ¦Û°Ê³¡¸p¦Ü¥»¾÷¨t²Î (%USERPROFILE%\.codex »P \.gemini)¡C
-REM  ¥u¦³¦b­×§ï¥À®w³W½d©Î·s¹q¸£Àô¹Ò³]©w®É¤~»İ­n°õ¦æ¡C
-REM ==============================================================================
-
-title [3] ¦P¨B¥ş°ì AI ¾Ëªk»P Skills
+chcp 65001 >nul
+title [3] åŒæ­¥ AI è¨­å®šèˆ‡ Skills
 cd /d "%~dp0"
-
+echo æ­£åœ¨æª¢æŸ¥è¨­å®šèˆ‡ Skills ä¸€è‡´æ€§...
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\sync_codex.ps1" -CheckOnly
+echo.
+set /p CONFIRM=è«‹è¼¸å…¥ YES ç¢ºèªåŒæ­¥: 
+if /I not "%CONFIRM%"=="YES" goto :end
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\sync_codex.ps1"
-
+:end
 echo.
 pause

@@ -1,10 +1,16 @@
 # LiangHao 開發環境入口
 
-本 Repository 保存全域開發憲法 v8.0、共用 Agent Skills、12 個開發 Repository 清單，以及 Windows 環境重建與一鍵自癒佈置腳本。目前版本為 **v1.4.0**。
+本 Repository 保存全域開發憲法 v8.1、共用 Agent Skills、12 個開發 Repository 清單，以及 Windows 環境重建與一鍵自癒佈置腳本。目前版本為 **v1.4.0**。
+
+## 技術架構現況（2026-08-24）
+
+- 工作區主力技術依專案用途分流：AI 鑑識與行政自動化維持 Python、免安裝資料工具維持純 Web、Windows 原生工具採 C#／.NET 8／WPF。
+- `03_Police-Image-Toolkit` 與 `06_System-Optimizer-Tool` 已完成 C#／.NET 8／WPF 遷移；舊版分別封存於 `legacy_web/` 與 `legacy-python/`，供回歸比對與備援。
+- `04_Photo-Report-Generator` 已為純前端 SPA，並不依賴 VBA 或 Microsoft Office；其餘專案尚未進行 Rust、Tauri 或 TypeScript 遷移。
 
 ## 下載、需求與執行入口
 
-- **用途**：集中管理專案清單、Git 同步、Codex／Antigravity 規則與 5 個 Python 專案的可攜環境。
+- **用途**：集中管理專案清單、Git 同步、Codex／Antigravity 規則，以及仍採 Python 的專案可攜環境。
 - **必要軟體**：Windows 10/11、Git for Windows、Windows PowerShell 5.1 以上；管理功能本身不要求先安裝 Python。
 - **下載**：`git clone https://github.com/lianghao02/home.git 00_home`。
 - **主要入口**：一般使用者直接雙擊根目錄的 `0_`～`4_` 批次檔；進階使用者可執行 `scripts/` 下對應 PowerShell 腳本。
@@ -18,7 +24,7 @@
 - `1_推送所有專案至GitHub.bat`：一鍵自動 Commit 並推播所有修改至 GitHub。
 - `2_從GitHub更新所有專案.bat`：一鍵從 GitHub 更新所有專案進度，自動 Clone 缺漏專案並部署 AI 規範。
 - `3_同步AI設定與Skills.bat`：獨立同步全域憲法與共用 Agent Skills 至 Codex / Antigravity。
-- `4_建置所有Python專案環境.bat`：一鍵自動為 5 個 Python 專案（`01`, `06`, `07`, `09`, `10`）佈置免安裝的可攜版 Python 3.13 獨立環境與相依套件。
+- `4_建置所有Python專案環境.bat`：供仍採 Python 的專案建立可攜版 Python 3.13 環境；`06` 的主力發行版已改為 C#／.NET，不應將其視為 Python 主程式。
 - `5_安裝GitHub與Playwright工具.bat`：新電腦首次使用時，安裝 Git、GitHub CLI、Playwright 與 Chromium；需要 GitHub 網頁登入授權。
 - `6_建立雙Agent工作區.bat`：選單式一鍵建立指定專案的 `*-codex` 與 `*-ag` 獨立 Worktree，支援自動預覽與確認機制。
 
