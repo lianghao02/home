@@ -13,7 +13,7 @@
 - **用途**：集中管理專案清單、Git 同步、Codex／Antigravity 規則，以及仍採 Python 的專案可攜環境。
 - **必要軟體**：Windows 10/11、Git for Windows、Windows PowerShell 5.1 以上；管理功能本身不要求先安裝 Python。
 - **下載**：`git clone https://github.com/lianghao02/home.git 00_home`。
-- **主要入口**：一般使用者直接雙擊根目錄的 `0_`～`4_` 批次檔；進階使用者可執行 `scripts/` 下對應 PowerShell 腳本。
+- **主要入口**：一般使用者直接雙擊根目錄的 `0_`～`6_` 批次檔；進階使用者可執行 `scripts/` 下對應 PowerShell 腳本。
 - **網路需求**：Clone、Pull、Push 與首次下載 Python 可攜核心時需要網路；若 `downloads/` 已有安裝母檔，Python 環境可離線建置。
 - **打包方式**：本專案是管理腳本集合，不需編譯或安裝；備份時保留完整資料夾即可。
 
@@ -25,7 +25,7 @@
 - `2_從GitHub更新所有專案.bat`：一鍵從 GitHub 更新所有專案進度，自動 Clone 缺漏專案並部署 AI 規範。
 - `3_同步AI設定與Skills.bat`：獨立同步全域憲法與共用 Agent Skills 至 Codex / Antigravity。
 - `4_建置所有Python專案環境.bat`：供仍採 Python 的專案建立可攜版 Python 3.13 環境；`06` 的主力發行版已改為 C#／.NET，不應將其視為 Python 主程式。
-- `5_安裝GitHub與Playwright工具.bat`：新電腦首次使用時，安裝 Git、GitHub CLI、Playwright 與 Chromium；需要 GitHub 網頁登入授權。
+- `5_安裝GitHub與Playwright工具.bat`：一鍵檢測與安裝系統語言環境（Python 3.13, .NET 8, Node.js, Git, gh, Playwright, Rust），支援狀態診斷與 winget 自動補齊。
 - `6_建立雙Agent工作區.bat`：選單式一鍵建立指定專案的 `*-codex` 與 `*-ag` 獨立 Worktree，支援自動預覽與確認機制。
 
 ## 新電腦快速開始
