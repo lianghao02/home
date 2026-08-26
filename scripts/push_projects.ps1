@@ -1,4 +1,4 @@
-# UTF-8 Compatibility
+﻿# UTF-8 Compatibility
 param(
 
 
@@ -923,7 +923,7 @@ foreach ($item in $manifest.repositories) {
 
 
 
-        $null = git -c "safe.directory=$safeTarget" -c core.safecrlf=false -C "$target" push origin HEAD 2>$null
+        $null = git -c "safe.directory=$safeTarget" -c core.safecrlf=false -C "$target" push 2>$null
 
 
 
