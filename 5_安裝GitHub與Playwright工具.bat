@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 chcp 65001 >nul
 title [5] 安裝開發者工具與 Playwright
 cd /d "%~dp0"

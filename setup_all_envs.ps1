@@ -1,4 +1,5 @@
-﻿[CmdletBinding()]
+﻿# PowerShell UTF-8 Compatibility
+[CmdletBinding()]
 param(
     [string]$DevelopmentRoot = '',
     [switch]$Force
@@ -6,6 +7,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 
 if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
     $parent = Split-Path -Parent $PSScriptRoot
@@ -22,7 +27,6 @@ $root = [IO.Path]::GetFullPath($DevelopmentRoot)
 $pyProjects = @(
     '01_AG-Monitor-Forensics',
     '07_auto-learning-bot',
-    '09_PaperSwitch',
     '10_Smart-Photo-Organizer'
 )
 

@@ -1,4 +1,5 @@
-﻿[CmdletBinding()]
+﻿# PowerShell UTF-8 Compatibility
+[CmdletBinding()]
 param(
     [switch]$CheckOnly,
     [switch]$Execute,
@@ -9,6 +10,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 
 $homeRepo = Split-Path -Parent $PSScriptRoot
 $githubRoot = Split-Path -Parent $homeRepo
@@ -153,7 +158,10 @@ function Install-WingetPackage([string]$Id, [string]$Name) {
         Write-Host ("⚠️  winget 靜默安裝傳回代碼 " + $LASTEXITCODE + "，嘗試一般模式安裝...") -ForegroundColor Yellow
         & winget install --id $Id --exact --source winget --accept-package-agreements --accept-source-agreements
         if ($LASTEXITCODE -ne 0) {
-            throw ("安裝失敗：" + $Name + " (" + $Id + ")")
+            Write-Host ("❌ 安裝失敗：" + $Name + "（結束代碼: " + $LASTEXITCODE + "）") -ForegroundColor Red
+            Write-Host ("💡 提示：此工具通常需要系統管理員權限，請嘗試以「系統管理員身分執行」此批次檔，或手動執行：") -ForegroundColor Yellow
+            Write-Host ("   winget install --id " + $Id + " --exact") -ForegroundColor Cyan
+            return
         }
     }
     Write-Host ("✅ 安裝完成：" + $Name) -ForegroundColor Green
@@ -211,8 +219,8 @@ if ($cppBuildTools.Installed) {
 Write-Host "  ℹ️  Tauri 建置需 Node.js、Rust／Cargo、C++ Build Tools；執行成品需 WebView2 Runtime。" -ForegroundColor DarkCyan
 
 Write-Host ""
-Write-Host "【三、 四大 Python 專案獨立可攜環境 (python_embed) 檢測】" -ForegroundColor Yellow
-$pyProjects = @('01_AG-Monitor-Forensics', '07_auto-learning-bot', '09_PaperSwitch', '10_Smart-Photo-Organizer')
+Write-Host "【三、 三大 Python 專案獨立可攜環境 (python_embed) 檢測】" -ForegroundColor Yellow
+$pyProjects = @('01_AG-Monitor-Forensics', '07_auto-learning-bot', '10_Smart-Photo-Organizer')
 $missingPyEnvs = @()
 
 foreach ($p in $pyProjects) {
@@ -312,7 +320,7 @@ if ($missingEssentials.Count -gt 0) {
     Write-Host "🎉 系統核心語言與工具鏈完全健康！" -ForegroundColor Green
     Write-Host ""
     Write-Host "選用操作：" -ForegroundColor DarkCyan
-    Write-Host "  [1] 重新建置四大 Python 專案可攜環境 (setup_all_envs.ps1)" -ForegroundColor White
+    Write-Host "  [1] 重新建置三大 Python 專案可攜環境 (setup_all_envs.ps1)" -ForegroundColor White
     Write-Host "  [2] 安裝選用 Playwright 與 Chromium 瀏覽器" -ForegroundColor White
     Write-Host "  [3] 安裝選用 Rust & Cargo (用於 Tauri / 原生模組編譯)" -ForegroundColor White
     Write-Host "  [Q] 結束離開" -ForegroundColor DarkGray

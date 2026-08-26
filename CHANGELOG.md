@@ -1,6 +1,14 @@
 # 📜 變更歷史 (CHANGELOG)
 
-## 未發布（2026-08-24）
+## 未發布（2026-08-26）
+- **批次檔編碼標準化**：根目錄 7 個 `.bat` 批次檔全數改採 UTF-8 with BOM 與標準 Windows CRLF 行尾，徹底排除 CMD.exe 雙擊啟動時解析中文造成的語法錯誤、標籤跳轉失敗與閃退。
+- **控制台編碼強化**：所有核心 PowerShell 腳本強制設定 `[Console]::OutputEncoding = UTF8`，杜絕 PowerShell 5.1 在繁體中文環境預設 CP950 引起的終端問號與方塊亂碼。
+- **AI 設定同步容錯自癒**：修復 `sync_codex.ps1` 遇 0 位元組空檔案（如未配置的 `mcp_config.json`）直接崩潰的臭蟲，並優化預覽模式為非中斷警告。
+- **00_home 免 Git 自癒升級**：`sync_projects.ps1` 新增非 Git 目錄自癒機制，若新電腦以 ZIP 下載解壓，執行更新時會自動初始化為標準 Git 版本庫並連結遠端。
+- **Python 專案清單校準**：將已全面升級為 C# .NET 8 原生架構的 `09_PaperSwitch` 自主力 Python 可攜清單移除，確保三大 Python 專案（`01`, `07`, `10`）建置與健康診斷 100% 綠燈。
+- **工具鏈安裝容錯**：`setup_developer_tools.ps1` 針對權限不足的 winget 安裝失敗加入明確導引提示，避免拋出未捕獲中斷例外。
+
+## 2026-08-24
 - **技術盤點文件**：README 明列工作區的實際技術分流，以及 `03`、`06` 已完成 C#／.NET 8／WPF 遷移的狀態。
 - **說明校正**：將 `06` 自主力 Python 可攜專案清單移除，保留其歷史 Python 備援版本的定位。
 - **環境管理校準**：第 5 支工具改以核心／建議／選配分級檢測語言環境；Node.js 不再列為全域必要項目，Rust、WebView2 Runtime 與 C++ Build Tools 僅於 Tauri 工作需要時提示。

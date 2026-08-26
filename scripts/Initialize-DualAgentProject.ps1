@@ -1,8 +1,13 @@
-﻿[CmdletBinding(SupportsShouldProcess)]
+﻿# PowerShell UTF-8 Compatibility
+[CmdletBinding(SupportsShouldProcess)]
 param([Parameter(Mandatory)][string]$Project)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 $homeRepo = Split-Path -Parent $PSScriptRoot
 $root = Split-Path -Parent $homeRepo
 $repo = if (Test-Path -LiteralPath $Project) { [IO.Path]::GetFullPath($Project) } else { Join-Path $root $Project }

@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 chcp 65001 >nul
 title [3] 同步 AI 設定與 Skills
 cd /d "%~dp0"

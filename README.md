@@ -5,7 +5,7 @@
 ## 技術架構現況（2026-08-24）
 
 - 工作區主力技術依專案用途分流：AI 鑑識與行政自動化維持 Python、免安裝資料工具維持純 Web、Windows 原生工具採 C#／.NET 8／WPF。
-- `03_Police-Image-Toolkit` 與 `06_System-Optimizer-Tool` 已完成 C#／.NET 8／WPF 遷移；舊版分別封存於 `legacy_web/` 與 `legacy-python/`，供回歸比對與備援。
+- `03_Police-Image-Toolkit`、`06_System-Optimizer-Tool` 與 `09_PaperSwitch` 已完成 C#／.NET 8／WPF 遷移；舊版分別封存於 `legacy_web/` 與 `legacy-python/`，供回歸比對與備援。
 - `04_Photo-Report-Generator` 已為純前端 SPA，並不依賴 VBA 或 Microsoft Office；其餘專案尚未進行 Rust、Tauri 或 TypeScript 遷移。
 
 ## 下載、需求與執行入口
@@ -24,7 +24,7 @@
 - `1_推送所有專案至GitHub.bat`：一鍵自動 Commit 並推播所有修改至 GitHub。
 - `2_從GitHub更新所有專案.bat`：一鍵從 GitHub 更新所有專案進度，自動 Clone 缺漏專案並部署 AI 規範。
 - `3_同步AI設定與Skills.bat`：獨立同步全域憲法與共用 Agent Skills 至 Codex / Antigravity。
-- `4_建置所有Python專案環境.bat`：供仍採 Python 的專案建立可攜版 Python 3.13 環境；`06` 的主力發行版已改為 C#／.NET，不應將其視為 Python 主程式。
+- `4_建置所有Python專案環境.bat`：供仍採 Python 的專案（`01`, `07`, `10`）建立可攜版 Python 3.13 環境；`06` 與 `09` 的主力發行版已改為 C#／.NET，不應將其視為 Python 主程式。
 - `5_安裝GitHub與Playwright工具.bat`：開發工具與語言環境管理入口；核心檢測／安裝 Git、GitHub CLI、Python 3.13 與 .NET 8，並提示 Node.js、Rust、WebView2 Runtime、C++ Build Tools 與 Playwright 的適用時機。選配元件不會自動安裝。
 - `6_建立雙Agent工作區.bat`：選單式一鍵建立指定專案的 `*-codex` 與 `*-ag` 獨立 Worktree，支援自動預覽與確認機制。
 

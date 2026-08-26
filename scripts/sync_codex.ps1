@@ -1,8 +1,13 @@
-﻿[CmdletBinding()]
+﻿# PowerShell UTF-8 Compatibility
+[CmdletBinding()]
 param([switch]$CheckOnly, [switch]$Force, [switch]$PruneBackups)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 
 $homeRepo = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
 $githubRoot = Split-Path -Parent $homeRepo
@@ -37,13 +42,34 @@ function Sync-ManagedItem([string]$Source, [string]$Target, [hashtable]$Old, [ha
 
     $New[$Target] = $sourceHash
     if ($targetHash -eq $sourceHash) { Write-Output "Current: $Target"; return }
-    if ($targetHash -and -not $knownHash -and -not $Force) {
+
+    $isEmptyFile = $false
+    if ($targetHash -and (Test-Path -LiteralPath $Target -PathType Leaf)) {
+        $targetItem = Get-Item -LiteralPath $Target
+        if ($targetItem.Length -eq 0) {
+            $isEmptyFile = $true
+        }
+    }
+
+    if ($CheckOnly) {
+        if ($targetHash -and -not $knownHash -and -not $isEmptyFile) {
+            Write-Warning "Unmanaged (未受管項目，正式同步需 -Force): $Target"
+            return
+        }
+        if ($targetHash -and $knownHash -and $targetHash -ne $knownHash) {
+            Write-Warning "Modified (曾被修改，正式同步需 -Force): $Target"
+            return
+        }
+        Write-Output "Pending: $Target"
+        return
+    }
+
+    if ($targetHash -and -not $knownHash -and -not $Force -and -not $isEmptyFile) {
         throw "Target exists but is not managed; refusing overwrite: $Target"
     }
     if ($targetHash -and $knownHash -and $targetHash -ne $knownHash -and -not $Force) {
         throw "Target was modified after deployment; refusing overwrite: $Target"
     }
-    if ($CheckOnly) { Write-Output "Pending: $Target"; return }
 
     New-Item -ItemType Directory -Path (Split-Path -Parent $Target) -Force | Out-Null
     if (Test-Path -LiteralPath $Target) {

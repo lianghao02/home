@@ -1,4 +1,5 @@
-﻿[CmdletBinding()]
+﻿# PowerShell UTF-8 Compatibility
+[CmdletBinding()]
 param(
     [string]$DevelopmentRoot = '',
     [switch]$Execute,
@@ -8,6 +9,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $config = [ordered]@{
@@ -101,8 +106,24 @@ foreach ($item in $manifest.repositories) {
     }
 
     if (-not (Test-Path -LiteralPath (Join-Path $target '.git'))) {
-        Write-Host "$prefix : ⚠️  已略過（本機已存在但非 Git 專案）"
-        continue
+        if ($folderName -eq '00_home' -and $Execute) {
+            Write-Host "$prefix : 🛠️  本機缺少 .git，正在自動初始化並連結遠端..."
+            $oldEap = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            try {
+                git -C "$target" init 2>$null
+                git -C "$target" remote add origin "$url" 2>$null
+                git -C "$target" fetch origin main 2>$null
+                git -C "$target" branch -M main 2>$null
+                git -C "$target" reset --mixed origin/main 2>$null
+            } finally {
+                $ErrorActionPreference = $oldEap
+            }
+            Write-Host "$prefix : ✅ 已完成 Git 版本庫自癒連結"
+        } else {
+            Write-Host "$prefix : ⚠️  已略過（本機已存在但非 Git 專案）"
+            continue
+        }
     }
 
     $oldEap = $ErrorActionPreference

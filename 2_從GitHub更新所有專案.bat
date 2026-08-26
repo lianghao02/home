@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 chcp 65001 >nul
 title [2] 從 GitHub 更新所有專案
 cd /d "%~dp0"

@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 chcp 65001 >nul
 title [1] 推送所有專案至 GitHub
 cd /d "%~dp0"

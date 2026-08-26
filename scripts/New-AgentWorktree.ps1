@@ -1,4 +1,5 @@
-﻿[CmdletBinding(SupportsShouldProcess)]
+﻿# PowerShell UTF-8 Compatibility
+[CmdletBinding(SupportsShouldProcess)]
 param(
     [Parameter(Mandatory)] [string]$Project,
     [Parameter(Mandatory)] [ValidateSet('codex', 'ag', 'both')] [string]$Agent,
@@ -7,6 +8,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 
 function Invoke-Git { param([string]$Repository, [string[]]$Arguments)
     $safePath = $Repository.Replace('\', '/')

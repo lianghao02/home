@@ -1,8 +1,13 @@
-﻿[CmdletBinding()]
+﻿# PowerShell UTF-8 Compatibility
+[CmdletBinding()]
 param()
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 
 $homeRepo = Split-Path -Parent $PSScriptRoot
 $githubRoot = Split-Path -Parent $homeRepo
