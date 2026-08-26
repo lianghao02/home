@@ -32,25 +32,35 @@ function Get-ToolInfo([string]$CommandName, [string]$VersionArg = '--version') {
     if ($CommandName -eq 'dotnet') {
         $sdkList = @(& dotnet --list-sdks 2>$null)
         $runtimeList = @(& dotnet --list-runtimes 2>$null)
-        if ($sdkList.Count -gt 0) {
-            $latestSdk = (($sdkList | Select-Object -Last 1) -split '\s+')[0]
+        $net8Sdk = @($sdkList | Where-Object { $_ -match '^8\.' } | Select-Object -Last 1)
+        if ($net8Sdk.Count -gt 0) {
+            $latestSdk = (($net8Sdk[0] -split '\s+')[0])
             return [ordered]@{
                 Installed = $true
                 Path      = $cmd.Source
-                Version   = (".NET SDK " + $latestSdk + " (含 Desktop Runtime)")
+                Version   = (".NET 8 SDK " + $latestSdk + "（含 Desktop Runtime）")
             }
-        } elseif ($runtimeList.Count -gt 0) {
-            $desktop = $runtimeList | Where-Object { $_ -match 'WindowsDesktop\.App\s+([\d\.]+)' } | Select-Object -First 1
-            $ver = if ($desktop -and $desktop -match 'WindowsDesktop\.App\s+([\d\.]+)') { $matches[1] } else { '8.0' }
+        }
+
+        $desktop = @($runtimeList | Where-Object { $_ -match 'WindowsDesktop\.App\s+8\.' } | Select-Object -Last 1)
+        if ($desktop.Count -gt 0) {
+            $ver = if ($desktop[0] -match 'WindowsDesktop\.App\s+([\d\.]+)') { $matches[1] } else { '8.0' }
             return [ordered]@{
                 Installed = $true
                 Path      = $cmd.Source
-                Version   = (".NET " + $ver + " Desktop Runtime (執行環境就緒)")
+                Version   = (".NET 8 Desktop Runtime " + $ver + "（可執行 WPF 發行檔）")
             }
+        }
+
+        return [ordered]@{
+            Installed = $false
+            Path      = $cmd.Source
+            Version   = '.NET 8 SDK／Desktop Runtime 未安裝'
         }
     }
 
     $verStr = $null
+    $isUsable = $false
     try {
         $pinfo = New-Object System.Diagnostics.ProcessStartInfo
         $pinfo.FileName = $cmd.Source
@@ -65,24 +75,71 @@ function Get-ToolInfo([string]$CommandName, [string]$VersionArg = '--version') {
         $finished = $proc.WaitForExit(3000)
         if (-not $finished) {
             $proc.Kill()
+            $verStr = '指令逾時，無法確認可用性'
         } else {
             $raw = ($output + "`n" + $err).Trim()
             $firstLine = ($raw -split "`r?`n" | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
-            $verStr = if ($firstLine) { $firstLine.Trim() } else { "已安裝 (版本未知)" }
+            if ($proc.ExitCode -eq 0 -and $firstLine) {
+                $verStr = $firstLine.Trim()
+                $isUsable = $true
+            } else {
+                $verStr = if ($firstLine) { $firstLine.Trim() } else { '指令無法執行' }
+            }
         }
     } catch {
-        $verStr = "已安裝 (無法取得版本)"
+        $verStr = '指令無法執行'
     }
-    
-    if ([string]::IsNullOrWhiteSpace($verStr)) {
-        $verStr = "已安裝"
+
+    if ($CommandName -eq 'python' -and $isUsable) {
+        $pythonVersion = [Version]'0.0'
+        if ($verStr -match '(?i)python\s+(\d+\.\d+(?:\.\d+)?)') {
+            $pythonVersion = [Version]$matches[1]
+        }
+        if ($pythonVersion -lt [Version]'3.13') {
+            $isUsable = $false
+            $verStr = "$verStr（需要 Python 3.13 以上）"
+        }
     }
 
     return [ordered]@{
-        Installed = $true
+        Installed = $isUsable
         Path      = $cmd.Source
         Version   = $verStr
     }
+}
+
+function Get-WebView2Info {
+    $registryRoots = @(
+        'HKLM:\SOFTWARE\Microsoft\EdgeUpdate\Clients',
+        'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients'
+    )
+
+    foreach ($registryRoot in $registryRoots) {
+        if (-not (Test-Path -LiteralPath $registryRoot)) { continue }
+        foreach ($entry in (Get-ChildItem -LiteralPath $registryRoot -ErrorAction SilentlyContinue)) {
+            $properties = Get-ItemProperty -LiteralPath $entry.PSPath -ErrorAction SilentlyContinue
+            if (([string]$properties.name) -match 'WebView2') {
+                $version = if ($properties.pv) { [string]$properties.pv } else { '已安裝（版本未知）' }
+                return [ordered]@{ Installed = $true; Version = $version }
+            }
+        }
+    }
+
+    return [ordered]@{ Installed = $false; Version = $null }
+}
+
+function Get-CppBuildToolsInfo {
+    $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+    if (-not (Test-Path -LiteralPath $vswhere -PathType Leaf)) {
+        return [ordered]@{ Installed = $false; Version = $null }
+    }
+
+    $installation = @(& $vswhere -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property displayName 2>$null)
+    if ($installation.Count -gt 0) {
+        return [ordered]@{ Installed = $true; Version = ([string]$installation[0]).Trim() }
+    }
+
+    return [ordered]@{ Installed = $false; Version = $null }
 }
 
 function Install-WingetPackage([string]$Id, [string]$Name) {
@@ -102,14 +159,14 @@ function Install-WingetPackage([string]$Id, [string]$Name) {
     Write-Host ("✅ 安裝完成：" + $Name) -ForegroundColor Green
 }
 
-# 定義核心與選用語言環境清單
+# 核心環境供目前專案直接使用；建議／選配環境僅在對應工作開始時安裝。
 $toolDefinitions = @(
-    [ordered]@{ Key = 'git';    Name = 'Git for Windows';  WingetId = 'Git.Git';              VerArg = '--version'; Essential = $true },
-    [ordered]@{ Key = 'gh';     Name = 'GitHub CLI';       WingetId = 'GitHub.cli';          VerArg = '--version'; Essential = $true },
-    [ordered]@{ Key = 'python'; Name = 'Python (3.13+)';   WingetId = 'Python.Python.3.13';   VerArg = '--version'; Essential = $true },
-    [ordered]@{ Key = 'dotnet'; Name = '.NET 8.0 (SDK/RT)'; WingetId = 'Microsoft.DotNet.SDK.8'; VerArg = '--version'; Essential = $true },
-    [ordered]@{ Key = 'node';   Name = 'Node.js LTS';      WingetId = 'OpenJS.NodeJS.LTS';    VerArg = '--version'; Essential = $true },
-    [ordered]@{ Key = 'cargo';  Name = 'Rust and Cargo';   WingetId = 'Rustlang.Rustup';      VerArg = '--version'; Essential = $false }
+    [ordered]@{ Key = 'git';    Name = 'Git for Windows';          WingetId = 'Git.Git';               VerArg = '--version'; Tier = '核心'; Essential = $true },
+    [ordered]@{ Key = 'gh';     Name = 'GitHub CLI';               WingetId = 'GitHub.cli';           VerArg = '--version'; Tier = '核心'; Essential = $true },
+    [ordered]@{ Key = 'python'; Name = 'Python 3.13+';             WingetId = 'Python.Python.3.13';    VerArg = '--version'; Tier = '核心'; Essential = $true },
+    [ordered]@{ Key = 'dotnet'; Name = '.NET 8 SDK／Desktop Runtime'; WingetId = 'Microsoft.DotNet.SDK.8'; VerArg = '--version'; Tier = '核心'; Essential = $true },
+    [ordered]@{ Key = 'node';   Name = 'Node.js LTS（Web／Tauri 建置）'; WingetId = 'OpenJS.NodeJS.LTS'; VerArg = '--version'; Tier = '建議'; Essential = $false },
+    [ordered]@{ Key = 'cargo';  Name = 'Rust／Cargo（Tauri／原生模組）'; WingetId = 'Rustlang.Rustup'; VerArg = '--version'; Tier = '選配'; Essential = $false }
 )
 
 Write-Header "🛠️  開發語言環境與工具鏈狀態診斷 (Developer Environment Manager)"
@@ -123,7 +180,7 @@ foreach ($def in $toolDefinitions) {
     $info = Get-ToolInfo -CommandName $def.Key -VersionArg $def.VerArg
     $toolResults[$def.Key] = $info
     
-    $tag = if ($def.Essential) { "[核心]" } else { "[選用]" }
+    $tag = "[$($def.Tier)]"
     if ($info.Installed) {
         Write-Host ("  ✅ {0,-6} {1,-18} : {2}" -f $tag, $def.Name, $info.Version) -ForegroundColor Green
         Write-Host ("     路徑: " + $info.Path) -ForegroundColor DarkGray
@@ -132,13 +189,29 @@ foreach ($def in $toolDefinitions) {
             Write-Host ("  ❌ {0,-6} {1,-18} : 未安裝 (Winget ID: {2})" -f $tag, $def.Name, $def.WingetId) -ForegroundColor Red
             $missingEssentials += $def
         } else {
-            Write-Host ("  ⚪ {0,-6} {1,-18} : 未安裝 (選配元件)" -f $tag, $def.Name) -ForegroundColor DarkGray
+            Write-Host ("  ⚪ {0,-6} {1,-30} : 未安裝（{2}元件）" -f $tag, $def.Name, $def.Tier) -ForegroundColor DarkGray
         }
     }
 }
 
 Write-Host ""
-Write-Host "【二、 四大 Python 專案獨立可攜環境 (python_embed) 檢測】" -ForegroundColor Yellow
+Write-Host "【二、 Tauri 桌面封裝前置元件（僅檢測，不自動安裝）】" -ForegroundColor Yellow
+$webView2 = Get-WebView2Info
+if ($webView2.Installed) {
+    Write-Host ("  ✅ WebView2 Runtime                : " + $webView2.Version) -ForegroundColor Green
+} else {
+    Write-Host "  ⚪ WebView2 Runtime                : 未偵測到；執行 Tauri 成品前請先安裝。" -ForegroundColor Yellow
+}
+$cppBuildTools = Get-CppBuildToolsInfo
+if ($cppBuildTools.Installed) {
+    Write-Host ("  ✅ C++ Build Tools                 : " + $cppBuildTools.Version) -ForegroundColor Green
+} else {
+    Write-Host "  ⚪ C++ Build Tools                 : 未偵測到；開始編譯 Tauri 時再安裝即可。" -ForegroundColor DarkGray
+}
+Write-Host "  ℹ️  Tauri 建置需 Node.js、Rust／Cargo、C++ Build Tools；執行成品需 WebView2 Runtime。" -ForegroundColor DarkCyan
+
+Write-Host ""
+Write-Host "【三、 四大 Python 專案獨立可攜環境 (python_embed) 檢測】" -ForegroundColor Yellow
 $pyProjects = @('01_AG-Monitor-Forensics', '07_auto-learning-bot', '09_PaperSwitch', '10_Smart-Photo-Organizer')
 $missingPyEnvs = @()
 
@@ -194,6 +267,8 @@ if ($Execute) {
             & npm install --global playwright
             & npx playwright install chromium
             Write-Host "✅ Playwright 與 Chromium 安裝完成。" -ForegroundColor Green
+        } else {
+            Write-Host "⚠️  未安裝 Node.js，無法安裝 Playwright；請先安裝建議元件 Node.js LTS。" -ForegroundColor Yellow
         }
     }
 
