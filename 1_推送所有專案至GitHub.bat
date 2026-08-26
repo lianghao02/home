@@ -7,7 +7,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\push_proje
 echo.
 set /p CONFIRM=請輸入 YES 確認推送所有專案: 
 if /I not "%CONFIRM%"=="YES" goto :end
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\push_projects.ps1" -Execute -ConfirmEach
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\push_projects.ps1" -Execute
 :end
 echo.
 pause

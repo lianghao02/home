@@ -1,4 +1,4 @@
-﻿# UTF-8 Compatibility
+# UTF-8 Compatibility
 [CmdletBinding()]
 param()
 
@@ -81,8 +81,8 @@ try {
 
 Write-Host ""
 Write-Host "-----------------------------------------------------------------" -ForegroundColor DarkCyan
-$confirm = Read-Host "確定要正式建立上述雙 Agent 工作區嗎？(Y/N)"
-if ($confirm -notmatch '^(?i)y$') {
+$confirm = Read-Host "確定要正式建立上述雙 Agent 工作區嗎？[預設 Y，輸入 N 取消]"
+if ($confirm -match '^(?i)n(o)?$') {
     Write-Host "已取消建立。" -ForegroundColor Yellow
     return
 }

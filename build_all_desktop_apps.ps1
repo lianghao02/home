@@ -126,16 +126,6 @@ if ($missingScripts.Count -gt 0) {
     throw "缺少發布腳本，已取消：$names"
 }
 
-if (-not $Force) {
-    Write-Host ''
-    Write-Host '注意：個別專案的建置腳本會重新編譯並覆寫該專案的舊發行目錄。' -ForegroundColor Yellow
-    $answer = Read-Host '輸入 Y 後開始建置，其餘輸入取消'
-    if ($answer -notmatch '^(?i)y(es)?$') {
-        Write-Host '已取消，未開始建置。' -ForegroundColor Yellow
-        return
-    }
-}
-
 $results = [System.Collections.Generic.List[object]]::new()
 
 foreach ($project in $selectedProjects) {
@@ -157,7 +147,7 @@ foreach ($project in $selectedProjects) {
         if (-not (Test-Path -LiteralPath $exePath)) {
             # 容錯尋找該專案 dist 底下的任何 exe
             $pRoot = Split-Path (Split-Path $project.BuildScript)
-            $foundExe = Get-ChildItem -Path $pRoot -Filter "*.exe" -Recurse -File | Where-Object { $_.FullName -notmatch '\(obj|bin)\' } | Select-Object -First 1
+            $foundExe = Get-ChildItem -Path $pRoot -Filter "*.exe" -Recurse -File | Where-Object { $_.FullName -notmatch '\\(obj|bin)\\' } | Select-Object -First 1
             if ($foundExe) {
                 $exePath = $foundExe.FullName
             } else {
