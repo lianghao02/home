@@ -38,6 +38,46 @@
 
 ---
 
+## 2026-08-26 集中建置桌面應用程式
+
+### 目標與驗收條件
+
+- 在 `00_home` 提供一個可由任何目前工作目錄執行的 PowerShell 腳本與同風格 BAT 捷徑。
+- 一次發布目前具原生 Windows 發行契約的 `03_Police-Image-Toolkit`、`06_System-Optimizer-Tool`、`09_PaperSwitch`，並保留可直接執行的 Self-Contained EXE 在各專案既有發布目錄。
+- 預覽模式不得修改檔案；實際建置前須明確確認，並在結尾回報每個專案的成功或失敗結果。
+
+### 不做範圍
+
+- 不將純 Web 或 Python 專案強制封裝為 EXE。
+- 不將二進位發行成品提交至 Git，也不建立集中副本。
+- 不修改三個專案既有的個別發布腳本。
+
+### 已確認決策
+
+- 使用各專案既有發布腳本，避免在管理端複製或分岔 .NET 發行參數。
+- `06` 與 `09` 選用 Self-Contained 發行；`03` 的既有發布流程即為 Self-Contained。
+- 集中腳本只負責觸發發布及回報來源成品路徑，避免產生兩套可能不同步的 EXE。
+
+### 工作清單
+
+- [x] 新增集中發布 PowerShell 腳本與 BAT 捷徑｜Windows PowerShell Parser 與預覽模式通過。
+- [x] 更新 README 與 Git 忽略規則｜路徑與入口文字檢核通過。
+- [x] 執行實際批次發布並驗證三個 EXE｜三個檔案皆存在於各自發布目錄。
+
+### 風險與因應
+
+- Self-Contained 發行需要 .NET 8 SDK，且可能耗時：先以預覽模式檢查所有腳本與來源路徑，再由使用者啟動實際建置。
+- 個別發布腳本會清理其既有輸出目錄：集中腳本在執行前顯示範圍並要求確認。
+
+### 驗證紀錄
+
+- `build_all_desktop_apps.ps1` 預覽模式：三個發布腳本均顯示「就緒」，結束代碼 `0`。
+- `03_Police-Image-Toolkit`：`03_Police-Image-Toolkit\dist\PoliceImageToolkit.exe`，69.08 MB。
+- `06_System-Optimizer-Tool`：`06_System-Optimizer-Tool\dotnet-src\publish\standalone\SystemOptimizer.App.exe`，68.41 MB。
+- `09_PaperSwitch`：先以 `dotnet restore -r win-x64` 建立 Runtime 對應資產後成功發布；`09_PaperSwitch\dist\publish\PaperSwitch.exe`，75.18 MB。
+
+---
+
 ## 2026-08-13 跨專案文件與發布同步
 
 ### 目標與驗收條件
