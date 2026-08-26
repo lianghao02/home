@@ -1,8 +1,5 @@
-﻿# PowerShell UTF-8 Compatibility
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-System.Text.ASCIIEncoding = [System.Text.Encoding]::UTF8
-
-﻿param(
+﻿# UTF-8 Compatibility
+param(
 
 
 

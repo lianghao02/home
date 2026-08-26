@@ -1,4 +1,4 @@
-﻿# PowerShell UTF-8 Compatibility
+﻿# UTF-8 Compatibility
 [CmdletBinding(SupportsShouldProcess)]
 param([Parameter(Mandatory)][string]$Project)
 
