@@ -5,5 +5,3 @@ cd /d "%~dp0"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0build_all_desktop_apps.ps1" -Execute %*
 echo.
 pause
-
-
