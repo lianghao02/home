@@ -23,7 +23,7 @@
 - `0_檢查專案更新狀態_預覽.bat`：唯讀掃描 12 個專案 Git 變更狀態。
 - `1_推送所有專案至GitHub.bat`：一鍵自動 Commit 並推播所有修改至 GitHub。
 - `2_從GitHub更新所有專案.bat`：一鍵從 GitHub 更新所有專案進度，自動 Clone 缺漏專案並部署 AI 規範。
-- `3_同步AI設定與Skills.bat`：獨立同步全域憲法與共用 Agent Skills 至 Codex / Antigravity。
+- `3_分發AI憲法與Skills至所有專案.bat`：獨立同步全域憲法與共用 Agent Skills 至 Codex / Antigravity。
 - `4_建置所有Python專案環境.bat`：供仍採 Python 的專案（`01`, `07`, `10`）建立可攜版 Python 3.13 環境；`06` 與 `09` 的主力發行版已改為 C#／.NET，不應將其視為 Python 主程式。
 - `5_安裝GitHub與Playwright工具.bat`：開發工具與語言環境管理入口；核心檢測／安裝 Git、GitHub CLI、Python 3.13 與 .NET 8，並提示 Node.js、Rust、WebView2 Runtime、C++ Build Tools 與 Playwright 的適用時機。選配元件不會自動安裝。
 - `6_建立雙Agent工作區.bat`：選單式一鍵建立指定專案的 `*-codex` 與 `*-ag` 獨立 Worktree，支援自動預覽與確認機制。
