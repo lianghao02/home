@@ -87,13 +87,24 @@ $projects = @(
             (Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis\Photo-Report-Generator-v2.1.2-Setup.exe'),
             (Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis\Photo-Report-Generator-v2.1.2-Portable.zip')
         )
+    },
+    [PSCustomObject]@{
+        Name = '07_auto-learning-bot'
+        BuildScript = Join-Path $root '07_auto-learning-bot\scripts\build_portable_release.py'
+        BuildArguments = @()
+        SourceExe = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.1.0_Portable\行政效能領航員.exe'
+        Repo = 'lianghao02/auto-learning-bot'
+        Tag = 'V3.1.0'
+        ReleaseFiles = @(
+            (Join-Path $root '07_auto-learning-bot\dist\AdminEfficiencyPilot_V3.1.0_Portable.zip')
+        )
     }
 )
 
 Write-Host '=================================================================' -ForegroundColor Cyan
 Write-Host '🖥️ 【Windows 桌面應用程式集中建置】' -ForegroundColor Yellow
 Write-Host "📂 開發根目錄：$root" -ForegroundColor Gray
-Write-Host '📌 發行模式：  四個專案各自輸出桌面免安裝應用程式' -ForegroundColor Gray
+Write-Host '📌 發行模式：  五個專案各自輸出桌面免安裝/可攜式應用程式' -ForegroundColor Gray
 if (Test-Path -LiteralPath $localDotnetExe) {
     Write-Host "🔧 .NET SDK：     $localDotnetExe" -ForegroundColor Gray
 } else {
@@ -124,7 +135,7 @@ if ($Force) {
     for ($index = 0; $index -lt $projects.Count; $index++) {
         Write-Host "  $($index + 1). $($projects[$index].Name)"
     }
-    Write-Host '  A. 全部專案 (預設輸入 A 或 1-4)'
+    Write-Host '  A. 全部專案 (預設輸入 A 或 1-5)'
     Write-Host '  0. 取消'
 
     $selection = (Read-Host '請輸入選項').Trim()
@@ -160,7 +171,20 @@ foreach ($project in $selectedProjects) {
     Write-Host "=================================================================" -ForegroundColor Gray
 
     try {
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $project.BuildScript @($project.BuildArguments)
+        $pScript = $project.BuildScript
+        $pDir = Split-Path -Parent (Split-Path -Parent $pScript)
+        
+        if ($pScript.EndsWith('.py', [System.StringComparison]::OrdinalIgnoreCase)) {
+            Push-Location (Join-Path $root $project.Name)
+            try {
+                & python.exe $pScript @($project.BuildArguments)
+            } finally {
+                Pop-Location
+            }
+        } else {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pScript @($project.BuildArguments)
+        }
+
         $exitCode = $LASTEXITCODE
         if ($null -eq $exitCode) { $exitCode = 0 }
         if ($exitCode -ne 0) {
@@ -170,12 +194,18 @@ foreach ($project in $selectedProjects) {
         # 尋找輸出成品
         $exePath = $project.SourceExe
         if (-not (Test-Path -LiteralPath $exePath)) {
-            $pRoot = Split-Path (Split-Path $project.BuildScript)
-            $foundExe = Get-ChildItem -Path $pRoot -Filter "*.exe" -Recurse -File | Where-Object { $_.FullName -notmatch '\\(obj|bin)\\' } | Select-Object -First 1
+            $pRoot = Join-Path $root $project.Name
+            $foundExe = Get-ChildItem -Path $pRoot -Filter "*.exe" -Recurse -File | Where-Object { $_.FullName -notmatch '\\(obj|bin|build)\\' } | Select-Object -First 1
             if ($foundExe) {
                 $exePath = $foundExe.FullName
             } else {
-                throw "建置後找不到預期 EXE：$($project.SourceExe)"
+                # 若為純 ZIP 發布包
+                $foundZip = Get-ChildItem -Path (Join-Path $pRoot 'dist') -Filter "*.zip" -File | Select-Object -First 1
+                if ($foundZip) {
+                    $exePath = $foundZip.FullName
+                } else {
+                    throw "建置後找不到預期發行成品：$($project.SourceExe)"
+                }
             }
         }
 
