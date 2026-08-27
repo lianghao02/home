@@ -22,13 +22,21 @@ $config = [ordered]@{
 
 function Test-IsDangerousPath([string]$PathToCheck) {
     $resolved = [IO.Path]::GetFullPath($PathToCheck).TrimEnd('\', '/')
-    $userProfile = [IO.Path]::GetFullPath($env:USERPROFILE).TrimEnd('\', '/')
-    $desktop = [IO.Path]::GetFullPath([Environment]::GetFolderPath('Desktop')).TrimEnd('\', '/')
-    $downloads = [IO.Path]::GetFullPath((Join-Path $env:USERPROFILE 'Downloads')).TrimEnd('\', '/')
-    $temp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+    $protectedPaths = @(
+        $env:USERPROFILE,
+        [Environment]::GetFolderPath('Desktop'),
+        $(if ($env:USERPROFILE) { Join-Path $env:USERPROFILE 'Downloads' }),
+        [IO.Path]::GetTempPath()
+    )
 
-    if ($resolved -eq $userProfile -or $resolved -eq $desktop -or $resolved -eq $downloads -or $resolved -eq $temp) {
-        return $true
+    foreach ($protectedPath in $protectedPaths) {
+        if ([string]::IsNullOrWhiteSpace($protectedPath)) {
+            continue
+        }
+        $normalizedProtectedPath = [IO.Path]::GetFullPath($protectedPath).TrimEnd('\', '/')
+        if ($resolved -eq $normalizedProtectedPath) {
+            return $true
+        }
     }
     if ($resolved -match '^[a-zA-Z]:$') {
         return $true
@@ -144,17 +152,63 @@ foreach ($item in $manifest.repositories) {
         continue
     }
 
+    $branch = ''
+    $upstream = @()
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $branch = @(git -c "safe.directory=$safeTarget" -C "$target" branch --show-current 2>$null)
+        $branchExitCode = $LASTEXITCODE
+        if ($branch) {
+            $branch = [string]$branch[0]
+        }
+        if ($branchExitCode -eq 0 -and $branch) {
+            $upstream = @(git -c "safe.directory=$safeTarget" -C "$target" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>$null)
+            $upstreamExitCode = $LASTEXITCODE
+        }
+    } finally {
+        $ErrorActionPreference = $oldEap
+    }
+
+    if ($branchExitCode -ne 0 -or -not $branch) {
+        Write-Host "$prefix : ⚠️  無法判斷目前 Git 分支，已略過"
+        continue
+    }
+
+    if ($upstreamExitCode -ne 0 -or -not $upstream) {
+        if ($Execute) {
+            Write-Host "$prefix : 🛠️  $branch 未設定上游分支，正在連結 origin/$branch..."
+            $oldEap = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            try {
+                $linkOutput = @(git -c "safe.directory=$safeTarget" -C "$target" branch --set-upstream-to="origin/$branch" "$branch" 2>&1)
+                $linkExitCode = $LASTEXITCODE
+            } finally {
+                $ErrorActionPreference = $oldEap
+            }
+            if ($linkExitCode -ne 0) {
+                throw "無法設定上游分支：$target`n$($linkOutput -join [Environment]::NewLine)"
+            }
+            Write-Host "$prefix : ✅ 已連結上游分支 origin/$branch"
+        } else {
+            Write-Host "$prefix : ⚠️  $branch 未設定上游分支（執行模式將嘗試連結 origin/$branch）"
+        }
+    }
+
     if ($Execute) {
         Write-Host "$prefix : 🔄 正在從 GitHub 更新 (git pull)..."
         $oldEap = $ErrorActionPreference
         $ErrorActionPreference = 'Continue'
         try {
-            $null = git -c "safe.directory=$safeTarget" -C "$target" pull --ff-only 2>$null
+            $pullOutput = @(git -c "safe.directory=$safeTarget" -C "$target" pull --ff-only 2>&1)
+            $pullExitCode = $LASTEXITCODE
         } finally {
             $ErrorActionPreference = $oldEap
         }
 
-        if ($LASTEXITCODE -ne 0) { throw "更新失敗：$target" }
+        if ($pullExitCode -ne 0) {
+            throw "更新失敗：$target`n$($pullOutput -join [Environment]::NewLine)"
+        }
         Write-Host "$prefix : ✅ 已更新至最新進度"
     } else {
         Write-Host "$prefix : ✨ 準備就緒（本機工作區乾淨，可安全更新）"
