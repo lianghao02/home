@@ -15,7 +15,11 @@ param(
 
 
 
-    [switch]$ConfirmEach
+    [switch]$ConfirmEach,
+
+
+
+    [switch]$PromptCommitMessage
 
 
 
@@ -236,6 +240,46 @@ if (Test-IsDangerousPath $root) {
 
 
 $manifest = Get-Content -LiteralPath $config.Manifest -Raw -Encoding UTF8 | ConvertFrom-Json
+
+
+
+if ($Execute -and $PromptCommitMessage -and [string]::IsNullOrWhiteSpace($CommitMessage)) {
+
+
+
+    Write-Host ''
+
+
+
+    $enteredCommitMessage = (Read-Host '請輸入本次統一提交說明（留白使用預設 sync 訊息）').Trim()
+
+
+
+    if ([string]::IsNullOrWhiteSpace($enteredCommitMessage)) {
+
+
+
+        Write-Host '💡 未輸入提交說明，將使用預設 sync 時間戳記。'
+
+
+
+    } else {
+
+
+
+        $CommitMessage = $enteredCommitMessage
+
+
+
+        Write-Host "📝 本次統一提交說明：$CommitMessage"
+
+
+
+    }
+
+
+
+}
 
 
 
