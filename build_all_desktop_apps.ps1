@@ -183,7 +183,9 @@ foreach ($project in $selectedProjects) {
         if ($project.Name -eq '09_PaperSwitch') {
             $saTarget = Join-Path $root '09_PaperSwitch\dist\release_assets\PaperSwitch-v4.0.0-Standalone.exe'
             New-Item -ItemType Directory -Path (Split-Path $saTarget) -Force | Out-Null
-            Copy-Item -LiteralPath $exePath -Destination $saTarget -Force
+            if ($exePath -ne $saTarget -and (Test-Path -LiteralPath $exePath)) {
+                Copy-Item -LiteralPath $exePath -Destination $saTarget -Force
+            }
         }
 
         # 針對 06 補充複製 Standalone 與 Slim 命名檔案
@@ -191,17 +193,21 @@ foreach ($project in $selectedProjects) {
             $pubDir = Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish'
             $saSrc = Join-Path $pubDir 'standalone\SystemOptimizer.App.exe'
             $slimSrc = Join-Path $pubDir 'slim\SystemOptimizer.App.exe'
-            if (Test-Path -LiteralPath $saSrc) { Copy-Item -LiteralPath $saSrc -Destination (Join-Path $pubDir 'SystemOptimizer-v6.2.1-Standalone-x64.exe') -Force }
-            if (Test-Path -LiteralPath $slimSrc) { Copy-Item -LiteralPath $slimSrc -Destination (Join-Path $pubDir 'SystemOptimizer-v6.2.1-Slim-x64.exe') -Force }
+            $saDest = Join-Path $pubDir 'SystemOptimizer-v6.2.1-Standalone-x64.exe'
+            $slimDest = Join-Path $pubDir 'SystemOptimizer-v6.2.1-Slim-x64.exe'
+            if ((Test-Path -LiteralPath $saSrc) -and ($saSrc -ne $saDest)) { Copy-Item -LiteralPath $saSrc -Destination $saDest -Force }
+            if ((Test-Path -LiteralPath $slimSrc) -and ($slimSrc -ne $slimDest)) { Copy-Item -LiteralPath $slimSrc -Destination $slimDest -Force }
         }
 
         # 針對 04 補充命名標準 NSIS EXE 與 Portable ZIP
         if ($project.Name -eq '04_Photo-Report-Generator') {
             $nsisDir = Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis'
-            $rawSetup = Get-ChildItem -Path $nsisDir -Filter "*setup.exe" | Select-Object -First 1
-            $rawZip = Get-ChildItem -Path $nsisDir -Filter "*.zip" | Select-Object -First 1
-            if ($rawSetup) { Copy-Item -LiteralPath $rawSetup.FullName -Destination (Join-Path $nsisDir 'Photo-Report-Generator-v2.1.2-Setup.exe') -Force }
-            if ($rawZip) { Copy-Item -LiteralPath $rawZip.FullName -Destination (Join-Path $nsisDir 'Photo-Report-Generator-v2.1.2-Portable.zip') -Force }
+            $destSetup = Join-Path $nsisDir 'Photo-Report-Generator-v2.1.2-Setup.exe'
+            $destZip = Join-Path $nsisDir 'Photo-Report-Generator-v2.1.2-Portable.zip'
+            $rawSetup = Get-ChildItem -Path $nsisDir -Filter "*setup.exe" | Where-Object { $_.FullName -ne $destSetup } | Select-Object -First 1
+            $rawZip = Get-ChildItem -Path $nsisDir -Filter "*.zip" | Where-Object { $_.FullName -ne $destZip } | Select-Object -First 1
+            if ($rawSetup) { Copy-Item -LiteralPath $rawSetup.FullName -Destination $destSetup -Force }
+            if ($rawZip) { Copy-Item -LiteralPath $rawZip.FullName -Destination $destZip -Force }
         }
 
         $sizeMb = [math]::Round((Get-Item -LiteralPath $exePath).Length / 1MB, 2)
@@ -254,7 +260,6 @@ if ($successfulProjects.Count -gt 0) {
             
             Write-Host "⏳ 正在上傳 $($p.Name) -> Release $($p.Tag)..." -ForegroundColor Yellow
             try {
-                $fileArgs = $existingFiles | ForEach-Object { "`"$_`"" }
                 & gh release upload $p.Tag $existingFiles --clobber --repo $p.Repo
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host "✅ $($p.Name) 發行檔案已成功發布至 GitHub Releases ($($p.Tag))！" -ForegroundColor Green
