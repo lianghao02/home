@@ -81,8 +81,11 @@ try {
 
 Write-Host ""
 Write-Host "-----------------------------------------------------------------" -ForegroundColor DarkCyan
-$confirm = Read-Host "確定要正式建立上述雙 Agent 工作區嗎？[預設 Y，輸入 N 取消]"
-if ($confirm -match '^(?i)n(o)?$') {
+Write-Host "請選擇操作：" -ForegroundColor Cyan
+Write-Host "  [1] 確認建立上述雙 Agent 工作區（預設，直接按 Enter 亦可）"
+Write-Host "  [2] 取消操作"
+$confirm = (Read-Host "請輸入選項 (1 或 2)").Trim()
+if ($confirm -eq '2' -or $confirm -match '^(?i)n(o)?$') {
     Write-Host "已取消建立。" -ForegroundColor Yellow
     return
 }

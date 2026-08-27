@@ -45,24 +45,48 @@ $projects = @(
         BuildScript = Join-Path $root '03_Police-Image-Toolkit\scripts\build.ps1'
         BuildArguments = @()
         SourceExe = Join-Path $root '03_Police-Image-Toolkit\dist\PoliceImageToolkit.exe'
+        Repo = 'lianghao02/Police-Image-Toolkit'
+        Tag = 'v11.2.0'
+        ReleaseFiles = @(
+            (Join-Path $root '03_Police-Image-Toolkit\dist\PoliceImageToolkit.exe'),
+            (Join-Path $root '03_Police-Image-Toolkit\dist\PoliceImageToolkit-v11.2.0-win-x64.zip')
+        )
     },
     [PSCustomObject]@{
         Name = '06_System-Optimizer-Tool'
         BuildScript = Join-Path $root '06_System-Optimizer-Tool\dotnet-src\build_release.ps1'
         BuildArguments = @()
-        SourceExe = Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish\SystemOptimizer.App.exe'
+        SourceExe = Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish\standalone\SystemOptimizer.App.exe'
+        Repo = 'lianghao02/System-Optimizer-Tool'
+        Tag = 'v6.2.1'
+        ReleaseFiles = @(
+            (Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish\SystemOptimizer-v6.2.1-Standalone-x64.exe'),
+            (Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish\SystemOptimizer-v6.2.1-Slim-x64.exe')
+        )
     },
     [PSCustomObject]@{
         Name = '09_PaperSwitch'
         BuildScript = Join-Path $root '09_PaperSwitch\dotnet-src\scripts\build.ps1'
-        BuildArguments = @()
+        BuildArguments = @('-SelfContained')
         SourceExe = Join-Path $root '09_PaperSwitch\dist\publish\PaperSwitch.exe'
+        Repo = 'lianghao02/PaperSwitch'
+        Tag = 'v4.0.0'
+        ReleaseFiles = @(
+            (Join-Path $root '09_PaperSwitch\dist\release_assets\PaperSwitch-v4.0.0-Standalone.exe'),
+            (Join-Path $root '09_PaperSwitch\dist\release_assets\PaperSwitch-v4.0.0-FrameworkDependent.zip')
+        )
     },
     [PSCustomObject]@{
         Name = '04_Photo-Report-Generator'
         BuildScript = Join-Path $root '04_Photo-Report-Generator\scripts\build-portable.ps1'
         BuildArguments = @()
         SourceExe = Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\photo-report-generator.exe'
+        Repo = 'lianghao02/Photo-Report-Generator'
+        Tag = 'v2.1.2'
+        ReleaseFiles = @(
+            (Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis\Photo-Report-Generator-v2.1.2-Setup.exe'),
+            (Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis\Photo-Report-Generator-v2.1.2-Portable.zip')
+        )
     }
 )
 
@@ -100,7 +124,7 @@ if ($Force) {
     for ($index = 0; $index -lt $projects.Count; $index++) {
         Write-Host "  $($index + 1). $($projects[$index].Name)"
     }
-    Write-Host '  A. 全部專案'
+    Write-Host '  A. 全部專案 (預設輸入 A 或 1-4)'
     Write-Host '  0. 取消'
 
     $selection = (Read-Host '請輸入選項').Trim()
@@ -108,7 +132,7 @@ if ($Force) {
         Write-Host '已取消，未開始建置。' -ForegroundColor Yellow
         return
     }
-    if ($selection -match '^(?i)a(ll)?$') {
+    if ($selection -match '^(?i)a(ll)?$' -or [string]::IsNullOrWhiteSpace($selection)) {
         $selectedProjects = $projects
     } elseif ($selection -match '^[1-9]\d*$' -and [int]$selection -le $projects.Count) {
         $selectedProjects = @($projects[[int]$selection - 1])
@@ -127,6 +151,7 @@ if ($missingScripts.Count -gt 0) {
 }
 
 $results = [System.Collections.Generic.List[object]]::new()
+$successfulProjects = [System.Collections.Generic.List[object]]::new()
 
 foreach ($project in $selectedProjects) {
     Write-Host ''
@@ -145,7 +170,6 @@ foreach ($project in $selectedProjects) {
         # 尋找輸出成品
         $exePath = $project.SourceExe
         if (-not (Test-Path -LiteralPath $exePath)) {
-            # 容錯尋找該專案 dist 底下的任何 exe
             $pRoot = Split-Path (Split-Path $project.BuildScript)
             $foundExe = Get-ChildItem -Path $pRoot -Filter "*.exe" -Recurse -File | Where-Object { $_.FullName -notmatch '\\(obj|bin)\\' } | Select-Object -First 1
             if ($foundExe) {
@@ -155,8 +179,34 @@ foreach ($project in $selectedProjects) {
             }
         }
 
+        # 針對 09 PaperSwitch 補充複製產出 Standalone EXE
+        if ($project.Name -eq '09_PaperSwitch') {
+            $saTarget = Join-Path $root '09_PaperSwitch\dist\release_assets\PaperSwitch-v4.0.0-Standalone.exe'
+            New-Item -ItemType Directory -Path (Split-Path $saTarget) -Force | Out-Null
+            Copy-Item -LiteralPath $exePath -Destination $saTarget -Force
+        }
+
+        # 針對 06 補充複製 Standalone 與 Slim 命名檔案
+        if ($project.Name -eq '06_System-Optimizer-Tool') {
+            $pubDir = Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish'
+            $saSrc = Join-Path $pubDir 'standalone\SystemOptimizer.App.exe'
+            $slimSrc = Join-Path $pubDir 'slim\SystemOptimizer.App.exe'
+            if (Test-Path -LiteralPath $saSrc) { Copy-Item -LiteralPath $saSrc -Destination (Join-Path $pubDir 'SystemOptimizer-v6.2.1-Standalone-x64.exe') -Force }
+            if (Test-Path -LiteralPath $slimSrc) { Copy-Item -LiteralPath $slimSrc -Destination (Join-Path $pubDir 'SystemOptimizer-v6.2.1-Slim-x64.exe') -Force }
+        }
+
+        # 針對 04 補充命名標準 NSIS EXE 與 Portable ZIP
+        if ($project.Name -eq '04_Photo-Report-Generator') {
+            $nsisDir = Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis'
+            $rawSetup = Get-ChildItem -Path $nsisDir -Filter "*setup.exe" | Select-Object -First 1
+            $rawZip = Get-ChildItem -Path $nsisDir -Filter "*.zip" | Select-Object -First 1
+            if ($rawSetup) { Copy-Item -LiteralPath $rawSetup.FullName -Destination (Join-Path $nsisDir 'Photo-Report-Generator-v2.1.2-Setup.exe') -Force }
+            if ($rawZip) { Copy-Item -LiteralPath $rawZip.FullName -Destination (Join-Path $nsisDir 'Photo-Report-Generator-v2.1.2-Portable.zip') -Force }
+        }
+
         $sizeMb = [math]::Round((Get-Item -LiteralPath $exePath).Length / 1MB, 2)
         $results.Add([PSCustomObject]@{ Project = $project.Name; Result = '成功'; Detail = "$exePath ($sizeMb MB)" })
+        $successfulProjects.Add($project)
         Write-Host "✅ 建置完成：$exePath ($sizeMb MB)" -ForegroundColor Green
     } catch {
         $results.Add([PSCustomObject]@{ Project = $project.Name; Result = '失敗'; Detail = $_.Exception.Message })
@@ -176,4 +226,48 @@ if ($failed.Count -gt 0) {
     exit 1
 } else {
     Write-Host "🎉 已選桌面專案全數建置成功！" -ForegroundColor Green
+}
+
+# =================================================================
+# 🌐 GitHub Releases 一鍵發布選項 (方案 B 整合)
+# =================================================================
+if ($successfulProjects.Count -gt 0) {
+    Write-Host ''
+    Write-Host '=================================================================' -ForegroundColor Cyan
+    Write-Host '🌐 【GitHub Releases 發布選項】' -ForegroundColor Yellow
+    Write-Host '是否要將剛才編譯成功的發行檔案，一鍵覆蓋更新至 GitHub Releases？' -ForegroundColor Cyan
+    Write-Host '  [1] 是，一鍵上傳更新至 GitHub Releases'
+    Write-Host '  [2] 否，僅保留本機發行檔案（預設，按 Enter 亦可）'
+    Write-Host '=================================================================' -ForegroundColor Cyan
+
+    $relChoice = (Read-Host '請輸入選項 (1 或 2)').Trim()
+    if ($relChoice -eq '1' -or $relChoice -match '^(?i)y(es)?$') {
+        Write-Host ''
+        Write-Host '🚀 正在上傳發行檔案至 GitHub Releases...' -ForegroundColor Cyan
+        
+        foreach ($p in $successfulProjects) {
+            $existingFiles = @($p.ReleaseFiles | Where-Object { Test-Path -LiteralPath $_ })
+            if ($existingFiles.Count -eq 0) {
+                Write-Host "⚠️  $($p.Name)：找不到可發布的檔案，略過。" -ForegroundColor Yellow
+                continue
+            }
+            
+            Write-Host "⏳ 正在上傳 $($p.Name) -> Release $($p.Tag)..." -ForegroundColor Yellow
+            try {
+                $fileArgs = $existingFiles | ForEach-Object { "`"$_`"" }
+                & gh release upload $p.Tag $existingFiles --clobber --repo $p.Repo
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host "✅ $($p.Name) 發行檔案已成功發布至 GitHub Releases ($($p.Tag))！" -ForegroundColor Green
+                } else {
+                    Write-Host "❌ $($p.Name) 發布至 GitHub Releases 失敗 (ExitCode: $LASTEXITCODE)。" -ForegroundColor Red
+                }
+            } catch {
+                Write-Host "❌ $($p.Name) 上傳異常：$($_.Exception.Message)" -ForegroundColor Red
+            }
+        }
+        Write-Host ''
+        Write-Host '🎉 GitHub Releases 發布流程已執行完畢！' -ForegroundColor Green
+    } else {
+        Write-Host '已選擇僅保留本機發行檔案，未上傳至 GitHub Releases。' -ForegroundColor Gray
+    }
 }
