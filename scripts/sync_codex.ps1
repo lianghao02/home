@@ -1,6 +1,11 @@
 ﻿# UTF-8 Compatibility
 [CmdletBinding()]
-param([switch]$CheckOnly, [switch]$Force, [switch]$PruneBackups)
+param(
+    [switch]$CheckOnly,
+    [switch]$Force,
+    [switch]$PruneBackups,
+    [switch]$Execute
+)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -8,11 +13,19 @@ Set-StrictMode -Version Latest
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
+if ($Execute) {
+    $Force = $true
+    $PruneBackups = $true
+} elseif (-not $Force -and -not $CheckOnly) {
+    $CheckOnly = $true
+}
 
-$homeRepo = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
+$homeRepo = Split-Path -Parent $PSScriptRoot
+if ([string]::IsNullOrWhiteSpace($homeRepo)) {
+    $homeRepo = 'C:\Development\GitHub\00_home'
+}
 $githubRoot = Split-Path -Parent $homeRepo
 $codexHome = Join-Path $env:USERPROFILE '.codex'
-# 此開發環境既有的 Codex 共用 Skill 位置。
 $agentHome = Join-Path $env:USERPROFILE '.agents'
 $codexSkillRoot = Join-Path $agentHome 'skills'
 $antigravityHome = Join-Path $env:USERPROFILE '.gemini\config'
@@ -34,6 +47,7 @@ function Get-TreeHash([string]$Path) {
     try { return (Get-FileHash -InputStream $stream -Algorithm SHA256).Hash }
     finally { $stream.Dispose() }
 }
+
 function Sync-ManagedItem([string]$Source, [string]$Target, [hashtable]$Old, [hashtable]$New) {
     if (-not (Test-Path -LiteralPath $Source)) { throw "Source does not exist: $Source" }
     $sourceHash = Get-TreeHash $Source
