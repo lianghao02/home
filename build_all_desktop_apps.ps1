@@ -1,4 +1,4 @@
-﻿# UTF-8 Compatibility
+# UTF-8 Compatibility
 [CmdletBinding()]
 param(
     [string]$DevelopmentRoot = '',
@@ -318,21 +318,23 @@ if ($failed.Count -gt 0) {
 }
 
 # =================================================================
-# 🌐 GitHub Releases 一鍵發布選項 (方案 B 整合)
+# 🌐 GitHub Releases A+B 雙軌融合發布系統
 # =================================================================
 if ($successfulProjects.Count -gt 0) {
     Write-Host ''
     Write-Host '=================================================================' -ForegroundColor Cyan
-    Write-Host '🌐 【GitHub Releases 發布選項】' -ForegroundColor Yellow
-    Write-Host '是否要將剛才編譯成功的發行檔案，一鍵覆蓋更新至 GitHub Releases？' -ForegroundColor Cyan
-    Write-Host '  [1] 是，一鍵上傳更新至 GitHub Releases'
-    Write-Host '  [2] 否，僅保留本機發行檔案（預設，按 Enter 亦可）'
+    Write-Host '🌐 【GitHub Releases 發布通道選擇 (A+B 雙軌架構)】' -ForegroundColor Yellow
+    Write-Host '請選擇發布通道：' -ForegroundColor Cyan
+    Write-Host '  [1] 🚀 正式發布 (Stable - 嚴格匹配版本 Tag，保護正式發布版)'
+    Write-Host '  [2] 🧪 測試預覽發布 (Pre-release - 覆蓋更新至測試通道，供同仁下載)'
+    Write-Host '  [3] 💻 僅保留本機發行檔案（預設，按 Enter 亦可）'
     Write-Host '=================================================================' -ForegroundColor Cyan
 
-    $relChoice = (Read-Host '請輸入選項 (1 或 2)').Trim()
-    if ($relChoice -eq '1' -or $relChoice -match '^(?i)y(es)?$') {
+    $relChoice = (Read-Host '請輸入選項 (1, 2 或 3)').Trim()
+    
+    if ($relChoice -eq '1') {
         Write-Host ''
-        Write-Host '🚀 正在上傳發行檔案至 GitHub Releases...' -ForegroundColor Cyan
+        Write-Host '🚀 [軌道 A] 正在執行正式發布 (Stable Release)...' -ForegroundColor Cyan
         
         foreach ($p in $successfulProjects) {
             $existingFiles = @($p.ReleaseFiles | Where-Object { Test-Path -LiteralPath $_ })
@@ -341,17 +343,17 @@ if ($successfulProjects.Count -gt 0) {
                 continue
             }
 
-            if (($p.PSObject.Properties.Name -contains 'RequireTagMatch') -and $p.RequireTagMatch) {
-                $repoPath = Join-Path $root $p.Name
-                $tagCommit = & git -c "safe.directory=$repoPath" -C $repoPath rev-list -n 1 $p.Tag 2>$null
-                $headCommit = & git -c "safe.directory=$repoPath" -C $repoPath rev-parse HEAD 2>$null
-                if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($tagCommit) -or $tagCommit -ne $headCommit) {
-                    Write-Host "⚠️  $($p.Name)：目前 HEAD 與 $($p.Tag) 不一致，為避免覆蓋既有正式 Release，略過上傳。請先建立新版本與 Tag。" -ForegroundColor Yellow
-                    continue
-                }
+            # 軌道 A 嚴格 Tag 匹配防護
+            $repoPath = Join-Path $root $p.Name
+            $tagCommit = & git -c "safe.directory=$repoPath" -C $repoPath rev-list -n 1 $p.Tag 2>$null
+            $headCommit = & git -c "safe.directory=$repoPath" -C $repoPath rev-parse HEAD 2>$null
+            if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($tagCommit) -or $tagCommit -ne $headCommit) {
+                Write-Host "⚠️  $($p.Name)：目前 HEAD 與 $($p.Tag) 不一致，為保護既有正式 Release，已安全略過。" -ForegroundColor Yellow
+                Write-Host "    💡 提示：若要發布正式版請先建立新版本與 Tag；若僅供測試請使用選項 [2] 測試預覽通道。" -ForegroundColor Gray
+                continue
             }
             
-            Write-Host "⏳ 正在處理 $($p.Name) -> Release $($p.Tag)..." -ForegroundColor Yellow
+            Write-Host "⏳ 正在處理 $($p.Name) -> 正式發布 $($p.Tag)..." -ForegroundColor Yellow
             try {
                 $null = & gh release view $p.Tag --repo $p.Repo 2>$null
                 $releaseExists = ($LASTEXITCODE -eq 0)
@@ -368,17 +370,55 @@ if ($successfulProjects.Count -gt 0) {
                     & gh @releaseArgs
                 }
                 if ($LASTEXITCODE -eq 0) {
-                    Write-Host "✅ $($p.Name) 發行檔案已成功發布至 GitHub Releases ($($p.Tag))！" -ForegroundColor Green
+                    Write-Host "✅ $($p.Name) 正式版發行檔案已成功發布 ($($p.Tag))！" -ForegroundColor Green
                 } else {
-                    Write-Host "❌ $($p.Name) 發布至 GitHub Releases 失敗 (ExitCode: $LASTEXITCODE)。" -ForegroundColor Red
+                    Write-Host "❌ $($p.Name) 正式發布失敗 (ExitCode: $LASTEXITCODE)。" -ForegroundColor Red
                 }
             } catch {
                 Write-Host "❌ $($p.Name) 上傳異常：$($_.Exception.Message)" -ForegroundColor Red
             }
         }
         Write-Host ''
-        Write-Host '🎉 GitHub Releases 發布流程已執行完畢！' -ForegroundColor Green
+        Write-Host '🎉 正式發布流程已執行完畢！' -ForegroundColor Green
+
+    } elseif ($relChoice -eq '2') {
+        Write-Host ''
+        Write-Host '🧪 [軌道 B] 正在發布至測試預覽通道 (Pre-release)...' -ForegroundColor Cyan
+        
+        $preReleaseTag = 'pre-release'
+        foreach ($p in $successfulProjects) {
+            $existingFiles = @($p.ReleaseFiles | Where-Object { Test-Path -LiteralPath $_ })
+            if ($existingFiles.Count -eq 0) {
+                Write-Host "⚠️  $($p.Name)：找不到可發布的檔案，略過。" -ForegroundColor Yellow
+                continue
+            }
+
+            Write-Host "⏳ 正在推送 $($p.Name) -> 測試預覽版 (Pre-release)..." -ForegroundColor Yellow
+            try {
+                $null = & gh release view $preReleaseTag --repo $p.Repo 2>$null
+                $releaseExists = ($LASTEXITCODE -eq 0)
+                if ($releaseExists) {
+                    & gh release upload $preReleaseTag $existingFiles --clobber --repo $p.Repo
+                } else {
+                    $releaseTitle = "$($p.Name) 測試預覽版 (Pre-release)"
+                    $releaseNotesText = "### 🧪 測試預覽版本 (Pre-release)`n`n此版本為開發中最新測試建置成品，檔案隨時會被覆蓋更新。供同仁搶先驗證新功能使用。"
+                    $releaseArgs = @('release', 'create', $preReleaseTag) + $existingFiles + @('--prerelease', '--title', $releaseTitle, '--notes', $releaseNotesText, '--repo', $p.Repo)
+                    & gh @releaseArgs
+                }
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host "✅ $($p.Name) 測試預覽檔案已成功更新至 Pre-release 通道！" -ForegroundColor Green
+                } else {
+                    Write-Host "❌ $($p.Name) 預覽版發布失敗 (ExitCode: $LASTEXITCODE)。" -ForegroundColor Red
+                }
+            } catch {
+                Write-Host "❌ $($p.Name) 上傳異常：$($_.Exception.Message)" -ForegroundColor Red
+            }
+        }
+        Write-Host ''
+        Write-Host '🎉 測試預覽版發布流程已執行完畢！' -ForegroundColor Green
+
     } else {
         Write-Host '已選擇僅保留本機發行檔案，未上傳至 GitHub Releases。' -ForegroundColor Gray
     }
 }
+
