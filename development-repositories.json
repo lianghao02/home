@@ -13,6 +13,7 @@
     { "folder": "08_Financial-Data-Parser", "repository": "Financial-Data-Parser" },
     { "folder": "09_PaperSwitch", "repository": "PaperSwitch" },
     { "folder": "10_Smart-Photo-Organizer", "repository": "Smart-Photo-Organizer" },
-    { "folder": "11_Calendar-Card-App", "repository": "Calendar-Card-App" }
+    { "folder": "11_Calendar-Card-App", "repository": "Calendar-Card-App" },
+    { "folder": "12_ClipMask-AI", "repository": "ClipMask-AI" }
   ]
 }
