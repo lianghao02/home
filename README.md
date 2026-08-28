@@ -13,29 +13,26 @@
 - **用途**：集中管理專案清單、Git 同步、Codex／Antigravity 規則，以及仍採 Python 的專案可攜環境。
 - **必要軟體**：Windows 10/11、Git for Windows、Windows PowerShell 5.1 以上；管理功能本身不要求先安裝 Python。
 - **下載**：`git clone https://github.com/lianghao02/home.git 00_home`。
-- **主要入口**：一般使用者直接雙擊根目錄的 `0_`～`6_` 批次檔；進階使用者可執行 `scripts/` 下對應 PowerShell 腳本。
+- **主要入口**：一般使用者直接雙擊根目錄的 `1_`～`3_` 旗艦批次檔；進階使用者可執行 `scripts/` 下對應 PowerShell 腳本。
 - **網路需求**：Clone、Pull、Push 與首次下載 Python 可攜核心時需要網路；若 `downloads/` 已有安裝母檔，Python 環境可離線建置。
 - **打包方式**：本專案是管理腳本集合，不需編譯或安裝；備份時保留完整資料夾即可。
 
-## 雙擊快捷捷徑 (One-Click Batch Tools)
+## 雙擊快捷捷徑 (One-Click Flagship Batch Tools)
 
-在 `00_home` 根目錄提供 8 個一鍵雙擊 `.bat` 啟動捷徑：
-- `0_檢查專案更新狀態_預覽.bat`：更新遠端參照並掃描 13 個專案的 Git 同步狀態，不修改工作檔案。
-- `1_推送所有專案至GitHub.bat`：一鍵自動 Commit 並推播所有修改至 GitHub。
-- `2_從GitHub更新所有專案.bat`：一鍵從 GitHub 更新所有專案進度，自動 Clone 缺漏專案並部署 AI 規範。
-- `3_分發AI憲法與Skills至所有專案.bat`：獨立同步全域憲法與共用 Agent Skills 至 Codex / Antigravity。
-- `4_建置所有Python專案環境.bat`：供仍採 Python 的專案（`01`, `07`, `10`）建立可攜版 Python 3.13 環境；`06` 與 `09` 的主力發行版已改為 C#／.NET，不應將其視為 Python 主程式。
-- `5_安裝GitHub與Playwright工具.bat`：開發工具與語言環境管理入口；核心檢測／安裝 Git、GitHub CLI、Python 3.13 與 .NET 8，並提示 Node.js、Rust、WebView2 Runtime、C++ Build Tools 與 Playwright 的適用時機。選配元件不會自動安裝。
-- `6_建立雙Agent工作區.bat`：選單式一鍵建立指定專案的 `*-codex` 與 `*-ag` 獨立 Worktree，支援自動預覽與確認機制。
-- `7_建置所有桌面應用程式.bat`：集中建置 AG-MONITOR、Police Image Toolkit、Photo Report Generator、System Optimizer、行政效能領航員與 PaperSwitch；開始前會要求選擇及確認。首次發布會建立 GitHub Release，既有版本則更新對應資產。
+在 `00_home` 根目錄提供精煉的 **3 大旗艦批次中樞**，全數採用純數字選單與 UTF-8 with BOM 防亂碼架構：
 
-### 集中發布桌面應用程式
+1. 🌟 **`1_全專案智慧同步中樞.bat`** (日常開發主力)：
+   - 雙擊即時掃描 13 個專案之本機與雲端狀態。
+   - **`[1] ⚡ 智慧全自動同步`**：按「先拉取雲端 ➜ 分發 AI 憲法 ➜ 後推送本地」黃金流水線一鍵搞定，徹底杜絕衝突與 push 失敗。
+   - 支援 `[2]` 僅拉取更新、`[3]` 僅推送修改、`[4]` 僅分發 AI 憲法與 Skills。
 
-可直接雙擊 `7_建置所有桌面應用程式.bat`，或於 `00_home` 執行：
+2. 🌟 **`2_建置所有桌面應用程式.bat`** (版本發布主力)：
+   - 一鍵集中編譯 5 大桌面應用程式（`03`, `06`, `09`, `04`, `07`），自帶專屬多尺寸圖示。
+   - 建置成功後提供 **GitHub Releases 一鍵覆蓋發布** 功能。
 
-```powershell
-.\build_all_desktop_apps.ps1 -Execute
-```
+3. 🌟 **`3_環境建置與工具安裝.bat`** (環境初始化與維護)：
+   - **`[1]`** 一鍵為 Python 專案（`01`, `07`, `10`）建置可攜式 Python 3.13 虛擬環境 (`.venv`)。
+   - **`[2]`** 診斷並透過 `winget` 安裝 Git、GitHub CLI、Rust、.NET SDK 與 Playwright 開發工具鏈。
 
 成品維持在各專案既有的發布目錄；AG-MONITOR 完整 CPU 可攜包輸出至 `01_AG-MONITOR-Smart-Video-Screening\dist\`。若只想確認路徑與發布腳本是否齊全，可省略 `-Execute` 進行預覽。
 
