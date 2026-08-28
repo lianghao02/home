@@ -311,3 +311,39 @@
 - `07_auto-learning-bot`：Python 3.13 開發環境 40 項測試通過；可攜式 Python 因隔離模式不作為開發測試入口。
 - `09_PaperSwitch`：Release 建置 0 警告、0 錯誤，26 項 .NET 測試通過。
 - `sync_projects.ps1`：PowerShell Parser 通過；實際預覽遇到 GitHub 暫時 DNS 失敗時仍繼續掃描至第 13 個專案，已加一次短暫重試。
+
+---
+
+## 2026-08-28 GitHub 基準化與舊專案清理
+
+### 目標與驗收條件
+
+- 以各 Repository 的 GitHub 預設／追蹤分支為共同基準，重新取得所有遠端提交。
+- 本機未發布內容逐案判斷：有效修改經測試後合併推送；快取、建置產物或過時副本不納入版本庫。
+- 移除已由 `01_AG-MONITOR-Smart-Video-Screening` 取代的舊本機資料夾 `01_AG-Monitor-Forensics`。
+- 最終中央清單內所有專案工作區乾淨，且 HEAD 與各自上游分支一致。
+
+### 工作清單
+
+- [x] 盤點中央清單與額外本機 Repository 的分支、origin、遠端差異及未提交檔案｜13 個中央專案無未發布程式；另發現舊 01、09 stash 與 10 的兩個已合併本機分支。
+- [x] 合併或排除所有本機未發布內容，執行各專案適用驗證｜09 有效待辦併入正式計畫並推送；重複模型、stash 與 10 已合併分支已移除。
+- [ ] 核對新舊 01 的追蹤內容後，以可回收方式移除舊本機專案｜新舊 HEAD 與 tree 完全相同；舊目錄已部分清除，但 Real-ESRGAN ACL 需使用者在電腦前核准 UAC 後才能完成。
+- [x] 一般提交與推送需要發布的修改，禁止 force push｜09 文件已一般推送；未重寫歷史。
+- [x] 執行全專案同步與最終乾淨度驗證｜中央清單 13 個 Repository 已執行 GitHub fetch／安全快轉；待 00 本紀錄推送後再做最終預覽。
+
+### 安全邊界
+
+- 不變更 GitHub remote URL、不重寫遠端歷史、不使用 force push。
+- 刪除舊 01 前，確認解析後路徑精確位於 `D:\Development\GitHub\01_AG-Monitor-Forensics`，不得以萬用字元操作。
+- 模型、快取、執行產物與使用者資料不因同步而上傳 GitHub。
+
+### 驗證紀錄
+
+- 舊、新 01 均為提交 `aa38553a380eb771173e89b84f37992119d58edb`，tree 均為 `14155bb136a36b7bb6842da01d65f2935304e170`。
+- 舊 01 額外約 57.2 MB 為可重新下載的 YOLO／Real-ESRGAN 模型、執行檔與範例媒體，未上傳 GitHub。
+- `10_Smart-Photo-Organizer` 的 `ag/dev`、`codex/dev` 均為 `main` 祖先且無獨立提交，已安全刪除本機分支。
+- `09_PaperSwitch` stash 的有效待辦已合併至 `docs/plan.md` 並推送；重複 `CanvasHistoryState` 已由有測試的 `ArrangementSnapshot` 取代，stash 已移除。
+
+### 剩餘問題
+
+- `D:\Development\GitHub\01_AG-Monitor-Forensics\models\realesrgan` 拒絕一般帳號存取；需在電腦前接受 UAC，才能由系統管理員 PowerShell 接管該精確舊路徑並永久刪除。
