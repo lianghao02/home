@@ -12,6 +12,12 @@ Set-StrictMode -Version Latest
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
+# 優先使用 PowerShell 7 正確解析無 BOM 的 UTF-8 子腳本；未安裝時仍支援
+# Windows PowerShell 5.1，並於呼叫階段建立同目錄的暫時 BOM 複本。
+$powerShell7 = Get-Command 'pwsh.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+$projectPowerShell = if ($powerShell7) { $powerShell7.Source } else { 'powershell.exe' }
+$usingWindowsPowerShell = [IO.Path]::GetFileName($projectPowerShell) -ieq 'powershell.exe'
+
 if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
     $DevelopmentRoot = Split-Path -Parent $PSScriptRoot
 }
@@ -32,7 +38,6 @@ if (Test-Path -LiteralPath $localDotnetExe) {
         $env:PATH = "$localDotnetRoot;$env:PATH"
     }
 }
-
 # 注入 Rust Cargo 與 MinGW 工具鏈 (若存在)
 $cargoBin = Join-Path $env:USERPROFILE '.cargo\bin'
 $mingwBin = Join-Path $env:USERPROFILE 'scoop\apps\mingw\current\bin'
@@ -124,6 +129,7 @@ if (Test-Path -LiteralPath $localDotnetExe) {
 } else {
     Write-Host '⚠️  .NET SDK：未在使用者本機目錄找到，使用系統預設 dotnet。' -ForegroundColor Yellow
 }
+Write-Host "🟦 PowerShell：   $projectPowerShell" -ForegroundColor Gray
 Write-Host '=================================================================' -ForegroundColor Cyan
 
 foreach ($project in $projects) {
@@ -198,7 +204,37 @@ foreach ($project in $selectedProjects) {
                 Pop-Location
             }
         } else {
-            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pScript @($project.BuildArguments)
+            $scriptToRun = $pScript
+            $temporaryUtf8Script = $null
+            try {
+                if ($usingWindowsPowerShell) {
+                    $scriptBytes = [IO.File]::ReadAllBytes($pScript)
+                    $hasUtf8Bom = $scriptBytes.Length -ge 3 -and
+                        $scriptBytes[0] -eq 0xEF -and
+                        $scriptBytes[1] -eq 0xBB -and
+                        $scriptBytes[2] -eq 0xBF
+                    if (-not $hasUtf8Bom) {
+                        $temporaryUtf8Script = Join-Path (
+                            Split-Path -Parent $pScript
+                        ) ".central-build-$([Guid]::NewGuid().ToString('N')).ps1"
+                        $sourceText = [IO.File]::ReadAllText(
+                            $pScript,
+                            [Text.UTF8Encoding]::new($false)
+                        )
+                        [IO.File]::WriteAllText(
+                            $temporaryUtf8Script,
+                            $sourceText,
+                            [Text.UTF8Encoding]::new($true)
+                        )
+                        $scriptToRun = $temporaryUtf8Script
+                    }
+                }
+                & $projectPowerShell -NoProfile -ExecutionPolicy Bypass -File $scriptToRun @($project.BuildArguments)
+            } finally {
+                if ($temporaryUtf8Script -and (Test-Path -LiteralPath $temporaryUtf8Script)) {
+                    Remove-Item -LiteralPath $temporaryUtf8Script -Force
+                }
+            }
         }
 
         $exitCode = $LASTEXITCODE

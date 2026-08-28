@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 chcp 65001 >nul
 title [7] 建置所有桌面應用程式
 cd /d "%~dp0"

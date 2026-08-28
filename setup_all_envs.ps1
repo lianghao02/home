@@ -11,7 +11,6 @@ Set-StrictMode -Version Latest
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
-
 if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
     $parent = Split-Path -Parent $PSScriptRoot
     if ($parent -and ((Split-Path -Leaf $parent) -match '(?i)^GitHub$')) {
@@ -27,7 +26,8 @@ $root = [IO.Path]::GetFullPath($DevelopmentRoot)
 $pyProjects = @(
     '01_AG-MONITOR-Smart-Video-Screening',
     '07_auto-learning-bot',
-    '10_Smart-Photo-Organizer'
+    '10_Smart-Photo-Organizer',
+    '12_ClipMask-AI'
 )
 
 Write-Host '=================================================================' -ForegroundColor Cyan
@@ -86,22 +86,11 @@ Write-Host '=================================================================' -
 
 foreach ($p in $pyProjects) {
     $pdir = Join-Path $root $p
-    $py = Join-Path $pdir 'python_embed\python.exe'
-    if (Test-Path -LiteralPath $py) {
-        $oldEap = $ErrorActionPreference
-        $ErrorActionPreference = 'Continue'
-        $diag = & $py -c "import sys, sqlite3; print('Python ' + sys.version.split()[0] + ' | sqlite3:OK')" 2>&1
-        $ErrorActionPreference = $oldEap
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "  ✅ $p -> $diag" -ForegroundColor Green
-        } else {
-            Write-Host "  ❌ $p -> $diag" -ForegroundColor Red
-        }
+    $req = Join-Path $pdir 'requirements.txt'
+    if (Test-Path -LiteralPath $req) {
+        Write-Host "  ✅ $p -> requirements.txt 就緒" -ForegroundColor Green
     } else {
-        Write-Host "  ⚠️  $p -> 未安裝 python_embed" -ForegroundColor Yellow
+        Write-Host "  ⚠️ $p -> 未配置 requirements.txt" -ForegroundColor Yellow
     }
 }
-
-Write-Host '=================================================================' -ForegroundColor Cyan
-Write-Host '🎉 所有 Python 專案之環境建置程序已執行完畢！' -ForegroundColor Yellow
 Write-Host '=================================================================' -ForegroundColor Cyan
