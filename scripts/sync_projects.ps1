@@ -73,7 +73,7 @@ Write-Host '================================================================='
 if ($Execute) {
     Write-Host '🚀 【執行模式】正式從 GitHub 拉取／下載最新專案與部署'
 } else {
-    Write-Host '🔍 【預覽模式】僅掃描本機專案與 GitHub 同步狀態（尚未修改檔案）'
+    Write-Host '🔍 【預覽模式】更新遠端參照並掃描同步狀態（不修改工作檔案）'
 }
 Write-Host "📁 【工作目錄】$root"
 Write-Host '================================================================='
@@ -85,6 +85,8 @@ if ($Execute -and -not (Test-Path -LiteralPath $root)) {
 
 $repoIndex = 0
 $totalRepos = $manifest.repositories.Count
+$failures = [System.Collections.Generic.List[string]]::new()
+$warnings = [System.Collections.Generic.List[string]]::new()
 
 foreach ($item in $manifest.repositories) {
     $repoIndex++
@@ -105,7 +107,12 @@ foreach ($item in $manifest.repositories) {
                 $ErrorActionPreference = $oldEap
             }
 
-            if ($LASTEXITCODE -ne 0) { throw "下載失敗：$url" }
+            if ($LASTEXITCODE -ne 0) {
+                $message = "$folderName：下載失敗（$url）"
+                $failures.Add($message)
+                Write-Host "$prefix : ❌ $message"
+                continue
+            }
             Write-Host "$prefix : ✅ 下載完成"
         } else {
             Write-Host "$prefix : 📥 待下載（新電腦缺少此專案）"
@@ -129,9 +136,36 @@ foreach ($item in $manifest.repositories) {
             }
             Write-Host "$prefix : ✅ 已完成 Git 版本庫自癒連結"
         } else {
-            Write-Host "$prefix : ⚠️  已略過（本機已存在但非 Git 專案）"
+            $message = "$folderName：本機已存在但不是 Git 專案"
+            $warnings.Add($message)
+            Write-Host "$prefix : ⚠️  已略過（$message）"
             continue
         }
+    }
+
+    $fetchOutput = @()
+    $fetchExitCode = 1
+    for ($fetchAttempt = 1; $fetchAttempt -le 2; $fetchAttempt++) {
+        $oldEap = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+            $fetchOutput = @(git -c "safe.directory=$safeTarget" -C "$target" fetch --prune origin 2>&1)
+            $fetchExitCode = $LASTEXITCODE
+        } finally {
+            $ErrorActionPreference = $oldEap
+        }
+        if ($fetchExitCode -eq 0) { break }
+        if ($fetchAttempt -eq 1) {
+            Write-Host "$prefix : 🌐 GitHub 連線失敗，2 秒後重試一次..."
+            Start-Sleep -Seconds 2
+        }
+    }
+    if ($fetchExitCode -ne 0) {
+        $message = "$folderName：無法取得 GitHub 最新分支"
+        $failures.Add($message)
+        Write-Host "$prefix : ❌ $message"
+        if ($fetchOutput) { Write-Host ($fetchOutput -join [Environment]::NewLine) }
+        continue
     }
 
     $oldEap = $ErrorActionPreference
@@ -144,10 +178,14 @@ foreach ($item in $manifest.repositories) {
     }
 
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "$prefix : ⚠️  無法讀取 Git 狀態，已略過"
+        $message = "$folderName：無法讀取 Git 狀態"
+        $failures.Add($message)
+        Write-Host "$prefix : ❌ $message"
         continue
     }
     if ($changes.Count -gt 0) {
+        $message = "$folderName：本機有未提交修改"
+        $warnings.Add($message)
         Write-Host "$prefix : 🛡️  保護略過（本機有未提交的修改，不強制覆蓋）"
         continue
     }
@@ -171,7 +209,9 @@ foreach ($item in $manifest.repositories) {
     }
 
     if ($branchExitCode -ne 0 -or -not $branch) {
-        Write-Host "$prefix : ⚠️  無法判斷目前 Git 分支，已略過"
+        $message = "$folderName：無法判斷目前 Git 分支"
+        $failures.Add($message)
+        Write-Host "$prefix : ❌ $message"
         continue
     }
 
@@ -187,31 +227,90 @@ foreach ($item in $manifest.repositories) {
                 $ErrorActionPreference = $oldEap
             }
             if ($linkExitCode -ne 0) {
-                throw "無法設定上游分支：$target`n$($linkOutput -join [Environment]::NewLine)"
+                $message = "$folderName：無法設定上游分支 origin/$branch"
+                $failures.Add($message)
+                Write-Host "$prefix : ❌ $message"
+                if ($linkOutput) { Write-Host ($linkOutput -join [Environment]::NewLine) }
+                continue
             }
             Write-Host "$prefix : ✅ 已連結上游分支 origin/$branch"
+            $upstream = @("origin/$branch")
         } else {
-            Write-Host "$prefix : ⚠️  $branch 未設定上游分支（執行模式將嘗試連結 origin/$branch）"
+            $message = "$folderName：$branch 未設定上游分支"
+            $warnings.Add($message)
+            Write-Host "$prefix : ⚠️  $message（執行模式將嘗試連結 origin/$branch）"
+            continue
         }
     }
 
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $counts = @(git -c "safe.directory=$safeTarget" -C "$target" rev-list --left-right --count 'HEAD...@{upstream}' 2>$null)
+        $countsExitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $oldEap
+    }
+    if ($countsExitCode -ne 0 -or -not $counts) {
+        $message = "$folderName：無法比較本機與上游分支"
+        $failures.Add($message)
+        Write-Host "$prefix : ❌ $message"
+        continue
+    }
+
+    $parts = ([string]$counts[0]).Trim() -split '\s+'
+    $ahead = [int]$parts[0]
+    $behind = [int]$parts[1]
+
     if ($Execute) {
-        Write-Host "$prefix : 🔄 正在從 GitHub 更新 (git pull)..."
+        if ($ahead -gt 0 -and $behind -gt 0) {
+            $message = "$folderName：本機與 GitHub 已分歧（本機 +$ahead、GitHub +$behind），需人工合併"
+            $failures.Add($message)
+            Write-Host "$prefix : ❌ $message"
+            continue
+        }
+        if ($ahead -gt 0) {
+            $message = "$folderName：本機領先 GitHub $ahead 筆提交，未自動推送"
+            $warnings.Add($message)
+            Write-Host "$prefix : ⬆️  $message"
+            continue
+        }
+        if ($behind -eq 0) {
+            Write-Host "$prefix : ✅ 已是最新進度"
+            continue
+        }
+
+        Write-Host "$prefix : 🔄 GitHub 領先 $behind 筆提交，正在安全快轉..."
         $oldEap = $ErrorActionPreference
         $ErrorActionPreference = 'Continue'
         try {
-            $pullOutput = @(git -c "safe.directory=$safeTarget" -C "$target" pull --ff-only 2>&1)
+            $pullOutput = @(git -c "safe.directory=$safeTarget" -C "$target" merge --ff-only '@{upstream}' 2>&1)
             $pullExitCode = $LASTEXITCODE
         } finally {
             $ErrorActionPreference = $oldEap
         }
-
         if ($pullExitCode -ne 0) {
-            throw "更新失敗：$target`n$($pullOutput -join [Environment]::NewLine)"
+            $message = "$folderName：安全快轉失敗"
+            $failures.Add($message)
+            Write-Host "$prefix : ❌ $message"
+            if ($pullOutput) { Write-Host ($pullOutput -join [Environment]::NewLine) }
+            continue
         }
-        Write-Host "$prefix : ✅ 已更新至最新進度"
+        Write-Host "$prefix : ✅ 已快轉 $behind 筆提交"
     } else {
-        Write-Host "$prefix : ✨ 準備就緒（本機工作區乾淨，可安全更新）"
+        if ($ahead -eq 0 -and $behind -eq 0) {
+            Write-Host "$prefix : ✅ 本機與 GitHub 已同步"
+        } elseif ($ahead -eq 0) {
+            Write-Host "$prefix : ⬇️  GitHub 領先 $behind 筆提交，可安全快轉"
+        } elseif ($behind -eq 0) {
+            $message = "$folderName：本機領先 GitHub $ahead 筆提交"
+            $warnings.Add($message)
+            Write-Host "$prefix : ⬆️  $message"
+        } else {
+            $message = "$folderName：本機與 GitHub 已分歧（本機 +$ahead、GitHub +$behind）"
+            $failures.Add($message)
+            Write-Host "$prefix : ❌ $message"
+        }
     }
 }
 
@@ -219,16 +318,30 @@ Write-Host '-----------------------------------------------------------------'
 if (-not $SkipAgentSetup) {
     Write-Host '🤖 正在同步 AI Agent 設定與 Skills...'
     if (-not (Test-Path -LiteralPath $config.AgentSetup -PathType Leaf)) {
-        throw "找不到 Agent 設定腳本：$($config.AgentSetup)"
+        $failures.Add("找不到 Agent 設定腳本：$($config.AgentSetup)")
+    } else {
+        try {
+            if ($Execute) { & $config.AgentSetup } else { & $config.AgentSetup -CheckOnly }
+        } catch {
+            $failures.Add("Agent 設定同步失敗：$($_.Exception.Message)")
+        }
     }
-    if ($Execute) { & $config.AgentSetup } else { & $config.AgentSetup -CheckOnly }
 }
 
 Write-Host ''
 Write-Host '================================================================='
-if ($Execute) {
-    Write-Host '🎉 【完成】所有專案與 AI Agent 設定已全數同步更新完畢！'
+if ($failures.Count -gt 0) {
+    Write-Host "❌ 【完成但需處理】失敗或分歧：$($failures.Count) 項；保護略過或待推送：$($warnings.Count) 項。"
+    foreach ($failure in $failures) { Write-Host "  - $failure" }
+    foreach ($warning in $warnings) { Write-Host "  - $warning" }
+    Write-Host '================================================================='
+    exit 1
+} elseif ($Execute) {
+    Write-Host "🎉 【完成】$totalRepos 個專案與 AI Agent 設定已完成同步；提醒事項：$($warnings.Count) 項。"
+    foreach ($warning in $warnings) { Write-Host "  - $warning" }
 } else {
-    Write-Host '💡 【完成】預覽掃描結束。若要正式拉取下載，請雙擊【2_從GitHub更新所有專案.bat】。'
+    Write-Host "💡 【完成】$totalRepos 個專案預覽掃描結束；提醒事項：$($warnings.Count) 項。"
+    foreach ($warning in $warnings) { Write-Host "  - $warning" }
+    Write-Host '若要正式拉取下載，請雙擊【2_從GitHub更新所有專案.bat】。'
 }
 Write-Host '================================================================='

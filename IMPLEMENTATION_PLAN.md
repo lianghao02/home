@@ -278,3 +278,36 @@
 - README 技術架構標記：12 個專案均已存在。
 - CHANGELOG 未發布條目：12 個專案均已存在。
 - `06` 的發行腳本及專案設定均確認為 `--self-contained false`／`SelfContained=false`。
+
+---
+
+## 2026-08-28 跨裝置 Git 同步修復
+
+### 目標與驗收條件
+
+- 重新核對清單內所有 Repository 的本機分支、上游分支與 GitHub 最新提交。
+- 保留公司與家中電腦產生的有效修改；遇到分歧時逐檔合併，禁止 force push。
+- 同步腳本即使單一專案有髒工作區或分支分歧，也必須繼續檢查其餘專案並在結尾正確摘要。
+- 完成適用測試、差異與敏感資料檢核後，才提交並推送需要整合的 Repository。
+
+### 工作清單
+
+- [x] 重新取得遠端分支並分類為同步、可快轉、本機超前或已分歧｜確認 04 分歧、06／07／09 遠端領先，其餘同步。
+- [x] 快轉無衝突專案並下載清單內缺少的 Repository｜06、07 安全快轉；12 依 GitHub 預設 `master` 下載。
+- [x] 合併 `04_Photo-Report-Generator` 與 `09_PaperSwitch` 的跨裝置修改｜04 保留雙方提交歷史；09 以 stash 保存點整合本機功能。
+- [x] 修正 `sync_projects.ps1` 的遠端檢查、不中斷處理與結果摘要｜預覽會 fetch、分類前後差異、失敗重試一次並繼續其餘專案。
+- [ ] 執行專案測試及推送前檢核，提交並一般推送至正確的 origin 分支｜本機測試與提交已完成，待推送及遠端最終確認。
+
+### 安全邊界
+
+- 不刪除舊版 `01_AG-Monitor-Forensics` 資料夾或其未追蹤模型檔。
+- 不修改 remote、不重寫歷史、不使用 force push。
+- 任何尚未完成或未通過驗證的本機程式修改，先建立可回復保存點再進行遠端整合。
+
+### 驗證紀錄
+
+- `04_Photo-Report-Generator`：內嵌 JavaScript 語法、資源重建、QA 與本機 Browser 實測通過；Undo／Redo、案件欄位復原／重做、專案與 PDF 入口正常，無 console error。
+- `06_System-Optimizer-Tool`：Release 組態 10 項 .NET 測試通過。
+- `07_auto-learning-bot`：Python 3.13 開發環境 40 項測試通過；可攜式 Python 因隔離模式不作為開發測試入口。
+- `09_PaperSwitch`：Release 建置 0 警告、0 錯誤，26 項 .NET 測試通過。
+- `sync_projects.ps1`：PowerShell Parser 通過；實際預覽遇到 GitHub 暫時 DNS 失敗時仍繼續掃描至第 13 個專案，已加一次短暫重試。
