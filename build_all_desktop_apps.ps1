@@ -41,6 +41,20 @@ if (Test-Path -LiteralPath $mingwBin) { $env:PATH = "$mingwBin;$env:PATH" }
 
 $projects = @(
     [PSCustomObject]@{
+        Name = '01_AG-MONITOR-Smart-Video-Screening'
+        BuildScript = Join-Path $root '01_AG-MONITOR-Smart-Video-Screening\scripts\build_portable_release.py'
+        BuildArguments = @()
+        SourceExe = Join-Path $root '01_AG-MONITOR-Smart-Video-Screening\dist\AG-MONITOR-v4.0.0\AG-MONITOR.exe'
+        Repo = 'lianghao02/AG-MONITOR-Smart-Video-Screening'
+        Tag = 'v4.0.0'
+        ReleaseTitle = 'AG-MONITOR 智慧影像快篩系統 v4.0.0'
+        ReleaseNotes = Join-Path $root '01_AG-MONITOR-Smart-Video-Screening\docs\RELEASE_NOTES_v4.0.0.md'
+        ReleaseFiles = @(
+            (Join-Path $root '01_AG-MONITOR-Smart-Video-Screening\dist\AG-MONITOR-Smart-Video-Screening-v4.0.0-win-x64-portable.zip'),
+            (Join-Path $root '01_AG-MONITOR-Smart-Video-Screening\dist\AG-MONITOR-Smart-Video-Screening-v4.0.0-win-x64-portable.zip.sha256')
+        )
+    },
+    [PSCustomObject]@{
         Name = '03_Police-Image-Toolkit'
         BuildScript = Join-Path $root '03_Police-Image-Toolkit\scripts\build.ps1'
         BuildArguments = @()
@@ -104,7 +118,7 @@ $projects = @(
 Write-Host '=================================================================' -ForegroundColor Cyan
 Write-Host '🖥️ 【Windows 桌面應用程式集中建置】' -ForegroundColor Yellow
 Write-Host "📂 開發根目錄：$root" -ForegroundColor Gray
-Write-Host '📌 發行模式：  五個專案各自輸出桌面免安裝/可攜式應用程式' -ForegroundColor Gray
+Write-Host "📌 發行模式：  $($projects.Count) 個專案各自輸出桌面免安裝／可攜式應用程式" -ForegroundColor Gray
 if (Test-Path -LiteralPath $localDotnetExe) {
     Write-Host "🔧 .NET SDK：     $localDotnetExe" -ForegroundColor Gray
 } else {
@@ -135,7 +149,7 @@ if ($Force) {
     for ($index = 0; $index -lt $projects.Count; $index++) {
         Write-Host "  $($index + 1). $($projects[$index].Name)"
     }
-    Write-Host '  A. 全部專案 (預設輸入 A 或 1-5)'
+        Write-Host "  A. 全部專案（預設輸入 A 或 1-$($projects.Count)）"
     Write-Host '  0. 取消'
 
     $selection = (Read-Host '請輸入選項').Trim()
@@ -177,7 +191,9 @@ foreach ($project in $selectedProjects) {
         if ($pScript.EndsWith('.py', [System.StringComparison]::OrdinalIgnoreCase)) {
             Push-Location (Join-Path $root $project.Name)
             try {
-                & python.exe $pScript @($project.BuildArguments)
+                $projectPython = Join-Path (Join-Path $root $project.Name) 'python_embed\python.exe'
+                $pythonCommand = if (Test-Path -LiteralPath $projectPython) { $projectPython } else { 'python.exe' }
+                & $pythonCommand $pScript @($project.BuildArguments)
             } finally {
                 Pop-Location
             }
@@ -288,9 +304,22 @@ if ($successfulProjects.Count -gt 0) {
                 continue
             }
             
-            Write-Host "⏳ 正在上傳 $($p.Name) -> Release $($p.Tag)..." -ForegroundColor Yellow
+            Write-Host "⏳ 正在處理 $($p.Name) -> Release $($p.Tag)..." -ForegroundColor Yellow
             try {
-                & gh release upload $p.Tag $existingFiles --clobber --repo $p.Repo
+                $null = & gh release view $p.Tag --repo $p.Repo 2>$null
+                $releaseExists = ($LASTEXITCODE -eq 0)
+                if ($releaseExists) {
+                    & gh release upload $p.Tag $existingFiles --clobber --repo $p.Repo
+                } else {
+                    $releaseTitle = if ($p.PSObject.Properties.Name -contains 'ReleaseTitle') { $p.ReleaseTitle } else { "$($p.Name) $($p.Tag)" }
+                    $releaseArgs = @('release', 'create', $p.Tag) + $existingFiles + @('--verify-tag', '--latest', '--title', $releaseTitle, '--repo', $p.Repo)
+                    if (($p.PSObject.Properties.Name -contains 'ReleaseNotes') -and (Test-Path -LiteralPath $p.ReleaseNotes)) {
+                        $releaseArgs += @('--notes-file', $p.ReleaseNotes)
+                    } else {
+                        $releaseArgs += @('--generate-notes')
+                    }
+                    & gh @releaseArgs
+                }
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host "✅ $($p.Name) 發行檔案已成功發布至 GitHub Releases ($($p.Tag))！" -ForegroundColor Green
                 } else {

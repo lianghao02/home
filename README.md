@@ -27,7 +27,7 @@
 - `4_建置所有Python專案環境.bat`：供仍採 Python 的專案（`01`, `07`, `10`）建立可攜版 Python 3.13 環境；`06` 與 `09` 的主力發行版已改為 C#／.NET，不應將其視為 Python 主程式。
 - `5_安裝GitHub與Playwright工具.bat`：開發工具與語言環境管理入口；核心檢測／安裝 Git、GitHub CLI、Python 3.13 與 .NET 8，並提示 Node.js、Rust、WebView2 Runtime、C++ Build Tools 與 Playwright 的適用時機。選配元件不會自動安裝。
 - `6_建立雙Agent工作區.bat`：選單式一鍵建立指定專案的 `*-codex` 與 `*-ag` 獨立 Worktree，支援自動預覽與確認機制。
-- `7_建置所有桌面應用程式.bat`：發布 `03_Police-Image-Toolkit`、`06_System-Optimizer-Tool`、`09_PaperSwitch` 的 Self-Contained EXE；開始前會要求確認，避免覆寫各專案既有發行成品。
+- `7_建置所有桌面應用程式.bat`：集中建置 AG-MONITOR、Police Image Toolkit、Photo Report Generator、System Optimizer、行政效能領航員與 PaperSwitch；開始前會要求選擇及確認。首次發布會建立 GitHub Release，既有版本則更新對應資產。
 
 ### 集中發布桌面應用程式
 
@@ -37,7 +37,7 @@
 .\build_all_desktop_apps.ps1 -Execute
 ```
 
-成品維持在各專案既有的發布目錄：`03_Police-Image-Toolkit\dist\`、`06_System-Optimizer-Tool\dotnet-src\publish\standalone\`、`09_PaperSwitch\dist\publish\`。若只想確認路徑與發布腳本是否齊全，可省略 `-Execute` 進行預覽。
+成品維持在各專案既有的發布目錄；AG-MONITOR 完整 CPU 可攜包輸出至 `01_AG-MONITOR-Smart-Video-Screening\dist\`。若只想確認路徑與發布腳本是否齊全，可省略 `-Execute` 進行預覽。
 
 ## 新電腦快速開始
 

@@ -7,7 +7,7 @@
 | 專案 | 現行技術棧 | 狀態與後續策略 | 優先級 | 工程邊界 |
 |---|---|---|---|---|
 | `00_home` | PowerShell／Batch／靜態入口 | 維持現狀 | — | 維護雙 Agent 設定同步、批次推送與全域 Skills 唯一來源。 |
-| `01_AG-Monitor-Forensics` | Python 3.13／YOLOv8／OpenCV | 維持現狀 | — | 維護 AI 核心與 `python_embed` 自癒環境。 |
+| `01_AG-MONITOR-Smart-Video-Screening` | Python 3.13／PyAV／YOLO11／12／OpenCV | 維持 Python 主架構 | 完整 CPU 可攜 ZIP | 維護監視器解碼、智慧快篩與離線發行環境。 |
 | `02_Cell-Tower-Map-Locator` | HTML／Leaflet／外部 CDN | 體驗優化 | P2 | 依賴本地化、無底圖的座標／扇形備援、標記叢集或 Canvas 圖層；底圖與地址搜尋仍需網路或合法離線圖資。 |
 | `03_Police-Image-Toolkit` | C# 12／.NET 8／WPF | 效能與相容性強化 | P1 | 維持 C#／WPF 主力，不改回 Web/Tauri；驗證 HEIC/HEIF 與既有格式、批次效能及發行。RAW 須通過格式矩陣測試才承諾支援。 |
 | `04_Photo-Report-Generator` | 純 Web SPA | 主重構已完成 | P2 | 維護所見即所得排版與 `docx.js` 匯出；僅在需要桌面檔案整合時選配 Tauri。 |

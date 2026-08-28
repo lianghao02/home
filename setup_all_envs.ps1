@@ -25,7 +25,7 @@ if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
 
 $root = [IO.Path]::GetFullPath($DevelopmentRoot)
 $pyProjects = @(
-    '01_AG-Monitor-Forensics',
+    '01_AG-MONITOR-Smart-Video-Screening',
     '07_auto-learning-bot',
     '10_Smart-Photo-Organizer'
 )
