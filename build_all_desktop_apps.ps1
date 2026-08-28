@@ -52,6 +52,7 @@ $projects = @(
         SourceExe = Join-Path $root '01_AG-MONITOR-Smart-Video-Screening\dist\AG-MONITOR-v4.0.0\AG-MONITOR.exe'
         Repo = 'lianghao02/AG-MONITOR-Smart-Video-Screening'
         Tag = 'v4.0.0'
+        RequireTagMatch = $true
         ReleaseTitle = 'AG-MONITOR 智慧影像快篩系統 v4.0.0'
         ReleaseNotes = Join-Path $root '01_AG-MONITOR-Smart-Video-Screening\docs\RELEASE_NOTES_v4.0.0.md'
         ReleaseFiles = @(
@@ -338,6 +339,16 @@ if ($successfulProjects.Count -gt 0) {
             if ($existingFiles.Count -eq 0) {
                 Write-Host "⚠️  $($p.Name)：找不到可發布的檔案，略過。" -ForegroundColor Yellow
                 continue
+            }
+
+            if (($p.PSObject.Properties.Name -contains 'RequireTagMatch') -and $p.RequireTagMatch) {
+                $repoPath = Join-Path $root $p.Name
+                $tagCommit = & git -c "safe.directory=$repoPath" -C $repoPath rev-list -n 1 $p.Tag 2>$null
+                $headCommit = & git -c "safe.directory=$repoPath" -C $repoPath rev-parse HEAD 2>$null
+                if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($tagCommit) -or $tagCommit -ne $headCommit) {
+                    Write-Host "⚠️  $($p.Name)：目前 HEAD 與 $($p.Tag) 不一致，為避免覆蓋既有正式 Release，略過上傳。請先建立新版本與 Tag。" -ForegroundColor Yellow
+                    continue
+                }
             }
             
             Write-Host "⏳ 正在處理 $($p.Name) -> Release $($p.Tag)..." -ForegroundColor Yellow
