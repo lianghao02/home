@@ -64,7 +64,9 @@ function Scan-Projects() {
             
             $aheadCount = 0
             $behindCount = 0
-            $revCount = (& git rev-list --left-right --count HEAD...origin/main 2>$null)
+            $currBranch = (& git branch --show-current 2>$null)
+            if ([string]::IsNullOrWhiteSpace($currBranch)) { $currBranch = 'main' } else { $currBranch = $currBranch.Trim() }
+            $revCount = (& git rev-list --left-right --count "HEAD...origin/$currBranch" 2>$null)
             if ($null -ne $revCount -and $revCount -match '(\d+)\s+(\d+)') {
                 $aheadCount = [int]$matches[1]
                 $behindCount = [int]$matches[2]
@@ -92,6 +94,7 @@ function Scan-Projects() {
                 Index = $idx
                 Name = $name
                 Path = $pPath
+                Branch = $currBranch
                 HasUncommitted = $hasUncommitted
                 Ahead = $aheadCount
                 Behind = $behindCount
@@ -124,7 +127,8 @@ function Invoke-PullAll($scanList) {
         Write-Host "⏳ 正在更新 $($item.Name)..." -ForegroundColor Yellow
         Push-Location $item.Path
         try {
-            & git pull --rebase origin main
+            $branch = if ($item.Branch) { $item.Branch } else { 'main' }
+            & git pull --rebase origin $branch
             if ($LASTEXITCODE -eq 0) {
                 Write-Host "✅ $($item.Name) 更新成功！" -ForegroundColor Green
             } else {
@@ -194,7 +198,8 @@ function Invoke-PushAll($scanList) {
                 & git commit -m "$commitMsg"
             }
 
-            & git push origin main
+            $branch = if ($item.Branch) { $item.Branch } else { 'main' }
+            & git push origin $branch
             if ($LASTEXITCODE -eq 0) {
                 Write-Host "✅ $($item.Name) 推送成功！" -ForegroundColor Green
             } else {
