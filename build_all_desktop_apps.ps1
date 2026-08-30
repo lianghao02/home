@@ -1,4 +1,4 @@
-# UTF-8 Compatibility
+﻿# UTF-8 Compatibility
 [CmdletBinding()]
 param(
     [string]$DevelopmentRoot = '',
@@ -43,6 +43,55 @@ $cargoBin = Join-Path $env:USERPROFILE '.cargo\bin'
 $mingwBin = Join-Path $env:USERPROFILE 'scoop\apps\mingw\current\bin'
 if (Test-Path -LiteralPath $cargoBin) { $env:PATH = "$cargoBin;$env:PATH" }
 if (Test-Path -LiteralPath $mingwBin) { $env:PATH = "$mingwBin;$env:PATH" }
+
+
+# -----------------------------------------------------------------
+# 📌 自動建立 Windows 桌面捷徑輔助函式
+# -----------------------------------------------------------------
+function New-DesktopShortcut {
+    param(
+        [string]$TargetExe,
+        [string]$ShortcutName,
+        [string]$Description = ''
+    )
+
+    if (-not (Test-Path -LiteralPath $TargetExe)) {
+        return $false
+    }
+
+    $targetFile = $TargetExe
+    if (-not $targetFile.EndsWith('.exe', [StringComparison]::OrdinalIgnoreCase)) {
+        if (Test-Path -LiteralPath $targetFile -PathType Container) {
+            $innerExe = Get-ChildItem -Path $targetFile -Filter "*.exe" -File | Select-Object -First 1
+            if ($innerExe) { $targetFile = $innerExe.FullName } else { return $false }
+        } else {
+            return $false
+        }
+    }
+
+    try {
+        $desktop = [Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)
+        if (-not (Test-Path -LiteralPath $desktop)) {
+            return $false
+        }
+
+        $shortcutPath = Join-Path $desktop "$ShortcutName.lnk"
+        $wsh = New-Object -ComObject WScript.Shell
+        $shortcut = $wsh.CreateShortcut($shortcutPath)
+        $shortcut.TargetPath = $targetFile
+        $shortcut.WorkingDirectory = Split-Path -Parent $targetFile
+        if (-not [string]::IsNullOrWhiteSpace($Description)) {
+            $shortcut.Description = $Description
+        }
+        $shortcut.Save()
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($wsh) | Out-Null
+        Write-Host "  📌 [桌面捷徑] 已建立/更新桌面捷徑 ➜ $ShortcutName.lnk" -ForegroundColor Cyan
+        return $true
+    } catch {
+        Write-Host "  ⚠️ 建立桌面捷徑失敗：$($_.Exception.Message)" -ForegroundColor Yellow
+        return $false
+    }
+}
 
 $projects = @(
     [PSCustomObject]@{
