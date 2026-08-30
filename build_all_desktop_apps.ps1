@@ -52,7 +52,10 @@ function New-DesktopShortcut {
     param(
         [string]$TargetExe,
         [string]$ShortcutName,
-        [string]$Description = ''
+        [string]$Description = '',
+        [string]$Arguments = '',
+        [string]$WorkingDirectory = '',
+        [string]$IconLocation = ''
     )
 
     if (-not (Test-Path -LiteralPath $TargetExe)) {
@@ -79,7 +82,13 @@ function New-DesktopShortcut {
         $wsh = New-Object -ComObject WScript.Shell
         $shortcut = $wsh.CreateShortcut($shortcutPath)
         $shortcut.TargetPath = $targetFile
-        $shortcut.WorkingDirectory = Split-Path -Parent $targetFile
+        $shortcut.WorkingDirectory = if (-not [string]::IsNullOrWhiteSpace($WorkingDirectory)) { $WorkingDirectory } else { Split-Path -Parent $targetFile }
+        if (-not [string]::IsNullOrWhiteSpace($Arguments)) {
+            $shortcut.Arguments = $Arguments
+        }
+        if (-not [string]::IsNullOrWhiteSpace($IconLocation)) {
+            $shortcut.IconLocation = $IconLocation
+        }
         if (-not [string]::IsNullOrWhiteSpace($Description)) {
             $shortcut.Description = $Description
         }
@@ -159,13 +168,18 @@ $projects = @(
     },
     [PSCustomObject]@{
         Name = '07_auto-learning-bot'
+        DisplayName = '行政效能領航員'
         BuildScript = Join-Path $root '07_auto-learning-bot\scripts\build_portable_release.py'
         BuildArguments = @()
-        SourceExe = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.1.0_Portable\行政效能領航員.exe'
+        SourceExe = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.1.1_Portable\current\runtime\pythonw.exe'
+        Arguments = '-B "ui.py"'
+        WorkingDirectory = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.1.1_Portable\current'
+        IconLocation = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.1.1_Portable\current\icons\app.ico,0'
         Repo = 'lianghao02/auto-learning-bot'
-        Tag = 'V3.1.0'
+        Tag = 'V3.1.1'
         ReleaseFiles = @(
-            (Join-Path $root '07_auto-learning-bot\dist\AdminEfficiencyPilot_V3.1.0_Portable.zip')
+            (Join-Path $root '07_auto-learning-bot\dist\AdminEfficiencyPilot_V3.1.1_Portable.zip'),
+            (Join-Path $root '07_auto-learning-bot\dist\AdminEfficiencyPilot_V3.1.1_Portable.zip.sha256')
         )
     }
 )
