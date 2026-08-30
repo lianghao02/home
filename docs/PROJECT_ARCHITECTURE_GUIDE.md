@@ -15,7 +15,7 @@
 | `06_System-Optimizer-Tool` | C# 12／.NET 8／WPF | 維持現狀 | — | 維護 0.30 MB Framework-dependent 單檔 Exe（目標電腦需 .NET 8 Desktop Runtime）、系統匣與 Win32 核心。 |
 | `07_auto-learning-bot` | Python 3.13／Selenium／PySide6 | 維持現狀 | — | 維護 Selenium 自動化、題庫 SQLite 與驗證機制。 |
 | `08_Financial-Data-Parser` | HTML／SheetJS／本地函式庫 | 串流防護與桌面化 | P1 | Web Streams 降低大型 CSV 峰值記憶體；ZIP/XLSX 以實測設定上限與失敗提示；金融欄位一律字串型態；Tauri 為選配。 |
-| `09_PaperSwitch` | Python 3.13／PyMuPDF／Office COM | 維持現狀 | P3 | 保留現有 `app.py`、COM 防禦與 Release 熱更新機制。 |
+| `09_PaperSwitch` | C# 12／.NET 8／WPF | 重構升級完成 (v4.0.0) | — | 具備 .NET 8 原生單檔、WinRT 超高清 PDF 縮圖、STA 執行緒 Office COM 隔離轉檔與向量無損裝訂。 |
 | `10_Smart-Photo-Organizer` | Python 3.13／pywebview／Pillow／SQLite | 基準測試與局部加速 | P1 | 先建立 Benchmark；僅在證實 dHash 或 ZIP 串流是瓶頸時，以 Rust/Rayon、PyO3 等實作局部核心。 |
 | `11_Calendar-Card-App` | HTML／ES Modules／Google Apps Script | 儲存防禦與本機體驗 | P2 | 新增 `RUN.bat` 啟動本機伺服器；IndexedDB 必須有配額估算、例外處理與資料匯出備份。 |
 
@@ -27,11 +27,11 @@
 
 ### C#／.NET 專案
 
-適用於 `03`、`06`：以 `.sln`、`src/`、`tests/`、`scripts/` 與 gitignored 的 `publish/` 為目標結構。WPF 預設採一般 .NET 發行；Native AOT 必須先完成相容性驗證。既有 `legacy_web/`、`legacy-python/` 等語意清楚的目錄不強制改名。
+適用於 `03`、`06`、`09`：以 `.sln`、`src/`、`tests/`、`scripts/` 與 gitignored 的 `publish/` 為目標結構。WPF 預設採一般 .NET 發行；Native AOT 必須先完成相容性驗證。既有 `legacy_web/`、`legacy-python/` 等語意清楚的目錄不強制改名。
 
 ### Python 原生／AI 應用
 
-適用於 `01`、`07`、`09`、`10`：入口可維持 `main.py` 或 `app.py`；依需要使用 `src/`、`tests/`、`docs/`、`scripts/`、`python_embed/`、`requirements.txt` 與可選但推薦的 `pyproject.toml`。`RUN.bat` 是終端除錯入口。
+適用於 `01`、`07`、`10`：入口可維持 `main.py` 或 `app.py`；依需要使用 `src/`、`tests/`、`docs/`、`scripts/`、`python_embed/`、`requirements.txt` 與可選但推薦的 `pyproject.toml`。`RUN.bat` 是終端除錯入口。
 
 ## 工程落地邊界與防禦準則
 
