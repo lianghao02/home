@@ -33,6 +33,11 @@ $sensitivePatterns = @(
     'sk-[a-zA-Z0-9]{32,}'
 )
 
+function Invoke-GitForProject([string]$ProjectPath, [string[]]$Arguments) {
+    $safePath = $ProjectPath.Replace('\', '/')
+    & git -c "safe.directory=$safePath" -C $ProjectPath @Arguments
+}
+
 function Scan-Projects() {
     Write-Host '=================================================================' -ForegroundColor Cyan
     Write-Host '🔍 【專案狀態掃描中...】正在比對 13 個專案之本機與雲端狀態' -ForegroundColor Yellow
@@ -49,33 +54,39 @@ function Scan-Projects() {
             Write-Host "[$idx/$($repoNames.Count)] $name : ⚠️ 目錄不存在" -ForegroundColor DarkYellow
             continue
         }
+        if (-not (Test-Path -LiteralPath (Join-Path $pPath '.git'))) {
+            Write-Host "[$idx/$($repoNames.Count)] $name : ⚠️ 非 Git 版本庫，已略過" -ForegroundColor DarkYellow
+            continue
+        }
 
-        # 設定 safe.directory 防護
-        $safePath = $pPath.Replace('\', '/')
-        & git config --global --add safe.directory "$safePath" 2>$null
+        # 依各版本庫的追蹤分支抓取所有遠端參照，兼容 main 與 master。
+        $null = Invoke-GitForProject $pPath @('fetch', 'origin', '--prune', '--quiet') 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[$idx/$($repoNames.Count)] $name : ⚠️ 無法抓取遠端狀態，已略過" -ForegroundColor DarkYellow
+            continue
+        }
 
-        Push-Location $pPath
-        try {
-            # 靜默 fetch 遠端
-            & git fetch origin main --quiet 2>$null
+        $statusOut = @(Invoke-GitForProject $pPath @('status', '--porcelain') 2>$null)
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[$idx/$($repoNames.Count)] $name : ⚠️ 無法讀取 Git 狀態，已略過" -ForegroundColor DarkYellow
+            continue
+        }
+        $hasUncommitted = ($null -ne $statusOut -and $statusOut.Count -gt 0)
             
-            $statusOut = (& git status --porcelain 2>$null)
-            $hasUncommitted = ($null -ne $statusOut -and $statusOut.Count -gt 0)
-            
-            $aheadCount = 0
-            $behindCount = 0
-            $currBranch = (& git branch --show-current 2>$null)
-            if ([string]::IsNullOrWhiteSpace($currBranch)) { $currBranch = 'main' } else { $currBranch = $currBranch.Trim() }
-            $revCount = (& git rev-list --left-right --count "HEAD...origin/$currBranch" 2>$null)
-            if ($null -ne $revCount -and $revCount -match '(\d+)\s+(\d+)') {
-                $aheadCount = [int]$matches[1]
-                $behindCount = [int]$matches[2]
-            }
+        $aheadCount = 0
+        $behindCount = 0
+        $currBranch = Invoke-GitForProject $pPath @('branch', '--show-current') 2>$null
+        if ([string]::IsNullOrWhiteSpace($currBranch)) { $currBranch = 'main' } else { $currBranch = $currBranch.Trim() }
+        $revCount = Invoke-GitForProject $pPath @('rev-list', '--left-right', '--count', "HEAD...origin/$currBranch") 2>$null
+        if ($null -ne $revCount -and $revCount -match '(\d+)\s+(\d+)') {
+            $aheadCount = [int]$matches[1]
+            $behindCount = [int]$matches[2]
+        }
 
-            $desc = '✨ 已是最新進度'
-            $color = 'Green'
+        $desc = '✨ 已是最新進度'
+        $color = 'Green'
 
-            if ($behindCount -gt 0 -and ($aheadCount -gt 0 -or $hasUncommitted)) {
+        if ($behindCount -gt 0 -and ($aheadCount -gt 0 -or $hasUncommitted)) {
                 $desc = "⚠️ 需同步 (⬇️ 雲端新 $behindCount 版, ⬆️ 本地 $aheadCount 版/待提交)"
                 $color = 'Yellow'
             } elseif ($behindCount -gt 0) {
@@ -85,23 +96,20 @@ function Scan-Projects() {
                 $changeDesc = if ($aheadCount -gt 0) { "$aheadCount 個待推送版本" } else { "未提交之檔案修改" }
                 $desc = "⬆️ 本地有修改 ($changeDesc)"
                 $color = 'Magenta'
-            }
-
-            Write-Host "[$idx/$($repoNames.Count)] $name : " -NoNewline
-            Write-Host $desc -ForegroundColor $color
-
-            $stats.Add([PSCustomObject]@{
-                Index = $idx
-                Name = $name
-                Path = $pPath
-                Branch = $currBranch
-                HasUncommitted = $hasUncommitted
-                Ahead = $aheadCount
-                Behind = $behindCount
-            })
-        } finally {
-            Pop-Location
         }
+
+        Write-Host "[$idx/$($repoNames.Count)] $name : " -NoNewline
+        Write-Host $desc -ForegroundColor $color
+
+        $stats.Add([PSCustomObject]@{
+            Index = $idx
+            Name = $name
+            Path = $pPath
+            Branch = $currBranch
+            HasUncommitted = $hasUncommitted
+            Ahead = $aheadCount
+            Behind = $behindCount
+        })
     }
 
     $behindTotal = @($stats | Where-Object { $_.Behind -gt 0 }).Count
@@ -123,19 +131,18 @@ function Invoke-PullAll($scanList) {
     $pullCount = 0
     foreach ($item in $scanList) {
         if ($item.Behind -eq 0) { continue }
+        if ($item.HasUncommitted) {
+            Write-Host "🛡️  $($item.Name) 有未提交修改，為保護工作目錄已略過拉取。" -ForegroundColor Yellow
+            continue
+        }
         $pullCount++
         Write-Host "⏳ 正在更新 $($item.Name)..." -ForegroundColor Yellow
-        Push-Location $item.Path
-        try {
-            $branch = if ($item.Branch) { $item.Branch } else { 'main' }
-            & git pull --rebase origin $branch
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "✅ $($item.Name) 更新成功！" -ForegroundColor Green
-            } else {
-                Write-Host "❌ $($item.Name) 更新失敗，請手動檢視衝突。" -ForegroundColor Red
-            }
-        } finally {
-            Pop-Location
+        $branch = if ($item.Branch) { $item.Branch } else { 'main' }
+        $null = Invoke-GitForProject $item.Path @('pull', '--ff-only', 'origin', $branch)
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "✅ $($item.Name) 更新成功！" -ForegroundColor Green
+        } else {
+            Write-Host "❌ $($item.Name) 更新失敗，請手動檢視衝突。" -ForegroundColor Red
         }
     }
     if ($pullCount -eq 0) {
@@ -153,7 +160,7 @@ function Invoke-SyncAI() {
 
     $syncScript = Join-Path $homeRepo 'scripts\sync_codex.ps1'
     if (Test-Path -LiteralPath $syncScript) {
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $syncScript -Execute
+        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $syncScript
     } else {
         Write-Host "⚠️ 找不到 sync_codex.ps1" -ForegroundColor Red
     }
@@ -167,46 +174,19 @@ function Invoke-PushAll($scanList) {
 
     $pushCount = 0
     foreach ($item in $scanList) {
-        if ($item.Ahead -eq 0 -and -not $item.HasUncommitted) { continue }
+        if ($item.HasUncommitted) {
+            Write-Host "🛡️  $($item.Name) 有未提交修改，未自動暫存或建立提交。請先逐案檢視並以 Conventional Commit 提交。" -ForegroundColor Yellow
+            continue
+        }
+        if ($item.Ahead -eq 0) { continue }
         $pushCount++
         Write-Host "⏳ 正在處理推送：$($item.Name)..." -ForegroundColor Yellow
-        Push-Location $item.Path
-        try {
-            if ($item.HasUncommitted) {
-                # 敏感資料安全掃描
-                $diffText = (& git diff HEAD 2>$null) -join "`n"
-                $untrackedFiles = (& git status --porcelain 2>$null) | Where-Object { $_ -match '^\?\?' }
-                foreach ($uf in $untrackedFiles) {
-                    $uPath = $uf.Substring(3).Trim()
-                    if (Test-Path -LiteralPath $uPath) {
-                        try { $diffText += "`n" + (Get-Content -LiteralPath $uPath -Raw -ErrorAction SilentlyContinue) } catch {}
-                    }
-                }
-
-                $foundSensitive = $false
-                foreach ($pattern in $sensitivePatterns) {
-                    if ($diffText -match $pattern) {
-                        $foundSensitive = $true
-                        Write-Host "🚨 安全攔截：$($item.Name) 偵測到疑似 API Key/Token 敏感資訊，已阻止推送！" -ForegroundColor Red
-                        break
-                    }
-                }
-                if ($foundSensitive) { continue }
-
-                & git add -A
-                $commitMsg = "sync: 自動同步本機修改進度 ($(Get-Date -Format 'yyyy-MM-dd HH:mm'))"
-                & git commit -m "$commitMsg"
-            }
-
-            $branch = if ($item.Branch) { $item.Branch } else { 'main' }
-            & git push origin $branch
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "✅ $($item.Name) 推送成功！" -ForegroundColor Green
-            } else {
-                Write-Host "❌ $($item.Name) 推送失敗。" -ForegroundColor Red
-            }
-        } finally {
-            Pop-Location
+        $branch = if ($item.Branch) { $item.Branch } else { 'main' }
+        $null = Invoke-GitForProject $item.Path @('push', 'origin', $branch)
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "✅ $($item.Name) 推送成功！" -ForegroundColor Green
+        } else {
+            Write-Host "❌ $($item.Name) 推送失敗。" -ForegroundColor Red
         }
     }
     if ($pushCount -eq 0) {
@@ -234,12 +214,14 @@ if ($Action -eq 'Auto') {
 } elseif ($Action -eq 'SyncAI') {
     Invoke-SyncAI
     return
+} elseif ($Action -eq 'Scan') {
+    return
 }
 
 # 互動選單模式
 Write-Host ''
 Write-Host '請選擇操作：' -ForegroundColor Cyan
-Write-Host '  [1] ⚡ 智慧全自動同步 (先拉取 ➜ 分發AI憲法 ➜ 再推送，最推薦 ⭐)' -ForegroundColor Yellow
+Write-Host '  [1] ⚡ 智慧全自動同步（先拉取乾淨版本庫 ➜ 分發 AI 設定 ➜ 推送既有提交）' -ForegroundColor Yellow
 Write-Host '  [2] ⬇️  僅拉取雲端更新 (Pull All)'
 Write-Host '  [3] ⬆️  僅推送本地修改 (Push All)'
 Write-Host '  [4] 🔀  僅分發 AI 憲法與 Skills 至本機專案'

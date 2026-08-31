@@ -1,6 +1,9 @@
 # 📜 變更歷史 (CHANGELOG)
 
 ## 未發布（2026-08-26）
+- **中樞同步防護**：智慧同步改為支援 `main`／`master`，只拉取乾淨版本庫、只推送既有提交，保留未提交修改供逐案檢視。
+- **集中建置校準**：`03`、`04`、`06`、`09` 的發布版號改由各自 `version.txt` 讀取，並修復 Windows PowerShell 5.1 的 UTF-8 BOM 解析相容性。
+- **環境入口對齊**：Python 可攜環境明確標示為 `python_embed`，並按核心、建議與選配元件說明開發工具鏈。
 - **批次檔編碼標準化**：根目錄 7 個 `.bat` 批次檔全數改採 UTF-8 with BOM 與標準 Windows CRLF 行尾，徹底排除 CMD.exe 雙擊啟動時解析中文造成的語法錯誤、標籤跳轉失敗與閃退。
 - **控制台編碼強化**：所有核心 PowerShell 腳本強制設定 `[Console]::OutputEncoding = UTF8`，杜絕 PowerShell 5.1 在繁體中文環境預設 CP950 引起的終端問號與方塊亂碼。
 - **AI 設定同步容錯自癒**：修復 `sync_codex.ps1` 遇 0 位元組空檔案（如未配置的 `mcp_config.json`）直接崩潰的臭蟲，並優化預覽模式為非中斷警告。

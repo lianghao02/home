@@ -1,5 +1,47 @@
 # 實作計畫
 
+## 2026-08-31 全專案版本檢核、文件對齊與發布
+
+### 目標與驗收條件
+
+- 依 `development-repositories.json` 盤點 13 個版本庫的 README、CHANGELOG、版本來源與 Git 狀態，確認是否符合指定版本。
+- 僅針對經程式碼、設定檔或既有發布資產證實的版本更新文件；不以任務書內容覆寫實際專案狀態。
+- 驗證三支中樞腳本、C# 單元測試與集中桌面建置；完成交付前檢查後，才提交、推送及建立缺漏的 GitHub Release。
+
+### 不做範圍
+
+- 不以 Big Bang 方式重構專案架構、不修改未經驗證的功能或版本號。
+- 不提交既有不相干、快取、可攜環境或二進位產物；不 force push、不覆寫遠端 Release。
+
+### 工作清單
+
+- [x] 盤點 13 個版本庫與版本來源｜README、CHANGELOG、設定檔與本機 tag 已交叉比對；發現任務書與多個版本庫版本不一致。
+- [ ] 校準可證實的文件與版本標示｜`12_ClipMask-AI` 已補 v1.0.0 版本檔、README 徽章與 CHANGELOG；其餘待確認採用任務書或版本庫的較新版本。
+- [ ] 驗證中樞腳本、C# 測試與集中桌面建置｜三支腳本 Parser 通過；`06` 10 項、`09` 27 項 .NET 測試通過；集中建置仍在執行 `07` 可攜封裝。
+- [ ] 執行交付前檢查並提交／推送｜分支、遠端、敏感資料與待提交範圍核對。
+- [ ] 建立缺漏的 GitHub Release｜tag、資產、發布日誌與遠端核對。
+
+### 風險與因應
+
+- 任務書與版本庫可能不同步：以版本庫的程式碼、設定與可驗證 Release 資料為準，差異先列為待確認。
+- 多版本庫可能存在既有未提交修改：逐案分離檢視，沒有明確歸屬的不納入 commit。
+- Release 與二進位建置會對遠端與本機造成實質變更：僅在測試與交付前檢查通過後執行。
+
+### 驗證紀錄
+
+- `workspace_sync_hub.ps1`：修正為相容 `main`／`master`、只拉取乾淨版本庫、只推送既有提交，並移除全域 `safe.directory` 寫入；Windows PowerShell Parser 通過。遠端 Scan 在此執行介面受單次逾時限制，未取得完整 13 個結果。
+- `build_all_desktop_apps.ps1`：改由 `03`、`04`、`06`、`09` 的 `version.txt` 讀取發布版本；修復 Windows PowerShell 5.1 所需的 UTF-8 BOM；預覽通過。
+- `setup_environment_hub.ps1`：可攜 Python 環境說明與實際 `python_embed` 行為一致；Parser 通過。
+- `06_System-Optimizer-Tool`：`dotnet test --no-restore`，10 項通過。
+- `09_PaperSwitch`：`dotnet test --no-restore`，27 項通過。
+- 集中建置：`01` v4.0.0 ZIP／SHA256、`03` v11.3.0 EXE／GUIDE／SHA256、`06` v6.2.1 Standalone／Slim、`09` v4.1.0 Standalone、`04` v2.2.0 Tauri 產物均已重建；`07` 封裝仍在進行。
+
+### 剩餘問題
+
+- 請確認發布基準：任務書版本與現有版本庫不同，不能在未確認下倒退版本或建立錯誤 tag／Release。
+- `03` 的單獨 `dotnet test` 回傳沒有可判讀輸出，尚不得標示通過；需在本機終端重新執行或改由其 QA 腳本補驗。
+- `07` 的集中可攜封裝仍在背景執行，尚未確認本輪 ZIP／SHA256 時間戳。
+
 ## 目標與驗收條件
 
 將共用自訂 Skill 的 Codex 部署位置遷移至官方個人位置 `%USERPROFILE%\.agents\skills`，維持 Antigravity 部署與中央來源不變，並移除工作區根目錄重複的全域憲法。

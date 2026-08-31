@@ -44,6 +44,26 @@ $mingwBin = Join-Path $env:USERPROFILE 'scoop\apps\mingw\current\bin'
 if (Test-Path -LiteralPath $cargoBin) { $env:PATH = "$cargoBin;$env:PATH" }
 if (Test-Path -LiteralPath $mingwBin) { $env:PATH = "$mingwBin;$env:PATH" }
 
+function Get-ReleaseVersion([string]$VersionFile) {
+    if (-not (Test-Path -LiteralPath $VersionFile -PathType Leaf)) {
+        throw "找不到版本宣告檔：$VersionFile"
+    }
+
+    $version = (Get-Content -LiteralPath $VersionFile -Encoding UTF8 -TotalCount 1).Trim()
+    if ($version -notmatch '^[vV]?\d+\.\d+\.\d+$') {
+        throw "版本宣告格式錯誤：$VersionFile -> $version"
+    }
+    if ($version -notmatch '^[vV]') {
+        $version = "v$version"
+    }
+    return $version
+}
+
+$policeImageToolkitVersion = Get-ReleaseVersion (Join-Path $root '03_Police-Image-Toolkit\src\PoliceImageToolkit\version.txt')
+$systemOptimizerVersion = Get-ReleaseVersion (Join-Path $root '06_System-Optimizer-Tool\version.txt')
+$paperSwitchVersion = Get-ReleaseVersion (Join-Path $root '09_PaperSwitch\version.txt')
+$photoReportVersion = Get-ReleaseVersion (Join-Path $root '04_Photo-Report-Generator\version.txt')
+
 
 # -----------------------------------------------------------------
 # 📌 自動建立 Windows 桌面捷徑輔助函式
@@ -124,10 +144,10 @@ $projects = @(
         BuildArguments = @()
         SourceExe = Join-Path $root '03_Police-Image-Toolkit\dist\PoliceImageToolkit.exe'
         Repo = 'lianghao02/Police-Image-Toolkit'
-        Tag = 'v11.2.0'
+        Tag = $policeImageToolkitVersion
         ReleaseFiles = @(
             (Join-Path $root '03_Police-Image-Toolkit\dist\PoliceImageToolkit.exe'),
-            (Join-Path $root '03_Police-Image-Toolkit\dist\PoliceImageToolkit-v11.2.0-win-x64.zip')
+            (Join-Path $root "03_Police-Image-Toolkit\dist\PoliceImageToolkit-$policeImageToolkitVersion-win-x64.zip")
         )
     },
     [PSCustomObject]@{
@@ -136,10 +156,10 @@ $projects = @(
         BuildArguments = @()
         SourceExe = Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish\standalone\SystemOptimizer.App.exe'
         Repo = 'lianghao02/System-Optimizer-Tool'
-        Tag = 'v6.2.1'
+        Tag = $systemOptimizerVersion
         ReleaseFiles = @(
-            (Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish\SystemOptimizer-v6.2.1-Standalone-x64.exe'),
-            (Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish\SystemOptimizer-v6.2.1-Slim-x64.exe')
+            (Join-Path $root "06_System-Optimizer-Tool\dotnet-src\publish\SystemOptimizer-$systemOptimizerVersion-Standalone-x64.exe"),
+            (Join-Path $root "06_System-Optimizer-Tool\dotnet-src\publish\SystemOptimizer-$systemOptimizerVersion-Slim-x64.exe")
         )
     },
     [PSCustomObject]@{
@@ -148,10 +168,10 @@ $projects = @(
         BuildArguments = @('-SelfContained')
         SourceExe = Join-Path $root '09_PaperSwitch\dist\publish\PaperSwitch.exe'
         Repo = 'lianghao02/PaperSwitch'
-        Tag = 'v4.0.0'
+        Tag = $paperSwitchVersion
         ReleaseFiles = @(
-            (Join-Path $root '09_PaperSwitch\dist\release_assets\PaperSwitch-v4.0.0-Standalone.exe'),
-            (Join-Path $root '09_PaperSwitch\dist\release_assets\PaperSwitch-v4.0.0-FrameworkDependent.zip')
+            (Join-Path $root "09_PaperSwitch\dist\release_assets\PaperSwitch-$paperSwitchVersion-Standalone.exe"),
+            (Join-Path $root "09_PaperSwitch\dist\release_assets\PaperSwitch-$paperSwitchVersion-FrameworkDependent.zip")
         )
     },
     [PSCustomObject]@{
@@ -160,10 +180,10 @@ $projects = @(
         BuildArguments = @()
         SourceExe = Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\photo-report-generator.exe'
         Repo = 'lianghao02/Photo-Report-Generator'
-        Tag = 'v2.1.2'
+        Tag = $photoReportVersion
         ReleaseFiles = @(
-            (Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis\Photo-Report-Generator-v2.1.2-Setup.exe'),
-            (Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis\Photo-Report-Generator-v2.1.2-Portable.zip')
+            (Join-Path $root "04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis\Photo-Report-Generator-$photoReportVersion-Setup.exe"),
+            (Join-Path $root "04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis\Photo-Report-Generator-$photoReportVersion-Portable.zip")
         )
     },
     [PSCustomObject]@{
@@ -327,7 +347,7 @@ foreach ($project in $selectedProjects) {
 
         # 針對 09 PaperSwitch 補充複製產出 Standalone EXE
         if ($project.Name -eq '09_PaperSwitch') {
-            $saTarget = Join-Path $root '09_PaperSwitch\dist\release_assets\PaperSwitch-v4.0.0-Standalone.exe'
+            $saTarget = Join-Path $root "09_PaperSwitch\dist\release_assets\PaperSwitch-$($project.Tag)-Standalone.exe"
             New-Item -ItemType Directory -Path (Split-Path $saTarget) -Force | Out-Null
             if ($exePath -ne $saTarget -and (Test-Path -LiteralPath $exePath)) {
                 Copy-Item -LiteralPath $exePath -Destination $saTarget -Force
@@ -339,8 +359,8 @@ foreach ($project in $selectedProjects) {
             $pubDir = Join-Path $root '06_System-Optimizer-Tool\dotnet-src\publish'
             $saSrc = Join-Path $pubDir 'standalone\SystemOptimizer.App.exe'
             $slimSrc = Join-Path $pubDir 'slim\SystemOptimizer.App.exe'
-            $saDest = Join-Path $pubDir 'SystemOptimizer-v6.2.1-Standalone-x64.exe'
-            $slimDest = Join-Path $pubDir 'SystemOptimizer-v6.2.1-Slim-x64.exe'
+            $saDest = Join-Path $pubDir "SystemOptimizer-$($project.Tag)-Standalone-x64.exe"
+            $slimDest = Join-Path $pubDir "SystemOptimizer-$($project.Tag)-Slim-x64.exe"
             if ((Test-Path -LiteralPath $saSrc) -and ($saSrc -ne $saDest)) { Copy-Item -LiteralPath $saSrc -Destination $saDest -Force }
             if ((Test-Path -LiteralPath $slimSrc) -and ($slimSrc -ne $slimDest)) { Copy-Item -LiteralPath $slimSrc -Destination $slimDest -Force }
         }
@@ -348,8 +368,8 @@ foreach ($project in $selectedProjects) {
         # 針對 04 補充命名標準 NSIS EXE 與 Portable ZIP
         if ($project.Name -eq '04_Photo-Report-Generator') {
             $nsisDir = Join-Path $root '04_Photo-Report-Generator\src-tauri\target\x86_64-pc-windows-gnu\release\bundle\nsis'
-            $destSetup = Join-Path $nsisDir 'Photo-Report-Generator-v2.1.2-Setup.exe'
-            $destZip = Join-Path $nsisDir 'Photo-Report-Generator-v2.1.2-Portable.zip'
+            $destSetup = Join-Path $nsisDir "Photo-Report-Generator-$($project.Tag)-Setup.exe"
+            $destZip = Join-Path $nsisDir "Photo-Report-Generator-$($project.Tag)-Portable.zip"
             $rawSetup = Get-ChildItem -Path $nsisDir -Filter "*setup.exe" | Where-Object { $_.FullName -ne $destSetup } | Select-Object -First 1
             $rawZip = Get-ChildItem -Path $nsisDir -Filter "*.zip" | Where-Object { $_.FullName -ne $destZip } | Select-Object -First 1
             if ($rawSetup) { Copy-Item -LiteralPath $rawSetup.FullName -Destination $destSetup -Force }
