@@ -16,10 +16,10 @@
 ### 工作清單
 
 - [x] 盤點 13 個版本庫與版本來源｜README、CHANGELOG、設定檔與本機 tag 已交叉比對；發現任務書與多個版本庫版本不一致。
-- [ ] 校準可證實的文件與版本標示｜`12_ClipMask-AI` 已補 v1.0.0 版本檔、README 徽章與 CHANGELOG；其餘待確認採用任務書或版本庫的較新版本。
-- [ ] 驗證中樞腳本、C# 測試與集中桌面建置｜三支腳本 Parser 通過；`06` 10 項、`09` 27 項 .NET 測試通過；集中建置仍在執行 `07` 可攜封裝。
-- [ ] 執行交付前檢查並提交／推送｜分支、遠端、敏感資料與待提交範圍核對。
-- [ ] 建立缺漏的 GitHub Release｜tag、資產、發布日誌與遠端核對。
+- [x] 校準可證實的文件與版本標示｜`12_ClipMask-AI` 已補 v1.0.0 版本檔、README 徽章與 CHANGELOG；其餘採用版本庫中可驗證且較新的版本。
+- [x] 驗證中樞腳本、C# 測試與集中桌面建置｜三支腳本 Parser 通過；`03`、`06`、`09` 的 .NET 測試通過；6 個桌面應用程式均已產出本輪發行檔。
+- [x] 執行交付前檢查並提交／推送｜分支、遠端、敏感資料與待提交範圍已核對；僅保留 `07` 既存未提交修改，不混入本次提交。
+- [x] 建立缺漏的 GitHub Release｜`03 v11.3.0`、`04 v2.2.0`、`09 v4.1.0`、`12 v1.0.0` 的 tag、資產與發布日誌均已核對。
 
 ### 風險與因應
 
@@ -29,18 +29,18 @@
 
 ### 驗證紀錄
 
-- `workspace_sync_hub.ps1`：修正為相容 `main`／`master`、只拉取乾淨版本庫、只推送既有提交，並移除全域 `safe.directory` 寫入；Windows PowerShell Parser 通過。遠端 Scan 在此執行介面受單次逾時限制，未取得完整 13 個結果。
+- `workspace_sync_hub.ps1`：修正為相容 `main`／`master`、只拉取乾淨版本庫、只推送既有提交，並移除全域 `safe.directory` 寫入；另修正 PowerShell 函式作用域造成的 Git 結束碼誤判。Windows PowerShell Parser 通過，授權環境的 `-Action Scan` 完成 13 專案掃描：無待拉取，僅 `00_home`（本次變更）與 `07`（既存變更）待推送。
 - `build_all_desktop_apps.ps1`：改由 `03`、`04`、`06`、`09` 的 `version.txt` 讀取發布版本；修復 Windows PowerShell 5.1 所需的 UTF-8 BOM；預覽通過。
 - `setup_environment_hub.ps1`：可攜 Python 環境說明與實際 `python_embed` 行為一致；Parser 通過。
 - `06_System-Optimizer-Tool`：`dotnet test --no-restore`，10 項通過。
 - `09_PaperSwitch`：`dotnet test --no-restore`，27 項通過。
-- 集中建置：`01` v4.0.0 ZIP／SHA256、`03` v11.3.0 EXE／GUIDE／SHA256、`06` v6.2.1 Standalone／Slim、`09` v4.1.0 Standalone、`04` v2.2.0 Tauri 產物均已重建；`07` 封裝仍在進行。
+- `03_Police-Image-Toolkit`：`dotnet test --no-restore` 結束碼 0。
+- 集中建置：`01` v4.0.0 ZIP／SHA256、`03` v11.3.0 EXE／GUIDE／SHA256／Portable ZIP、`04` v2.2.0 Setup／Portable ZIP、`06` v6.2.1 Standalone／Slim、`07` V3.1.1 ZIP／SHA256、`09` v4.1.0 Standalone／Framework-dependent ZIP 均已重建。
+- GitHub Release：`03 v11.3.0`（EXE、ZIP、GUIDE、SHA256SUMS）、`04 v2.2.0`（Setup、Portable ZIP）、`09 v4.1.0`（Standalone、Framework-dependent ZIP）、`12 v1.0.0`（初始文件版）均已公開發布。
 
 ### 剩餘問題
 
-- 請確認發布基準：任務書版本與現有版本庫不同，不能在未確認下倒退版本或建立錯誤 tag／Release。
-- `03` 的單獨 `dotnet test` 回傳沒有可判讀輸出，尚不得標示通過；需在本機終端重新執行或改由其 QA 腳本補驗。
-- `07` 的集中可攜封裝仍在背景執行，尚未確認本輪 ZIP／SHA256 時間戳。
+- `07_auto-learning-bot` 有既存未提交修改；本次依安全邊界保留原樣，待原作者確認內容後另案提交。
 
 ## 目標與驗收條件
 

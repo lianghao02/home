@@ -36,6 +36,9 @@ $sensitivePatterns = @(
 function Invoke-GitForProject([string]$ProjectPath, [string[]]$Arguments) {
     $safePath = $ProjectPath.Replace('\', '/')
     & git -c "safe.directory=$safePath" -C $ProjectPath @Arguments
+    # 函式內的 $LASTEXITCODE 不會可靠地回傳到呼叫端；以 Script 範圍保存，
+    # 讓掃描、拉取與推送都能判斷實際 Git 結果。
+    $script:LastGitExitCode = $LASTEXITCODE
 }
 
 function Scan-Projects() {
@@ -61,13 +64,13 @@ function Scan-Projects() {
 
         # 依各版本庫的追蹤分支抓取所有遠端參照，兼容 main 與 master。
         $null = Invoke-GitForProject $pPath @('fetch', 'origin', '--prune', '--quiet') 2>$null
-        if ($LASTEXITCODE -ne 0) {
+        if ($script:LastGitExitCode -ne 0) {
             Write-Host "[$idx/$($repoNames.Count)] $name : ⚠️ 無法抓取遠端狀態，已略過" -ForegroundColor DarkYellow
             continue
         }
 
         $statusOut = @(Invoke-GitForProject $pPath @('status', '--porcelain') 2>$null)
-        if ($LASTEXITCODE -ne 0) {
+        if ($script:LastGitExitCode -ne 0) {
             Write-Host "[$idx/$($repoNames.Count)] $name : ⚠️ 無法讀取 Git 狀態，已略過" -ForegroundColor DarkYellow
             continue
         }
@@ -139,7 +142,7 @@ function Invoke-PullAll($scanList) {
         Write-Host "⏳ 正在更新 $($item.Name)..." -ForegroundColor Yellow
         $branch = if ($item.Branch) { $item.Branch } else { 'main' }
         $null = Invoke-GitForProject $item.Path @('pull', '--ff-only', 'origin', $branch)
-        if ($LASTEXITCODE -eq 0) {
+        if ($script:LastGitExitCode -eq 0) {
             Write-Host "✅ $($item.Name) 更新成功！" -ForegroundColor Green
         } else {
             Write-Host "❌ $($item.Name) 更新失敗，請手動檢視衝突。" -ForegroundColor Red
@@ -183,7 +186,7 @@ function Invoke-PushAll($scanList) {
         Write-Host "⏳ 正在處理推送：$($item.Name)..." -ForegroundColor Yellow
         $branch = if ($item.Branch) { $item.Branch } else { 'main' }
         $null = Invoke-GitForProject $item.Path @('push', 'origin', $branch)
-        if ($LASTEXITCODE -eq 0) {
+        if ($script:LastGitExitCode -eq 0) {
             Write-Host "✅ $($item.Name) 推送成功！" -ForegroundColor Green
         } else {
             Write-Host "❌ $($item.Name) 推送失敗。" -ForegroundColor Red
