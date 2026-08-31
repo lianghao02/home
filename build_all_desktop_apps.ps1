@@ -191,15 +191,15 @@ $projects = @(
         DisplayName = '行政效能領航員'
         BuildScript = Join-Path $root '07_auto-learning-bot\scripts\build_portable_release.py'
         BuildArguments = @()
-        SourceExe = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.1.1_Portable\current\runtime\pythonw.exe'
+        SourceExe = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.2.0_Portable\current\runtime\pythonw.exe'
         Arguments = '-B "ui.py"'
-        WorkingDirectory = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.1.1_Portable\current'
-        IconLocation = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.1.1_Portable\current\icons\app.ico,0'
+        WorkingDirectory = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.2.0_Portable\current'
+        IconLocation = Join-Path $root '07_auto-learning-bot\dist\行政效能領航員_V3.2.0_Portable\current\icons\app.ico,0'
         Repo = 'lianghao02/auto-learning-bot'
-        Tag = 'V3.1.1'
+        Tag = 'V3.2.0'
         ReleaseFiles = @(
-            (Join-Path $root '07_auto-learning-bot\dist\AdminEfficiencyPilot_V3.1.1_Portable.zip'),
-            (Join-Path $root '07_auto-learning-bot\dist\AdminEfficiencyPilot_V3.1.1_Portable.zip.sha256')
+            (Join-Path $root '07_auto-learning-bot\dist\AdminEfficiencyPilot_V3.2.0_Portable.zip'),
+            (Join-Path $root '07_auto-learning-bot\dist\AdminEfficiencyPilot_V3.2.0_Portable.zip.sha256')
         )
     }
 )
