@@ -11,7 +11,7 @@
 ## 下載、需求與執行入口
 
 - **用途**：集中管理專案清單、Git 同步、Codex／Antigravity 規則，以及仍採 Python 的專案可攜環境。
-- **必要軟體**：Windows 10/11、Git for Windows、Windows PowerShell 5.1 以上；管理功能本身不要求先安裝 Python。
+- **必要軟體**：Windows 10/11、Git for Windows；建議使用 PowerShell 7，未安裝時各入口會自動退回 Windows PowerShell 5.1。管理功能本身不要求先安裝 Python。
 - **下載**：`git clone https://github.com/lianghao02/home.git 00_home`。
 - **主要入口**：一般使用者直接雙擊根目錄的 `1_`～`3_` 旗艦批次檔；進階使用者可執行 `scripts/` 下對應 PowerShell 腳本。
 - **網路需求**：Clone、Pull、Push 與首次下載 Python 可攜核心時需要網路；若 `downloads/` 已有安裝母檔，Python 環境可離線建置。

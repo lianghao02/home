@@ -9,6 +9,8 @@ Set-StrictMode -Version Latest
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $homeRepo = Split-Path -Parent $PSScriptRoot
+$powerShell7 = Get-Command 'pwsh.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+$projectPowerShell = if ($powerShell7) { $powerShell7.Source } else { 'powershell.exe' }
 
 Write-Host '=================================================================' -ForegroundColor Cyan
 Write-Host '🛠️ 【環境建置與工具安裝中樞】' -ForegroundColor Yellow
@@ -25,7 +27,7 @@ switch ($choice) {
     '1' {
         $envScript = Join-Path $homeRepo 'setup_all_envs.ps1'
         if (Test-Path -LiteralPath $envScript) {
-            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $envScript
+            & $projectPowerShell -NoProfile -ExecutionPolicy Bypass -File $envScript
         } else {
             Write-Host "⚠️ 找不到 setup_all_envs.ps1" -ForegroundColor Red
         }
@@ -33,7 +35,7 @@ switch ($choice) {
     '2' {
         $toolScript = Join-Path $homeRepo 'scripts\setup_developer_tools.ps1'
         if (Test-Path -LiteralPath $toolScript) {
-            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $toolScript -Execute
+            & $projectPowerShell -NoProfile -ExecutionPolicy Bypass -File $toolScript -Execute
         } else {
             Write-Host "⚠️ 找不到 setup_developer_tools.ps1" -ForegroundColor Red
         }

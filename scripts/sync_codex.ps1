@@ -48,6 +48,15 @@ function Get-TreeHash([string]$Path) {
     finally { $stream.Dispose() }
 }
 
+function Get-BackupDirectory([string]$Target) {
+    $backupSession = Get-Date -Format 'yyyyMMdd-HHmmss'
+    $targetLabel = [regex]::Replace($Target.TrimEnd('\\', '/'), '[^A-Za-z0-9._-]', '_').Trim('_')
+    if ([string]::IsNullOrWhiteSpace($targetLabel)) {
+        $targetLabel = 'managed-item'
+    }
+    return Join-Path $codexHome (Join-Path (Join-Path 'bridge-backups' $backupSession) $targetLabel)
+}
+
 function Sync-ManagedItem([string]$Source, [string]$Target, [hashtable]$Old, [hashtable]$New) {
     if (-not (Test-Path -LiteralPath $Source)) { throw "Source does not exist: $Source" }
     $sourceHash = Get-TreeHash $Source
@@ -87,7 +96,7 @@ function Sync-ManagedItem([string]$Source, [string]$Target, [hashtable]$Old, [ha
 
     New-Item -ItemType Directory -Path (Split-Path -Parent $Target) -Force | Out-Null
     if (Test-Path -LiteralPath $Target) {
-        $backup = Join-Path $codexHome ('bridge-backups\' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+        $backup = Get-BackupDirectory $Target
         New-Item -ItemType Directory -Path $backup -Force | Out-Null
         Copy-Item -LiteralPath $Target -Destination $backup -Recurse -Force
         Remove-Item -LiteralPath $Target -Recurse -Force

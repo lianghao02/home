@@ -23,6 +23,8 @@ if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
 }
 
 $root = [IO.Path]::GetFullPath($DevelopmentRoot)
+$powerShell7 = Get-Command 'pwsh.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+$projectPowerShell = if ($powerShell7) { $powerShell7.Source } else { 'powershell.exe' }
 $pyProjects = @(
     '01_AG-MONITOR-Smart-Video-Screening',
     '07_auto-learning-bot',
@@ -66,7 +68,7 @@ foreach ($p in $pyProjects) {
         if ($Force) {
             $argList += '-Force'
         }
-        & powershell.exe $argList
+        & $projectPowerShell $argList
     } finally {
         $ErrorActionPreference = $oldEap
     }

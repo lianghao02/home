@@ -17,6 +17,8 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $homeRepo = Split-Path -Parent $PSScriptRoot
 $githubRoot = Split-Path -Parent $homeRepo
+$powerShell7 = Get-Command 'pwsh.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+$projectPowerShell = if ($powerShell7) { $powerShell7.Source } else { 'powershell.exe' }
 
 function Write-Header([string]$Title) {
     Write-Host "=================================================================" -ForegroundColor Cyan
@@ -291,7 +293,7 @@ if ($Execute) {
         if (Test-Path -LiteralPath $setupPyScript) {
             Write-Host ""
             Write-Host "🚀 正在為 Python 專案建置獨立可攜環境..." -ForegroundColor Cyan
-            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $setupPyScript
+            & $projectPowerShell -NoProfile -ExecutionPolicy Bypass -File $setupPyScript
         }
     }
 
@@ -329,7 +331,7 @@ if ($missingEssentials.Count -gt 0) {
     switch ($choice) {
         '1' {
             $setupPyScript = Join-Path $homeRepo 'setup_all_envs.ps1'
-            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $setupPyScript
+            & $projectPowerShell -NoProfile -ExecutionPolicy Bypass -File $setupPyScript
         }
         '2' {
             Write-Host "⏳ 正在安裝 Playwright..." -ForegroundColor Cyan

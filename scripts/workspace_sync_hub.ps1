@@ -12,6 +12,8 @@ Set-StrictMode -Off
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $homeRepo = Split-Path -Parent $PSScriptRoot
+$powerShell7 = Get-Command 'pwsh.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+$projectPowerShell = if ($powerShell7) { $powerShell7.Source } else { 'powershell.exe' }
 if ([string]::IsNullOrWhiteSpace($DevelopmentRoot)) {
     $DevelopmentRoot = Split-Path -Parent $homeRepo
 }
@@ -163,7 +165,7 @@ function Invoke-SyncAI() {
 
     $syncScript = Join-Path $homeRepo 'scripts\sync_codex.ps1'
     if (Test-Path -LiteralPath $syncScript) {
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $syncScript
+        & $projectPowerShell -NoProfile -ExecutionPolicy Bypass -File $syncScript
     } else {
         Write-Host "⚠️ 找不到 sync_codex.ps1" -ForegroundColor Red
     }
