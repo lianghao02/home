@@ -50,7 +50,7 @@ function Get-TreeHash([string]$Path) {
 
 function Get-BackupDirectory([string]$Target) {
     $backupSession = Get-Date -Format 'yyyyMMdd-HHmmss'
-    $targetLabel = [regex]::Replace($Target.TrimEnd('\\', '/'), '[^A-Za-z0-9._-]', '_').Trim('_')
+    $targetLabel = [regex]::Replace($Target.TrimEnd([char[]]('\', '/')), '[^A-Za-z0-9._-]', '_').Trim('_')
     if ([string]::IsNullOrWhiteSpace($targetLabel)) {
         $targetLabel = 'managed-item'
     }
