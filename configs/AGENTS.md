@@ -145,9 +145,20 @@
 - `MEMORY.md`：具長期價值的重大架構決策與踩坑歷史（不記流水帳）。
 - `CHANGELOG.md`：版本變更歷程（有正式發布需求時維護）。
 
+**治理文件衝突判斷優先順序**：
+若治理文件內容互相衝突，依下列原則判斷：
+1. 使用者當次明確要求
+2. 專案 `AGENTS.md` 的專案長期邊界
+3. 最新有效 `HANDOFF.md` 的當前工作狀態
+4. `IMPROVEMENTS.md` 的待辦與暫緩狀態
+5. Git Commit / Diff 與 Working Tree 的實際證據
+
+其中 Git 實際狀態用於驗證「實際做了什麼」，不得因文件宣稱完成而忽略實際 Git 狀態。
+
 ### 4.2 雙 Agent 協作與輪替交接規範
 - **共用單一交接檔**：Codex 與 Antigravity 共用單一 `HANDOFF.md`，嚴禁建立 `CODEX_HANDOFF.md`、`ANTIGRAVITY_HANDOFF.md` 或個人專屬備忘錄。
 - **單一主責原則**：同一輪只指定一個主責實作 Agent；Agent 角色可互換，不固定誰實作、誰 Review。
+- **更新責任歸屬**：完成、中斷或移交任務時，由**當前主責 Agent** 負責更新 `HANDOFF.md`；下一個 Agent 不應重新代為整理前一輪工作。
 - **成果繼承**：已完成、已驗證的工作不因換 Agent 而重新開始或全盤推翻。
 - **HANDOFF 標準欄位結構**：
   ```markdown

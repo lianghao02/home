@@ -4,7 +4,7 @@
 可交付
 
 ## 本輪目標
-在最新 v8.2 基礎上，完成 00_home 全域開發治理 v8.3 升級，並建立跨專案改善總表與單一交接機制。
+在最新 v8.2 基礎上，完成 00_home 全域開發治理 v8.3 升級，並建立跨專案改善總表與單一交接機制（含 v8.3.1 細節校正）。
 
 ## 已完成
 1. 安全拉取 `00_home` 最新 GitHub 版本（`git pull --ff-only`，成功 fast-forward 至 `dd71c6e`）。
@@ -12,10 +12,13 @@
    - 憲法標題與版本歷程升級至 v8.3。
    - 強化 Git 操作安全與工作目錄防護條款。
    - 擴充第 4 節多 Agent 協作連續性機制：雙 Agent 單一交接檔規範、單一主責原則、中斷與額度不足安全處理程序、最小必要驗證原則、Agent 接手最小讀取順序、Reviewer 審查範圍與停止條件、治理文件真理來源（Source of Truth）。
-3. 新增全域唯一跨專案改善總表 `IMPROVEMENTS.md`，收錄已確認專案狀態（06、07、04、01、02 等）。
+   - **v8.3.1 校正**：補強治理文件衝突判斷優先順序（使用者當次要求 > 專案 AGENTS > HANDOFF > IMPROVEMENTS > Git 實際證據），並明確規範 HANDOFF.md 由離開或移交之「當前主責 Agent」負責更新。
+3. 新增全域唯一跨專案改善總表 `IMPROVEMENTS.md`：
+   - 收錄已確認專案狀態（06、07、04、01、10 等）。
+   - **v8.3.1 校正**：修正專案編號為 `10_Smart-Photo-Organizer`；`07_auto-learning-bot` 精準修正為「題目順序變動」，選項順序變動列為待確認；移除「指紋演算法」未確認實作假設，聚焦於題目識別 Key 與是否依賴題號。
 4. 建立 `00_home/HANDOFF.md` 當前交接斷點。
 5. 微調 `README.md`，更新全域憲法版本號至 v8.3 並補強治理文件導覽。
-6. 透過 `scripts/sync_codex.ps1 -Execute` 將 v8.3 憲法成功部署至 Codex 與 Antigravity 本機全域設定。
+6. 透過 `scripts/sync_codex.ps1 -Execute` 將更新後的憲法成功部署至 Codex 與 Antigravity 本機全域設定。
 
 ## 刻意未修改
 - 未修改其他 13 個業務 Repository。
@@ -33,7 +36,7 @@
 - `scripts/sync_codex.ps1 -CheckOnly`：預檢正確指出 AGENTS.md Pending，其餘全部 Current。
 - `scripts/sync_codex.ps1 -Execute`：成功將 `configs/AGENTS.md` 同步至 `%USERPROFILE%\.codex\AGENTS.md` 與 `%USERPROFILE%\.gemini\config\AGENTS.md`。
 - 複檢 `scripts/sync_codex.ps1 -CheckOnly`：所有項目狀態皆為 `Current`。
-- Git Diff 審查：僅包含本輪指定的治理檔案（`configs/AGENTS.md`, `README.md`, `IMPROVEMENTS.md`, `HANDOFF.md`）。
+- Git Diff 審查：僅包含本輪指定的治理檔案（`configs/AGENTS.md`, `IMPROVEMENTS.md`, `HANDOFF.md`）。
 
 ### 尚未驗證
 - 無
@@ -42,12 +45,12 @@
 - 無
 
 ## Git 狀態
-- Commit：ae95788
-- Push：是
-- Working Tree：Clean
+- Commit：待提交（即將 Commit）
+- Push：否（待 Commit 後執行）
+- Working Tree：Modified（僅 configs/AGENTS.md、IMPROVEMENTS.md、HANDOFF.md）
 - Branch：main
 
 ## 下一步
-1. 提交 Commit：`docs(governance): 升級全域開發治理至 v8.3 並建立跨專案改善與交接機制`
+1. 提交 Commit：`docs(governance): 微調全域治理至 v8.3.1 (修正專案編號、事實陳述與衝突優先順序)`
 2. 推送至遠端 GitHub。
-3. 驗證遠端與 Working Tree 為 Clean 狀態。
+3. 確認遠端同步且 Working Tree Clean。
