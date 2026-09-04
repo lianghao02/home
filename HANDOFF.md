@@ -45,12 +45,10 @@
 - 無
 
 ## Git 狀態
-- Commit：待提交（即將 Commit）
-- Push：否（待 Commit 後執行）
-- Working Tree：Modified（僅 configs/AGENTS.md、IMPROVEMENTS.md、HANDOFF.md）
+- Commit：b22e090
+- Push：是
+- Working Tree：Clean
 - Branch：main
 
 ## 下一步
-1. 提交 Commit：`docs(governance): 微調全域治理至 v8.3.1 (修正專案編號、事實陳述與衝突優先順序)`
-2. 推送至遠端 GitHub。
-3. 確認遠端同步且 Working Tree Clean。
+- 無；本輪 v8.3.1 治理校正已完成並推送。
