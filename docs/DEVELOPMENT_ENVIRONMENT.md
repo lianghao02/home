@@ -33,7 +33,7 @@
 
 ```text
 D:\Development\GitHub\
-├── 00_home/
+├── 00_Dev-Control-Center/
 ├── 01_AG-MONITOR-Smart-Video-Screening/
 ├── 02_Cell-Tower-Map-Locator/
 ├── 03_Police-Image-Toolkit/
@@ -44,7 +44,9 @@ D:\Development\GitHub\
 ├── 08_Financial-Data-Parser/
 ├── 09_PaperSwitch/
 ├── 10_Smart-Photo-Organizer/
-└── 11_Calendar-Card-App/
+├── 11_Calendar-Card-App/
+├── 12_ClipMask-AI/
+└── 13_Project-Hub/
 ```
 
 ## 4. 2026-08-11 實測結果

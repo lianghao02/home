@@ -6,7 +6,7 @@
 
 | 專案 | 現行技術棧 | 狀態與後續策略 | 優先級 | 工程邊界 |
 |---|---|---|---|---|
-| `00_home` | PowerShell／Batch／靜態入口 | 維持現狀 | — | 維護雙 Agent 設定同步、批次推送與全域 Skills 唯一來源。 |
+| `00_Dev-Control-Center` | PowerShell／Batch／中央控制台 | 維持現狀 | — | 維護雙 Agent 設定同步、批次推送與全域 Skills 唯一來源。 |
 | `01_AG-MONITOR-Smart-Video-Screening` | Python 3.13／PyAV／YOLO11／12／OpenCV | 維持 Python 主架構 | 完整 CPU 可攜 ZIP | 維護監視器解碼、智慧快篩與離線發行環境。 |
 | `02_Cell-Tower-Map-Locator` | HTML／Leaflet／外部 CDN | 體驗優化 | P2 | 依賴本地化、無底圖的座標／扇形備援、標記叢集或 Canvas 圖層；底圖與地址搜尋仍需網路或合法離線圖資。 |
 | `03_Police-Image-Toolkit` | C# 12／.NET 8／WPF | 效能與相容性強化 | P1 | 維持 C#／WPF 主力，不改回 Web/Tauri；驗證 HEIC/HEIF 與既有格式、批次效能及發行。RAW 須通過格式矩陣測試才承諾支援。 |
@@ -16,8 +16,10 @@
 | `07_auto-learning-bot` | Python 3.13／Selenium／PySide6 | 維持現狀 | — | 維護 Selenium 自動化、題庫 SQLite 與驗證機制。 |
 | `08_Financial-Data-Parser` | HTML／SheetJS／本地函式庫 | 串流防護與桌面化 | P1 | Web Streams 降低大型 CSV 峰值記憶體；ZIP/XLSX 以實測設定上限與失敗提示；金融欄位一律字串型態；Tauri 為選配。 |
 | `09_PaperSwitch` | C# 12／.NET 8／WPF | 重構升級完成 (v4.0.0) | — | 具備 .NET 8 原生單檔、WinRT 超高清 PDF 縮圖、STA 執行緒 Office COM 隔離轉檔與向量無損裝訂。 |
-| `10_Smart-Photo-Organizer` | Python 3.13／pywebview／Pillow／SQLite | 基準測試與局部加速 | P1 | 先建立 Benchmark；僅在證實 dHash 或 ZIP 串流是瓶頸時，以 Rust/Rayon、PyO3 等實作局部核心。 |
+| `10_Smart-Photo-Organizer` | Python 3.13／pywebview／Pillow／SQLite | 基準測試與局部加速 | P1 | 先建立 Benchmark；僅在證使 dHash 或 ZIP 串流是瓶頸時，以 Rust/Rayon、PyO3 等實作局部核心。 |
 | `11_Calendar-Card-App` | HTML／ES Modules／Google Apps Script | 儲存防禦與本機體驗 | P2 | 新增 `RUN.bat` 啟動本機伺服器；IndexedDB 必須有配額估算、例外處理與資料匯出備份。 |
+| `12_ClipMask-AI` | Python 3.13／Qt6／PyAV／VAD | 效能與去識別化 | P1 | 離線影音去識別化、AI 人臉追蹤與智慧聽打工作站。 |
+| `13_Project-Hub` | 純 Web (HTML5 / Vanilla JS) | 維持現狀 | — | 公開展示所有開發工具與專案的 GitHub Pages 入口網站。 |
 
 ## 資料夾模板（預設起點）
 

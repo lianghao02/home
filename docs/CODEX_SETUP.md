@@ -11,10 +11,10 @@
 
 ```powershell
 # 唯讀檢查
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\scripts\sync_codex.ps1' -CheckOnly
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_Dev-Control-Center\scripts\sync_codex.ps1' -CheckOnly
 
 # 正式同步
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_home\scripts\sync_codex.ps1'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\00_Dev-Control-Center\scripts\sync_codex.ps1'
 ```
 
 Codex 系統目錄 `%USERPROFILE%/.codex/skills/.system/` 與 Antigravity 平台內建 Skills 不在同步或移除範圍內。

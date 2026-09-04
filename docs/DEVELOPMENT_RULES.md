@@ -11,7 +11,7 @@
 
 ## Worktree 協作
 
-主工作區只承載 `main`。需要平行開發時，由 `00_home/scripts/New-AgentWorktree.ps1` 建立相鄰工作區：
+主工作區只承載 `main`。需要平行開發時，由 `00_Dev-Control-Center/scripts/New-AgentWorktree.ps1` 建立相鄰工作區：
 
 ```text
 Smart-Photo-Organizer/        main

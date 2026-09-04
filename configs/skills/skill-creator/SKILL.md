@@ -26,10 +26,10 @@ skill-name/
 
 ## 單一來源與分流
 
-- 唯一維護來源：`D:\Development\GitHub\00_home\configs\skills\`。
-- 分流定義：`D:\Development\GitHub\00_home\configs\skills-manifest.json`。
+- 唯一維護來源：`D:\Development\GitHub\00_Dev-Control-Center\configs\skills\`。
+- 分流定義：`D:\Development\GitHub\00_Dev-Control-Center\configs\skills-manifest.json`。
 - Codex 共用部署：`C:\Users\chia-hao\.agents\skills\`。
 - Antigravity 共用部署：`C:\Users\chia-hao\.gemini\config\skills\`。
 - 專案專屬規則分開維護於 `[專案]\.agents\AGENTS.md` 與 `[專案]\.gemini\AGENTS.md`；不得由全域同步腳本互相複製。
 
-新增 Skill 前先更新分流清單，再執行 `D:\Development\GitHub\00_home\scripts\sync_codex.ps1 -CheckOnly`。確認無誤後才正式同步。
+新增 Skill 前先更新分流清單，再執行 `D:\Development\GitHub\00_Dev-Control-Center\scripts\sync_codex.ps1 -CheckOnly`。確認無誤後才正式同步。
