@@ -1,6 +1,6 @@
 # LiangHao 開發環境入口
 
-本 Repository 保存全域開發憲法 v8.1、共用 Agent Skills、13 個開發 Repository 清單，以及 Windows 環境重建與一鍵自癒佈置腳本。目前版本為 **v1.4.0**。
+本 Repository 保存全域開發憲法 v8.3、共用 Agent Skills、13 個開發 Repository 清單，以及 Windows 環境重建與一鍵自癒佈置腳本。目前版本為 **v1.4.0**。
 
 ## 技術架構現況（2026-08-24）
 
@@ -53,7 +53,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File 'D:\Development\GitHub\0
 
 腳本會依 [development-repositories.json](development-repositories.json) 處理 13 個 Repository。遇到既有未提交變更時會略過；遇到分支分歧時會繼續檢查其餘專案並於結尾列出，不會自動刪除任何本機資料夾，也不會強制覆蓋 Git 歷史。
 
-## Agent 設定
+## Agent 設定與治理機制
+
+- **全域規則唯一編輯源**：[configs/AGENTS.md](configs/AGENTS.md)（部署至各 Agent 環境之全域開發憲法）
+- **跨專案改善事項總表**：[IMPROVEMENTS.md](IMPROVEMENTS.md)（所有專案已確認改善與待辦唯一彙整表）
+- **當前交接狀態斷點**：[HANDOFF.md](HANDOFF.md)（本專案之工作交接與中斷紀錄）
 
 `scripts/sync_codex.ps1` 會同步：
 
