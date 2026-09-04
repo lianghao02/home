@@ -28,15 +28,11 @@
 - **邊界限制**：暫不改動 Selenium / Gemini / Session / Login 核心架構。
 
 ### 04_Photo-Report-Generator
-- **目前狀態**：待小修
+- **目前狀態**：可交付
 - **已確認事項**：
-  - 最新相關 Commit：`ec8ef93`，已 Push。
-- **待辦項目（局部精確修正）**：
-  1. 日期／時間完整度驗證邏輯。
-  2. 「疑似重複」與實際同檔名判斷之介面文案一致性。
-  3. 移除 audit filter 雙重事件綁定（避免重複觸發）。
-  4. 修正 `exportAuditTitle` / `exportAuditModalTitle` 命名與標題綁定。
-- **邊界限制**：不重構 `index.html` 整體架構，不動 Word / PDF / Excel 既有 exporter 模組。
+  - 最新相關 Commit：`cdee1e8`（修復日期時間合法性、同名照片文案、移除雙重事件綁定、修正標題 ID），已 Push。
+  - **漸進模組化**：已建立完整中期實作路線圖，目標為降低大型 `index.html` 與 `PhotoReportApp` 的維護／Agent 上下文成本；採 Phase 0～4 分段執行，目前僅完成規劃，尚未開始程式拆分。詳細計畫見 `04_Photo-Report-Generator/MODULARIZATION_PLAN.md`。
+- **邊界限制**：不盲目重構 `index.html` 整體架構，不動 Word / PDF / Excel 既有 exporter 模組。
 
 ### 01_AG-MONITOR-Smart-Video-Screening
 - **目前狀態**：暫緩
