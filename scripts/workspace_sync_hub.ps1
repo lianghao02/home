@@ -1,4 +1,4 @@
-﻿# UTF-8 Compatibility
+# UTF-8 Compatibility
 [CmdletBinding()]
 param(
     [string]$DevelopmentRoot = '',
@@ -45,7 +45,7 @@ function Invoke-GitForProject([string]$ProjectPath, [string[]]$Arguments) {
 
 function Scan-Projects() {
     Write-Host '=================================================================' -ForegroundColor Cyan
-    Write-Host '🔍 【專案狀態掃描中...】正在比對 13 個專案之本機與雲端狀態' -ForegroundColor Yellow
+    Write-Host "🔍 【專案狀態掃描中...】正在比對 $($repoNames.Count) 個專案之本機與雲端狀態" -ForegroundColor Yellow
     Write-Host "📁 【工作目錄】$devRoot" -ForegroundColor Gray
     Write-Host '=================================================================' -ForegroundColor Cyan
 
@@ -160,7 +160,7 @@ function Invoke-PullAll($scanList) {
 function Invoke-SyncAI() {
     Write-Host ''
     Write-Host '=================================================================' -ForegroundColor Cyan
-    Write-Host '🔀 【正在分發 00_home 的 AI 憲法與 Skills 至所有專案...】' -ForegroundColor Green
+    Write-Host '🔀 【正在分發 Dev-Control-Center 的 AI 憲法與 Skills 至所有專案...】' -ForegroundColor Green
     Write-Host '=================================================================' -ForegroundColor Cyan
 
     $syncScript = Join-Path $homeRepo 'scripts\sync_codex.ps1'

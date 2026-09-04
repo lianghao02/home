@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "githubOwner": "lianghao02",
   "repositories": [
-    { "folder": "00_home", "repository": "home" },
+    { "folder": "00_Dev-Control-Center", "repository": "Dev-Control-Center" },
     { "folder": "01_AG-MONITOR-Smart-Video-Screening", "repository": "AG-MONITOR-Smart-Video-Screening" },
     { "folder": "02_Cell-Tower-Map-Locator", "repository": "Cell-Tower-Map-Locator" },
     { "folder": "03_Police-Image-Toolkit", "repository": "Police-Image-Toolkit" },
@@ -14,6 +14,7 @@
     { "folder": "09_PaperSwitch", "repository": "PaperSwitch" },
     { "folder": "10_Smart-Photo-Organizer", "repository": "Smart-Photo-Organizer" },
     { "folder": "11_Calendar-Card-App", "repository": "Calendar-Card-App" },
-    { "folder": "12_ClipMask-AI", "repository": "ClipMask-AI" }
+    { "folder": "12_ClipMask-AI", "repository": "ClipMask-AI" },
+    { "folder": "13_Project-Hub", "repository": "Project-Hub" }
   ]
 }

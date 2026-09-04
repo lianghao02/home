@@ -133,10 +133,10 @@
 
 ### 4.1 核心文件職責劃分與 Source of Truth
 專案治理文件權限與真理來源（Source of Truth）明確劃分如下，彼此不重複保存相同資訊：
-- `00_home/configs/AGENTS.md`：**全域工作規則**與開發憲法最高指導。
+- `00_Dev-Control-Center/configs/AGENTS.md`：**全域工作規則**與開發憲法最高指導。
 - 各 Repository `AGENTS.md`：**專案長期邊界**與不可違反的規則例外（不複製全域憲法）。
 - 各 Repository `HANDOFF.md`：**當前工作交接斷點**（回答上一個 Agent 做到哪裡、Git 狀態與下一步）。
-- `00_home/IMPROVEMENTS.md`：**跨專案已確認改善總表**（全域唯一彙整表，各 Repository 不自建）。
+- `00_Dev-Control-Center/IMPROVEMENTS.md`：**跨專案已確認改善總表**（全域唯一彙整表，各 Repository 不自建）。
 - Git Commit / Diff：**實際修改歷史與驗證證據**（README、ARCHITECTURE、DESIGN、MEMORY 不重複保存歷史流水帳）。
 - `README.md`：專案定位、下載、安裝與使用說明。
 - `ARCHITECTURE.md`：系統架構、模組切分與資料流。
@@ -208,7 +208,7 @@
 1. 全域 `configs/AGENTS.md`
 2. 專案 `AGENTS.md`
 3. 專案 `HANDOFF.md`
-4. `00_home/IMPROVEMENTS.md` 中該專案段落
+4. `00_Dev-Control-Center/IMPROVEMENTS.md` 中該專案段落
 5. 最新相關 Commit / Diff
 6. 本輪任務必要程式碼
 

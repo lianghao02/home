@@ -1,4 +1,4 @@
-# 00_home Agent 開發規範
+# 00_Dev-Control-Center Agent 開發規範
 
 本專案遵循目前有效之全域開發憲法；本檔僅定義專案專屬規則與例外。
 
@@ -7,7 +7,7 @@
 ## 1. 專案核心定位與治理邊界
 - **中央開發中樞定位**：
   - 本專案本質為 **Git 同步中樞、Codex / Antigravity Agent 全域規則部署源、共用 Skills 倉庫、桌面應用批次建置與 Windows 環境自癒腳本庫**。
-  - **嚴禁同時將 home 作為作品展示網站或混合商業入口**；若未來需要作品展示站，必須另闢獨立 Repository 存放。
+  - **中央控制中心不得兼任作品展示網站**；公開專案展示、Demo 與 GitHub Pages 部署已獨立由 `13_Project-Hub` Repository 負責。
   - 全域開發憲法之唯一編輯源為 `configs/AGENTS.md`；Skills 來源為 `configs/skills/`，並依 `configs/skills-manifest.json` 進行分流。
 
 ---

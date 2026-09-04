@@ -1,4 +1,4 @@
-﻿# UTF-8 Compatibility
+# UTF-8 Compatibility
 [CmdletBinding()]
 param(
     [string]$DevelopmentRoot = '',
@@ -121,7 +121,7 @@ foreach ($item in $manifest.repositories) {
     }
 
     if (-not (Test-Path -LiteralPath (Join-Path $target '.git'))) {
-        if ($folderName -eq '00_home' -and $Execute) {
+        if (($folderName -eq '00_Dev-Control-Center' -or $folderName -eq '00_home') -and $Execute) {
             Write-Host "$prefix : 🛠️  本機缺少 .git，正在自動初始化並連結遠端..."
             $oldEap = $ErrorActionPreference
             $ErrorActionPreference = 'Continue'

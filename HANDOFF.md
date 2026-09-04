@@ -4,26 +4,34 @@
 可交付
 
 ## 本輪目標
-在最新 v8.2 基礎上，完成 00_home 全域開發治理 v8.3 升級，並建立跨專案改善總表與單一交接機制（含 v8.3.1 細節校正）。
+拆分目前 `lianghao02/home` Repository，建立獨立的 `Dev-Control-Center` 與 `Project-Hub`，同步調整本機資料夾名稱、Repository 清單、GitHub Pages、治理文件與相關引用。
 
 ## 已完成
-1. 安全拉取 `00_home` 最新 GitHub 版本（`git pull --ff-only`，成功 fast-forward 至 `dd71c6e`）。
-2. 更新 `configs/AGENTS.md`：
-   - 憲法標題與版本歷程升級至 v8.3。
-   - 強化 Git 操作安全與工作目錄防護條款。
-   - 擴充第 4 節多 Agent 協作連續性機制：雙 Agent 單一交接檔規範、單一主責原則、中斷與額度不足安全處理程序、最小必要驗證原則、Agent 接手最小讀取順序、Reviewer 審查範圍與停止條件、治理文件真理來源（Source of Truth）。
-   - **v8.3.1 校正**：補強治理文件衝突判斷優先順序（使用者當次要求 > 專案 AGENTS > HANDOFF > IMPROVEMENTS > Git 實際證據），並明確規範 HANDOFF.md 由離開或移交之「當前主責 Agent」負責更新。
-3. 新增全域唯一跨專案改善總表 `IMPROVEMENTS.md`：
-   - 收錄已確認專案狀態（06、07、04、01、10 等）。
-   - **v8.3.1 校正**：修正專案編號為 `10_Smart-Photo-Organizer`；`07_auto-learning-bot` 精準修正為「題目順序變動」，選項順序變動列為待確認；移除「指紋演算法」未確認實作假設，聚焦於題目識別 Key 與是否依賴題號。
-4. 建立 `00_home/HANDOFF.md` 當前交接斷點。
-5. 微調 `README.md`，更新全域憲法版本號至 v8.3 並補強治理文件導覽。
-6. 透過 `scripts/sync_codex.ps1 -Execute` 將更新後的憲法成功部署至 Codex 與 Antigravity 本機全域設定。
+1. **GitHub Repository 拆分與建立**：
+   - 建立獨立展示站 `lianghao02/Project-Hub`，並設定 GitHub Pages 由 Actions workflow 自動部署。
+   - 本機 Clone 並建立 `C:\Development\GitHub\13_Project-Hub`。
+   - 將展示網站資產遷移至 `Project-Hub`：`index.html`、`photo_report.html`、`favicon.ico`、`.nojekyll`、`images/`、`downloads/`（含 `Photo_Report.rar`、`README.md`）、`scripts/update_project_hub.py` 與 `.github/workflows/pages.yml`。
+   - 測試並驗證 `Project-Hub` GitHub Pages 部署狀態（HTTP 200 正常，無 404，樣式與圖檔均載入成功）。
+2. **原 Repository 清理與改名**：
+   - 自原 Repository 移除展示站檔案（`index.html`、`photo_report.html`、`favicon.ico`、`.nojekyll`、`images/`、`downloads/Photo_Report.rar`、`scripts/update_home_html.py`、`.github/`），僅保留開發環境與治理職責。
+   - 將 GitHub Repository `lianghao02/home` 更名為 `lianghao02/Dev-Control-Center`。
+   - 將本機資料夾更名為 `C:\Development\GitHub\00_Dev-Control-Center`，並更新 remote origin URL 至 `https://github.com/lianghao02/Dev-Control-Center.git`。
+3. **Repository 清單與腳本相容性更新**：
+   - `development-repositories.json`：更新第 1 個專案為 `00_Dev-Control-Center` / `Dev-Control-Center`，新增第 14 個專案 `13_Project-Hub` / `Project-Hub`。
+   - `scripts/workspace_sync_hub.ps1`：專案數量動態顯示（`$repoNames.Count`），更新 AI 憲法分發提示。
+   - `scripts/sync_projects.ps1`：自癒連結邏輯支援 `00_Dev-Control-Center` 與相容 `00_home`。
+   - `scripts/sync_codex.ps1`：Fallback 路徑優先支援 `00_Dev-Control-Center`。
+4. **治理文件更新**：
+   - `README.md`：更新為 LiangHao Dev Control Center，新增 Project-Hub 公開展示站連結，更新 Clone 與快速開始路徑。
+   - `AGENTS.md`：更新專案名稱與邊界，明定作品展示由 `13_Project-Hub` 負責。
+   - `configs/AGENTS.md`：同步更新 Source of Truth 之治理文件路徑定義。
+   - 執行 `scripts\sync_codex.ps1 -Execute` 將最新全域設定部署至本機各 Agent 環境。
 
 ## 刻意未修改
-- 未修改其他 13 個業務 Repository。
-- 未建立任何重複治理檔案（如 CODEX_HANDOFF.md、ANTIGRAVITY_HANDOFF.md 等）。
-- 未更動其他無關腳本與資產。
+- 未重構既有正常運作的 PowerShell 與桌面建置腳本。
+- 未改動 01～12 業務專案之代碼與架構。
+- 未更動其他專案的編號排序。
+- Project-Hub 維持純 HTML/CSS/JS 靜態架構，未引入任何前端框架。
 
 ## 尚未完成
 - 無
@@ -31,12 +39,12 @@
 ## 驗證結果
 
 ### 已執行
-- `git status -sb`、`git remote -v`、`git branch --show-current`：確認初始乾淨。
-- `git pull --ff-only`：成功從 `2d5de22` fast-forward 至 `dd71c6e`。
-- `scripts/sync_codex.ps1 -CheckOnly`：預檢正確指出 AGENTS.md Pending，其餘全部 Current。
-- `scripts/sync_codex.ps1 -Execute`：成功將 `configs/AGENTS.md` 同步至 `%USERPROFILE%\.codex\AGENTS.md` 與 `%USERPROFILE%\.gemini\config\AGENTS.md`。
-- 複檢 `scripts/sync_codex.ps1 -CheckOnly`：所有項目狀態皆為 `Current`。
-- Git Diff 審查：僅包含本輪指定的治理檔案（`configs/AGENTS.md`, `IMPROVEMENTS.md`, `HANDOFF.md`）。
+- `Project-Hub` GitHub Pages 部署測試：Run ID 33839719640 執行成功。`Invoke-WebRequest` 驗證線上 `index.html`、`photo_report.html`、`banner_Cell-Tower-Map-Locator.png` 均為 HTTP 200。
+- `sync_codex.ps1 -CheckOnly`：全域 AGENTS、Skills、mcp_config 全數為 Current。
+- `workspace_sync_hub.ps1 -Action Scan`：成功掃描 14 個專案狀態，`00_Dev-Control-Center` 與 `13_Project-Hub` 正常識別。
+- `build_all_desktop_apps.ps1`：6 個桌面應用程式識別就緒。
+- `setup_all_envs.ps1`：4 個 Python 專案環境檢查通過。
+- `git status`：兩版本庫均為 working tree clean。
 
 ### 尚未驗證
 - 無
@@ -45,10 +53,15 @@
 - 無
 
 ## Git 狀態
-- Commit：b22e090
-- Push：是
-- Working Tree：Clean
-- Branch：main
+- `00_Dev-Control-Center`：
+  - Branch：main
+  - Remote：https://github.com/lianghao02/Dev-Control-Center.git
+- `13_Project-Hub`：
+  - Commit：4fd5ef0
+  - Push：是
+  - Working Tree：Clean
+  - Branch：main
+  - Remote：https://github.com/lianghao02/Project-Hub.git
 
 ## 下一步
-- 無；本輪 v8.3.1 治理校正已完成並推送。
+- 提交並推送 `00_Dev-Control-Center` 之更名與治理更新 Commit。

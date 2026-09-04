@@ -1,4 +1,4 @@
-﻿# UTF-8 Compatibility
+# UTF-8 Compatibility
 [CmdletBinding()]
 param(
     [switch]$CheckOnly,
@@ -22,7 +22,7 @@ if ($Execute) {
 
 $homeRepo = Split-Path -Parent $PSScriptRoot
 if ([string]::IsNullOrWhiteSpace($homeRepo)) {
-    $homeRepo = 'C:\Development\GitHub\00_home'
+    $homeRepo = if (Test-Path -LiteralPath 'C:\Development\GitHub\00_Dev-Control-Center') { 'C:\Development\GitHub\00_Dev-Control-Center' } else { 'C:\Development\GitHub\00_home' }
 }
 $githubRoot = Split-Path -Parent $homeRepo
 $codexHome = Join-Path $env:USERPROFILE '.codex'
