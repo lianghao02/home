@@ -31,7 +31,7 @@
 - **目前狀態**：可交付
 - **已確認事項**：
   - 最新相關 Commit：`cdee1e8`（修復日期時間合法性、同名照片文案、移除雙重事件綁定、修正標題 ID），已 Push。
-  - **漸進模組化**：已建立完整中期實作路線圖，目標為降低大型 `index.html` 與 `PhotoReportApp` 的維護／Agent 上下文成本；採 Phase 0～4 分段執行。已完成 Phase 0（建立 `REGRESSION_BASELINE.md` 回歸基準手冊），尚未開始程式拆分。詳細計畫見 `04_Photo-Report-Generator/MODULARIZATION_PLAN.md`。
+  - **漸進模組化**：已建立完整中期實作路線圖，目標為降低大型 `index.html` 與 `PhotoReportApp` 的維護／Agent 上下文成本；採 Phase 0～4 分段執行。Phase 0 確立自動化回歸防線策略（Phase 0A 純邏輯單元測試、Phase 0B Web E2E、Phase 0C 匯出結構 Golden Baseline，人工視覺驗收放至全模組化完成後），尚未開始程式拆分。詳細計畫見 `04_Photo-Report-Generator/MODULARIZATION_PLAN.md`。
 - **邊界限制**：不盲目重構 `index.html` 整體架構，不動 Word / PDF / Excel 既有 exporter 模組。
 
 ### 01_AG-MONITOR-Smart-Video-Screening
