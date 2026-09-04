@@ -38,7 +38,6 @@ D:\Development\GitHub\
 ├── 02_Cell-Tower-Map-Locator/
 ├── 03_Police-Image-Toolkit/
 ├── 04_Photo-Report-Generator/
-├── 05_tw-formal-writing/
 ├── 06_System-Optimizer-Tool/
 ├── 07_auto-learning-bot/
 ├── 08_Financial-Data-Parser/
